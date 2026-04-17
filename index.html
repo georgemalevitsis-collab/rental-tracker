@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Rental Tracker">
+<title>Rental Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0d0f18; --surface:#161926; --s2:#1e2130; --s3:#252838;
+  --border:#232638; --border2:#2e3248;
+  --text:#e8e4dc; --muted:#6a7080; --dim:#3a3d4a;
+  --gold:#e8d5a3; --gold-dim:#a89060;
+  --green:#5cb87a; --green-bg:#152a1e; --green-border:#1e4a2e;
+  --red:#e07070; --red-bg:#2a1515; --red-border:#4a2020;
+  --radius:14px; --radius-sm:9px; --radius-xs:6px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-text-size-adjust: 100%; }
+body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100svh; font-size: 14px; line-height: 1.4; -webkit-tap-highlight-color: transparent; overflow-x: hidden; }
+
+/* ── TOP BAR ── */
+.topbar { background: var(--surface); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+.topbar-inner { max-width: 960px; margin: 0 auto; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.brand { display: flex; flex-direction: column; }
+.brand-eyebrow { font-size: 9px; letter-spacing: 3px; color: var(--muted); text-transform: uppercase; margin-bottom: 1px; }
+.brand-name { font-family: 'DM Serif Display', serif; font-size: 19px; color: var(--gold); line-height: 1; }
+.topbar-right { display: flex; gap: 7px; align-items: center; }
+
+/* ── NAV ── */
+.nav { background: var(--surface); border-bottom: 1px solid var(--border); }
+.nav-inner { max-width: 960px; margin: 0 auto; display: flex; }
+.nav-btn { flex: 1; padding: 11px 0; background: none; border: none; border-bottom: 2px solid transparent; color: var(--muted); font-weight: 600; font-size: 13px; cursor: pointer; font-family: inherit; transition: all .15s; text-align: center; }
+.nav-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+/* ── PAGE BODY ── */
+.page { max-width: 960px; margin: 0 auto; padding: 20px 16px 40px; }
+
+/* ── BUTTONS ── */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 5px; border: none; border-radius: var(--radius-sm); font-weight: 600; font-size: 13px; cursor: pointer; font-family: inherit; transition: all .12s; padding: 9px 16px; white-space: nowrap; line-height: 1; }
+.btn:active { transform: scale(.97); }
+.btn-gold { background: var(--gold); color: #0c0e16; }
+.btn-ghost { background: transparent; color: var(--muted); border: 1.5px solid var(--border2); }
+.btn-green { background: var(--green-bg); color: var(--green); border: 1.5px solid var(--green-border); }
+.btn-danger { background: var(--red-bg); color: var(--red); border: 1.5px solid var(--red-border); }
+.btn-sm { padding: 7px 13px; font-size: 12px; }
+.btn-full { width: 100%; }
+.btn-block-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+/* ── KPI STRIP ── */
+.kpi-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+.kpi { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; }
+.kpi-label { font-size: 9px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; font-weight: 600; margin-bottom: 6px; }
+.kpi-val { font-family: 'DM Serif Display', serif; font-size: 20px; line-height: 1; }
+.kpi-sub { font-size: 10px; color: var(--dim); margin-top: 5px; }
+@media (max-width: 420px) { .kpi-val { font-size: 16px; } .kpi { padding: 11px 12px; } }
+
+/* ── SEGMENT CONTROL ── */
+.seg { display: inline-flex; background: var(--s2); border-radius: 11px; padding: 3px; border: 1px solid var(--border); margin-bottom: 18px; }
+.seg-btn { padding: 8px 18px; border-radius: 9px; border: none; cursor: pointer; font-weight: 600; font-size: 13px; font-family: inherit; background: transparent; color: var(--muted); transition: all .15s; }
+.seg-btn.active { background: var(--gold); color: #0c0e16; box-shadow: 0 1px 4px rgba(0,0,0,.4); }
+
+/* ── SECTION ROW ── */
+.section-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.section-label { font-size: 10px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; font-weight: 600; }
+
+/* ── CARDS / TABLE CONTAINER ── */
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.card-header { padding: 13px 18px; border-bottom: 1px solid var(--border); font-size: 10px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; font-weight: 600; }
+
+/* ── DATA TABLE ── */
+.data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.data-table colgroup col { /* widths set per table */ }
+
+/* Header cells */
+.data-table thead th {
+  padding: 11px 14px;
+  font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
+  font-weight: 600; color: var(--muted);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+.data-table thead th.r { text-align: right; }
+.data-table thead th.c { text-align: center; }
+
+/* Body cells */
+.data-table tbody td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #191c28;
+  vertical-align: middle;
+}
+.data-table tbody tr:last-child td { border-bottom: none; }
+.data-table tbody td.r { text-align: right; font-variant-numeric: tabular-nums; }
+.data-table tbody td.muted { color: var(--muted); }
+.data-table tbody td.month { font-weight: 600; color: #c0bdb5; width: 110px; }
+.data-table tbody td.amt-green { text-align: right; font-weight: 700; color: var(--green); font-variant-numeric: tabular-nums; }
+.data-table tbody td.amt-red { text-align: right; font-weight: 700; color: var(--red); font-variant-numeric: tabular-nums; }
+.data-table tbody td.amt-gold { text-align: right; font-weight: 700; color: var(--gold); font-variant-numeric: tabular-nums; }
+.data-table tbody td.del { width: 44px; text-align: center; }
+
+/* Footer */
+.data-table tfoot td {
+  padding: 12px 14px;
+  border-top: 1px solid var(--border2);
+  background: #0b0d16;
+  font-size: 11px; font-weight: 700; letter-spacing: .5px;
+}
+.data-table tfoot td.r { text-align: right; font-variant-numeric: tabular-nums; }
+.data-table tfoot td.total-label { color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; font-size: 9px; }
+.data-table tfoot td.total-green { color: var(--green); font-size: 14px; text-align: right; }
+.data-table tfoot td.total-red { color: var(--red); font-size: 14px; text-align: right; }
+.data-table tfoot td.total-gold { color: var(--gold); font-size: 14px; text-align: right; }
+.data-table tfoot td.total-neg { color: var(--red); font-size: 14px; text-align: right; }
+
+/* Delete button */
+.del-btn { background: none; border: none; cursor: pointer; color: var(--dim); font-size: 17px; line-height: 1; padding: 4px 6px; border-radius: 6px; transition: all .12s; display: flex; align-items: center; justify-content: center; }
+.del-btn:active { background: var(--red-bg); color: var(--red); }
+
+/* Tag pill */
+.tag { display: inline-flex; align-items: center; background: var(--s2); color: var(--gold-dim); padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; letter-spacing: .3px; white-space: nowrap; }
+
+/* Status badge */
+.badge { display: inline-flex; align-items: center; padding: 3px 9px; border-radius: 20px; font-size: 10px; font-weight: 700; letter-spacing: .3px; }
+.badge-profit { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+.badge-loss { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); }
+
+/* ── PROPERTY CARDS ── */
+.prop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 12px; margin-bottom: 22px; }
+.prop-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; cursor: pointer; transition: border-color .15s; }
+.prop-card:active { border-color: var(--gold); }
+.prop-card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; }
+.prop-card-info { flex: 1; min-width: 0; }
+.prop-card-name { font-family: 'DM Serif Display', serif; font-size: 15px; color: var(--gold); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.prop-card-addr { font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.prop-card-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; margin-left: 10px; }
+.prop-card-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-bottom: 12px; }
+.prop-stat { padding: 10px 10px; border-right: 1px solid var(--border); }
+.prop-stat:last-child { border-right: none; }
+.prop-stat-label { font-size: 8px; color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 5px; }
+.prop-stat-val { font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.mini-bar { height: 5px; background: var(--s2); border-radius: 3px; overflow: hidden; display: flex; margin-bottom: 5px; }
+.mini-bar-i { background: var(--green); border-radius: 3px 0 0 3px; }
+.mini-bar-e { background: var(--red); flex: 1; border-radius: 0 3px 3px 0; }
+.prop-legend { display: flex; justify-content: space-between; font-size: 9px; margin-bottom: 12px; }
+.prop-card-link { font-size: 11px; color: var(--dim); text-align: right; }
+
+/* ── PROPERTY PILLS ── */
+.prop-pills { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; align-items: center; }
+.prop-pill-wrap { display: inline-flex; align-items: center; gap: 5px; }
+.prop-pill { padding: 8px 15px; border-radius: 30px; cursor: pointer; font-weight: 600; font-size: 13px; font-family: inherit; border: 1.5px solid var(--border2); background: transparent; color: var(--muted); transition: all .15s; }
+.prop-pill.active { border-color: var(--gold); background: var(--s2); color: var(--gold); }
+.prop-pill-del { background: none; border: none; cursor: pointer; color: var(--dim); font-size: 14px; line-height: 1; padding: 2px; transition: color .12s; }
+.prop-pill-del:active { color: var(--red); }
+
+/* ── EMPTY STATE ── */
+.empty-state { padding: 48px 20px; text-align: center; }
+.empty-icon { font-size: 32px; margin-bottom: 10px; }
+.empty-title { font-size: 14px; color: #4a5060; margin-bottom: 3px; }
+.empty-sub { font-size: 11px; color: var(--dim); }
+
+/* ── MODAL ── */
+.overlay { position: fixed; inset: 0; background: rgba(0,0,0,.82); z-index: 200; display: flex; align-items: flex-end; justify-content: center; }
+@media (min-width: 560px) { .overlay { align-items: center; padding: 20px; } }
+.sheet { background: var(--surface); border: 1px solid var(--border2); border-radius: 20px 20px 0 0; padding: 24px 20px 32px; width: 100%; max-width: 460px; max-height: 92svh; overflow-y: auto; }
+@media (min-width: 560px) { .sheet { border-radius: 18px; } }
+.sheet-handle { width: 36px; height: 4px; background: var(--border2); border-radius: 2px; margin: 0 auto 20px; }
+.sheet-title { font-family: 'DM Serif Display', serif; font-size: 18px; color: var(--gold); margin-bottom: 20px; }
+.sheet-close { float: right; background: none; border: none; color: var(--muted); font-size: 22px; cursor: pointer; line-height: 1; margin-top: -2px; }
+
+/* ── FORM ── */
+.field { margin-bottom: 14px; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+.field label { display: block; font-size: 10px; color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; font-weight: 600; margin-bottom: 7px; }
+.field input, .field select { width: 100%; background: var(--s2); border: 1.5px solid var(--border2); color: var(--text); padding: 12px 13px; border-radius: var(--radius-sm); font-size: 15px; font-family: inherit; outline: none; -webkit-appearance: none; appearance: none; transition: border-color .12s; }
+.field input:focus, .field select:focus { border-color: var(--gold); }
+.field input::placeholder { color: var(--dim); }
+
+/* ── WARN BOX ── */
+.warn-box { background: var(--red-bg); border: 1px solid var(--red-border); border-radius: var(--radius-sm); padding: 14px; font-size: 13px; color: #c87070; line-height: 1.6; margin-bottom: 20px; }
+.warn-box strong { color: var(--red); }
+.info-box { background: var(--s2); border-radius: var(--radius-sm); padding: 14px; font-size: 13px; color: var(--muted); line-height: 1.8; margin-bottom: 14px; }
+.info-box strong { color: var(--text); }
+.ok-box { background: var(--green-bg); border: 1px solid var(--green-border); border-radius: var(--radius-sm); padding: 11px 14px; font-size: 12px; color: var(--green); margin-bottom: 18px; }
+
+/* ── YEAR SELECT ── */
+.year-sel { background: var(--s2); border: 1.5px solid var(--border2); color: var(--text); padding: 8px 11px; border-radius: var(--radius-sm); font-size: 13px; font-family: inherit; cursor: pointer; outline: none; -webkit-appearance: none; }
+
+/* ── SCROLLABLE TABLE WRAPPER ── */
+.table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+.hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <span class="brand-eyebrow">Portfolio</span>
+      <span class="brand-name">Rental Tracker</span>
+    </div>
+    <div class="topbar-right">
+      <select id="yearSel" class="year-sel"></select>
+      <button class="btn btn-green btn-sm" onclick="openSheet('exportSheet')">⬇ Export</button>
+      <button class="btn btn-gold btn-sm" onclick="openSheet('addPropSheet')">+ Property</button>
+    </div>
+  </div>
+</div>
+
+<!-- NAV -->
+<div class="nav">
+  <div class="nav-inner">
+    <button class="nav-btn active" id="navDash" onclick="setView('dashboard',this)">🏠 Dashboard</button>
+    <button class="nav-btn" id="navDetail" onclick="setView('detail',this)">📋 Detail</button>
+  </div>
+</div>
+
+<!-- PAGE -->
+<div class="page">
+
+  <!-- ═══════════ DASHBOARD ═══════════ -->
+  <div id="vDash">
+    <div class="kpi-strip" id="portKpis"></div>
+    <div class="section-label" style="margin-bottom:12px" id="propCardsLabel"></div>
+    <div class="prop-grid" id="propCards"></div>
+    <div class="card">
+      <div class="card-header" id="compTitle"></div>
+      <div class="table-scroll"><table class="data-table" id="compTable"></table></div>
+    </div>
+  </div>
+
+  <!-- ═══════════ DETAIL ═══════════ -->
+  <div id="vDetail" class="hidden">
+    <div class="prop-pills" id="propPills"></div>
+    <div class="kpi-strip" id="detKpis"></div>
+
+    <div class="seg" id="segCtrl">
+      <button class="seg-btn active" onclick="setTab('income',this)">Income</button>
+      <button class="seg-btn" onclick="setTab('expenses',this)">Expenses</button>
+      <button class="seg-btn" onclick="setTab('summary',this)">Summary</button>
+    </div>
+
+    <!-- Income tab -->
+    <div id="tabIncome">
+      <div class="section-row">
+        <span class="section-label">Income · <span id="incYrLbl"></span></span>
+        <button class="btn btn-gold btn-sm" onclick="openSheet('addIncSheet')">+ Add Income</button>
+      </div>
+      <div class="card">
+        <div id="incEmpty" class="empty-state hidden">
+          <div class="empty-icon">💰</div>
+          <div class="empty-title">No income recorded</div>
+          <div class="empty-sub">Tap "+ Add Income" to log a payment</div>
+        </div>
+        <div class="table-scroll">
+          <table class="data-table" id="incTable">
+            <colgroup><col style="width:120px"><col><col style="width:130px"><col style="width:44px"></colgroup>
+            <thead><tr><th>Month</th><th>Note</th><th class="r">Amount</th><th></th></tr></thead>
+            <tbody id="incBody"></tbody>
+            <tfoot id="incFoot"></tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Expenses tab -->
+    <div id="tabExpenses" class="hidden">
+      <div class="section-row">
+        <span class="section-label">Expenses · <span id="expYrLbl"></span></span>
+        <button class="btn btn-gold btn-sm" onclick="openSheet('addExpSheet')">+ Add Expense</button>
+      </div>
+      <div class="card">
+        <div id="expEmpty" class="empty-state hidden">
+          <div class="empty-icon">🧾</div>
+          <div class="empty-title">No expenses recorded</div>
+          <div class="empty-sub">Tap "+ Add Expense" to log a cost</div>
+        </div>
+        <div class="table-scroll">
+          <table class="data-table" id="expTable">
+            <colgroup><col style="width:110px"><col style="width:120px"><col><col style="width:130px"><col style="width:44px"></colgroup>
+            <thead><tr><th>Month</th><th>Category</th><th>Description</th><th class="r">Amount</th><th></th></tr></thead>
+            <tbody id="expBody"></tbody>
+            <tfoot id="expFoot"></tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Summary tab -->
+    <div id="tabSummary" class="hidden">
+      <div class="card">
+        <div class="card-header" id="sumTitle"></div>
+        <div class="table-scroll">
+          <table class="data-table" id="sumTable">
+            <colgroup><col style="width:100px"><col style="width:130px"><col style="width:130px"><col style="width:130px"></colgroup>
+            <thead><tr><th>Month</th><th class="r">Income</th><th class="r">Expenses</th><th class="r">Net</th></tr></thead>
+            <tbody id="sumBody"></tbody>
+            <tfoot id="sumFoot"></tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div><!-- /page -->
+
+<!-- ═══════════ SHEETS / MODALS ═══════════ -->
+
+<!-- Add Property -->
+<div class="overlay hidden" id="addPropSheet" onclick="bgClose(event,'addPropSheet')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <button class="sheet-close" onclick="closeSheet('addPropSheet')">×</button>
+    <div class="sheet-title">New Property</div>
+    <div class="field"><label>Property Name *</label><input id="fPropName" placeholder="e.g. 123 Oak Street" autocomplete="off"></div>
+    <div class="field" style="margin-bottom:22px"><label>Address</label><input id="fPropAddr" placeholder="Full address" autocomplete="off"></div>
+    <div class="btn-block-pair">
+      <button class="btn btn-gold btn-full" onclick="addProperty()">Add Property</button>
+      <button class="btn btn-ghost btn-full" onclick="closeSheet('addPropSheet')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Income -->
+<div class="overlay hidden" id="addIncSheet" onclick="bgClose(event,'addIncSheet')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <button class="sheet-close" onclick="closeSheet('addIncSheet')">×</button>
+    <div class="sheet-title">Add Income</div>
+    <div class="field-row">
+      <div class="field"><label>Month</label><select id="fIncMonth"></select></div>
+      <div class="field"><label>Amount ($)</label><input id="fIncAmt" type="number" inputmode="decimal" placeholder="0.00"></div>
+    </div>
+    <div class="field" style="margin-bottom:22px"><label>Note (optional)</label><input id="fIncNote" placeholder="e.g. Tenant A – full payment" autocomplete="off"></div>
+    <div class="btn-block-pair">
+      <button class="btn btn-gold btn-full" onclick="addIncome()">Save Income</button>
+      <button class="btn btn-ghost btn-full" onclick="closeSheet('addIncSheet')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Expense -->
+<div class="overlay hidden" id="addExpSheet" onclick="bgClose(event,'addExpSheet')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <button class="sheet-close" onclick="closeSheet('addExpSheet')">×</button>
+    <div class="sheet-title">Add Expense</div>
+    <div class="field-row">
+      <div class="field"><label>Month</label><select id="fExpMonth"></select></div>
+      <div class="field"><label>Category</label><select id="fExpCat"></select></div>
+    </div>
+    <div class="field"><label>Amount ($)</label><input id="fExpAmt" type="number" inputmode="decimal" placeholder="0.00"></div>
+    <div class="field" style="margin-bottom:22px"><label>Description (optional)</label><input id="fExpDesc" placeholder="e.g. Roof repair" autocomplete="off"></div>
+    <div class="btn-block-pair">
+      <button class="btn btn-gold btn-full" onclick="addExpense()">Save Expense</button>
+      <button class="btn btn-ghost btn-full" onclick="closeSheet('addExpSheet')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Property -->
+<div class="overlay hidden" id="delPropSheet" onclick="bgClose(event,'delPropSheet')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <button class="sheet-close" onclick="closeSheet('delPropSheet')">×</button>
+    <div class="sheet-title">Delete Property</div>
+    <div class="warn-box">⚠ Permanently delete <strong id="delPropName"></strong> and all its income and expense records? This cannot be undone.</div>
+    <div class="btn-block-pair">
+      <button class="btn btn-danger btn-full" onclick="confirmDelete()">Yes, Delete</button>
+      <button class="btn btn-ghost btn-full" onclick="closeSheet('delPropSheet')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Export -->
+<div class="overlay hidden" id="exportSheet" onclick="bgClose(event,'exportSheet')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <button class="sheet-close" onclick="closeSheet('exportSheet')">×</button>
+    <div class="sheet-title">Export Data</div>
+    <div class="info-box">Exports as a <strong>.CSV file</strong> — opens directly in Excel or Google Sheets.<br><br>📊 <strong>Excel:</strong> Open the downloaded file directly<br>📋 <strong>Google Sheets:</strong> File → Import → Upload CSV</div>
+    <div class="ok-box">✓ All properties · all years · income + expenses</div>
+    <div class="btn-block-pair">
+      <button class="btn btn-green btn-full" onclick="exportCSV()">⬇ Download CSV</button>
+      <button class="btn btn-ghost btn-full" onclick="closeSheet('exportSheet')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ─── CONSTANTS ─── */
+const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const MS     = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const CATS   = ["Mortgage","Insurance","Taxes","Repairs","Maintenance","Management","Utilities","HOA","Other"];
+const CY     = new Date().getFullYear();
+const YEARS  = [CY-2, CY-1, CY, CY+1];
+
+/* ─── STATE ─── */
+let D = {
+  properties: [{ id:"p1", name:"123 Oak Street", address:"123 Oak St, Austin TX" }],
+  income: {}, expenses: {},
+  prop: "p1", year: CY, view: "dashboard", tab: "income"
+};
+
+/* ─── PERSIST ─── */
+function save() { try { localStorage.setItem("rt3", JSON.stringify(D)); } catch(e) {} }
+function load() { try { const d = localStorage.getItem("rt3"); if(d) D = JSON.parse(d); } catch(e) {} }
+
+/* ─── HELPERS ─── */
+const uid  = () => Math.random().toString(36).slice(2) + Date.now().toString(36);
+const $    = id => document.getElementById(id);
+const fmt  = n  => (+n).toLocaleString("en-US", { style:"currency", currency:"USD", maximumFractionDigits:0 });
+const fmtD = n  => (+n).toLocaleString("en-US", { style:"currency", currency:"USD", minimumFractionDigits:2, maximumFractionDigits:2 });
+const getI = (p,y) => D.income[p]?.[y]   ?? [];
+const getE = (p,y) => D.expenses[p]?.[y] ?? [];
+const sum  = arr   => arr.reduce((s,e) => s + e.amount, 0);
+function propSums(p,y) {
+  const i = sum(getI(p,y)), e = sum(getE(p,y));
+  return { i, e, n: i - e };
+}
+function portfolio(y) {
+  return D.properties.reduce((a,p) => {
+    const s = propSums(p.id, y);
+    return { i: a.i+s.i, e: a.e+s.e, n: a.n+s.n };
+  }, { i:0, e:0, n:0 });
+}
+const dash = v => v ? fmt(v) : `<span style="color:var(--dim)">—</span>`;
+
+/* ─── SHEETS ─── */
+function openSheet(id)  { $(id).classList.remove('hidden'); }
+function closeSheet(id) { $(id).classList.add('hidden'); }
+function bgClose(e, id) { if (e.target === $(id)) closeSheet(id); }
+
+/* ─── VIEWS ─── */
+function setView(v, btn) {
+  D.view = v;
+  $('vDash').classList.toggle('hidden', v !== 'dashboard');
+  $('vDetail').classList.toggle('hidden', v !== 'detail');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  render();
+}
+function setTab(t, btn) {
+  D.tab = t;
+  ['income','expenses','summary'].forEach(x =>
+    $('tab' + x.charAt(0).toUpperCase() + x.slice(1)).classList.toggle('hidden', x !== t)
+  );
+  document.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  renderDetail();
+}
+
+/* ─── YEAR ─── */
+function initYear() {
+  const s = $('yearSel');
+  s.innerHTML = YEARS.map(y => `<option value="${y}"${y===D.year?' selected':''}>${y}</option>`).join('');
+  s.onchange = () => { D.year = +s.value; save(); render(); };
+}
+
+/* ─── SELECTS ─── */
+function initSelects() {
+  const mo = MONTHS.map((m,i) => `<option value="${i}">${m}</option>`).join('');
+  $('fIncMonth').innerHTML = mo;
+  $('fExpMonth').innerHTML = mo;
+  $('fExpCat').innerHTML   = CATS.map(c => `<option>${c}</option>`).join('');
+  const cm = new Date().getMonth();
+  $('fIncMonth').value = cm;
+  $('fExpMonth').value = cm;
+}
+
+/* ─── PROPERTY CRUD ─── */
+function addProperty() {
+  const name = $('fPropName').value.trim();
+  if (!name) { $('fPropName').focus(); return; }
+  const id = uid();
+  D.properties.push({ id, name, address: $('fPropAddr').value.trim() });
+  D.prop = id;
+  $('fPropName').value = '';
+  $('fPropAddr').value = '';
+  closeSheet('addPropSheet');
+  save(); render();
+}
+
+let _delId = null;
+function promptDelete(id, e) {
+  e.stopPropagation();
+  _delId = id;
+  const p = D.properties.find(x => x.id === id);
+  $('delPropName').textContent = p ? p.name : 'this property';
+  openSheet('delPropSheet');
+}
+function confirmDelete() {
+  if (!_delId) return;
+  D.properties = D.properties.filter(p => p.id !== _delId);
+  delete D.income[_delId];
+  delete D.expenses[_delId];
+  if (D.prop === _delId) D.prop = D.properties[0]?.id ?? null;
+  _delId = null;
+  closeSheet('delPropSheet');
+  save(); render();
+}
+
+/* ─── INCOME CRUD ─── */
+function addIncome() {
+  const amt = parseFloat($('fIncAmt').value);
+  if (!amt || isNaN(amt)) { $('fIncAmt').focus(); return; }
+  const p = D.prop, y = D.year;
+  (D.income[p] ??= {})[y] ??= [];
+  D.income[p][y].push({ id: uid(), month: +$('fIncMonth').value, amount: amt, note: $('fIncNote').value.trim() });
+  $('fIncAmt').value = '';
+  $('fIncNote').value = '';
+  closeSheet('addIncSheet');
+  save(); render();
+}
+function delIncome(id) {
+  const p = D.prop, y = D.year;
+  D.income[p][y] = D.income[p][y].filter(e => e.id !== id);
+  save(); render();
+}
+
+/* ─── EXPENSE CRUD ─── */
+function addExpense() {
+  const amt = parseFloat($('fExpAmt').value);
+  if (!amt || isNaN(amt)) { $('fExpAmt').focus(); return; }
+  const p = D.prop, y = D.year;
+  (D.expenses[p] ??= {})[y] ??= [];
+  D.expenses[p][y].push({ id: uid(), month: +$('fExpMonth').value, cat: $('fExpCat').value, desc: $('fExpDesc').value.trim(), amount: amt });
+  $('fExpAmt').value = '';
+  $('fExpDesc').value = '';
+  closeSheet('addExpSheet');
+  save(); render();
+}
+function delExpense(id) {
+  const p = D.prop, y = D.year;
+  D.expenses[p][y] = D.expenses[p][y].filter(e => e.id !== id);
+  save(); render();
+}
+
+/* ─── EXPORT ─── */
+function exportCSV() {
+  const rows = [["Property","Address","Year","Type","Month","Category","Note / Description","Amount"]];
+  D.properties.forEach(p => {
+    YEARS.forEach(y => {
+      getI(p.id,y).forEach(e => rows.push([p.name, p.address, y, "Income",  MONTHS[e.month], "Rental Income", e.note||"", e.amount]));
+      getE(p.id,y).forEach(e => rows.push([p.name, p.address, y, "Expense", MONTHS[e.month], e.cat, e.desc||"", e.amount]));
+    });
+  });
+  const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(",")).join("\n");
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], { type:"text/csv" }));
+  a.download = "rental-tracker.csv";
+  a.click();
+  closeSheet('exportSheet');
+}
+
+/* ─── NAVIGATION HELPERS ─── */
+function selectProp(id) { D.prop = id; save(); renderDetail(); }
+function goDetail(id) {
+  D.prop = id; D.view = 'detail';
+  $('vDash').classList.add('hidden');
+  $('vDetail').classList.remove('hidden');
+  $('navDash').classList.remove('active');
+  $('navDetail').classList.add('active');
+  save(); render();
+}
+
+/* ══════════════════════════════════════════
+   RENDER
+══════════════════════════════════════════ */
+function render() { renderDashboard(); renderDetail(); }
+
+/* ─── DASHBOARD ─── */
+function renderDashboard() {
+  const y = D.year, tot = portfolio(y);
+
+  /* Portfolio KPIs */
+  $('portKpis').innerHTML = [
+    { label:"Portfolio Income",   val: tot.i, color:"var(--green)" },
+    { label:"Portfolio Expenses", val: tot.e, color:"var(--red)"   },
+    { label:"Portfolio Net",      val: tot.n, color: tot.n>=0 ? "var(--gold)" : "var(--red)" }
+  ].map(k => `
+    <div class="kpi">
+      <div class="kpi-label">${k.label}</div>
+      <div class="kpi-val" style="color:${k.color}">${fmt(k.val)}</div>
+      <div class="kpi-sub">${y} · All Properties</div>
+    </div>`).join('');
+
+  /* Property label */
+  $('propCardsLabel').textContent = `Properties — ${y}`;
+
+  /* Property cards */
+  $('propCards').innerHTML = D.properties.map(p => {
+    const s = propSums(p.id, y);
+    const total = s.i + s.e;
+    const pct   = total > 0 ? Math.round(s.i / total * 100) : 0;
+    return `
+    <div class="prop-card" onclick="goDetail('${p.id}')">
+      <div class="prop-card-top">
+        <div class="prop-card-info">
+          <div class="prop-card-name">${p.name}</div>
+          <div class="prop-card-addr">${p.address || 'No address'}</div>
+        </div>
+        <div class="prop-card-actions">
+          <span class="${s.n>=0?'badge badge-profit':'badge badge-loss'}">${s.n>=0?'✓ Profit':'⚠ Loss'}</span>
+          <button onclick="promptDelete('${p.id}',event)" class="prop-pill-del" title="Delete">🗑</button>
+        </div>
+      </div>
+      <div class="prop-card-stats">
+        <div class="prop-stat">
+          <div class="prop-stat-label">Income</div>
+          <div class="prop-stat-val" style="color:var(--green)">${fmt(s.i)}</div>
+        </div>
+        <div class="prop-stat">
+          <div class="prop-stat-label">Expenses</div>
+          <div class="prop-stat-val" style="color:var(--red)">${fmt(s.e)}</div>
+        </div>
+        <div class="prop-stat">
+          <div class="prop-stat-label">Net</div>
+          <div class="prop-stat-val" style="color:${s.n>=0?'var(--gold)':'var(--red)'}">${fmt(s.n)}</div>
+        </div>
+      </div>
+      <div class="mini-bar"><div class="mini-bar-i" style="width:${pct}%"></div><div class="mini-bar-e"></div></div>
+      <div class="prop-legend"><span style="color:var(--green)">■ Income</span><span style="color:var(--red)">■ Expenses</span></div>
+      <div class="prop-card-link">View details →</div>
+    </div>`;
+  }).join('');
+
+  /* Comparison table */
+  $('compTitle').textContent = `Monthly Comparison — All Properties — ${y}`;
+  const ps = D.properties;
+  if (!ps.length) { $('compTable').innerHTML = ''; return; }
+
+  const ch = ps.map(p => `<th colspan="2" style="text-align:center;border-left:1px solid var(--border)">${p.name}</th>`).join('');
+  const sh = ps.map(() => `
+    <th style="text-align:right;color:var(--green);border-left:1px solid var(--border);font-size:9px;padding:8px 12px;background:var(--s3);border-bottom:1px solid var(--border)">INC</th>
+    <th style="text-align:right;color:var(--red);font-size:9px;padding:8px 12px;background:var(--s3);border-bottom:1px solid var(--border)">EXP</th>`).join('');
+
+  const rows = MS.map((m,i) => {
+    let rn = 0;
+    const cells = ps.map(p => {
+      const inc = sum(getI(p.id,y).filter(e => e.month===i));
+      const exp = sum(getE(p.id,y).filter(e => e.month===i));
+      rn += inc - exp;
+      return `<td style="text-align:right;color:var(--green);font-weight:600;border-left:1px solid var(--border);font-variant-numeric:tabular-nums">${dash(inc)}</td>
+              <td style="text-align:right;color:var(--red);font-variant-numeric:tabular-nums">${dash(exp)}</td>`;
+    }).join('');
+    const nc = rn>0?'var(--gold)':rn<0?'var(--red)':'var(--dim)';
+    return `<tr>
+      <td style="font-weight:600;color:#c0bdb5;white-space:nowrap">${m}</td>
+      ${cells}
+      <td style="text-align:right;font-weight:700;color:${nc};border-left:1px solid var(--border2);font-variant-numeric:tabular-nums">${rn!==0?fmt(rn):'<span style="color:var(--dim)">—</span>'}</td>
+    </tr>`;
+  }).join('');
+
+  const fc = ps.map(p => {
+    const s = propSums(p.id,y);
+    return `<td class="total-green r" style="border-left:1px solid var(--border)">${fmt(s.i)}</td>
+            <td class="total-red r">${fmt(s.e)}</td>`;
+  }).join('');
+  const nc = tot.n>=0?'total-gold':'total-neg';
+
+  $('compTable').innerHTML = `
+    <colgroup><col style="width:90px">${ps.map(()=>'<col style="width:110px"><col style="width:110px">').join('')}<col style="width:120px"></colgroup>
+    <thead>
+      <tr><th>Month</th>${ch}<th class="r" style="border-left:1px solid var(--border2)">Net</th></tr>
+      <tr><th></th>${sh}<th style="border-left:1px solid var(--border2)"></th></tr>
+    </thead>
+    <tbody>${rows}</tbody>
+    <tfoot><tr>
+      <td class="total-label">Annual</td>
+      ${fc}
+      <td class="${nc}" style="border-left:1px solid var(--border2)">${fmt(tot.n)}</td>
+    </tr></tfoot>`;
+}
+
+/* ─── DETAIL ─── */
+function renderDetail() {
+  const pid = D.prop, y = D.year;
+  const prop = D.properties.find(p => p.id === pid);
+
+  /* Pills */
+  $('propPills').innerHTML = D.properties.map(p => `
+    <span class="prop-pill-wrap">
+      <button class="prop-pill${p.id===pid?' active':''}" onclick="selectProp('${p.id}')">${p.name}</button>
+      <button class="prop-pill-del" onclick="promptDelete('${p.id}',event)" title="Delete">🗑</button>
+    </span>`).join('');
+
+  if (!prop) return;
+
+  const s = propSums(pid, y);
+
+  /* Detail KPIs */
+  $('detKpis').innerHTML = [
+    { label:"Total Income",   val:s.i, color:"var(--green)" },
+    { label:"Total Expenses", val:s.e, color:"var(--red)"   },
+    { label:"Net Income",     val:s.n, color:s.n>=0?"var(--gold)":"var(--red)" }
+  ].map(k => `
+    <div class="kpi">
+      <div class="kpi-label">${k.label}</div>
+      <div class="kpi-val" style="color:${k.color}">${fmt(k.val)}</div>
+    </div>`).join('');
+
+  $('incYrLbl').textContent = y;
+  $('expYrLbl').textContent = y;
+  $('sumTitle').textContent = `Month-by-Month — ${y}`;
+
+  /* ── Income ── */
+  const il = [...getI(pid,y)].sort((a,b) => a.month - b.month);
+  $('incEmpty').classList.toggle('hidden', il.length > 0);
+  $('incTable').classList.toggle('hidden', il.length === 0);
+  if (il.length) {
+    $('incBody').innerHTML = il.map(r => `
+      <tr>
+        <td class="month">${MONTHS[r.month]}</td>
+        <td class="muted">${r.note || '—'}</td>
+        <td class="amt-green">${fmtD(r.amount)}</td>
+        <td class="del"><button class="del-btn" onclick="delIncome('${r.id}')">×</button></td>
+      </tr>`).join('');
+    $('incFoot').innerHTML = `
+      <tr>
+        <td class="total-label" colspan="2">Total</td>
+        <td class="total-green">${fmt(s.i)}</td>
+        <td></td>
+      </tr>`;
+  }
+
+  /* ── Expenses ── */
+  const el = [...getE(pid,y)].sort((a,b) => a.month - b.month);
+  $('expEmpty').classList.toggle('hidden', el.length > 0);
+  $('expTable').classList.toggle('hidden', el.length === 0);
+  if (el.length) {
+    $('expBody').innerHTML = el.map(r => `
+      <tr>
+        <td class="month">${MONTHS[r.month]}</td>
+        <td><span class="tag">${r.cat}</span></td>
+        <td class="muted">${r.desc || '—'}</td>
+        <td class="amt-red">${fmtD(r.amount)}</td>
+        <td class="del"><button class="del-btn" onclick="delExpense('${r.id}')">×</button></td>
+      </tr>`).join('');
+    $('expFoot').innerHTML = `
+      <tr>
+        <td class="total-label" colspan="3">Total</td>
+        <td class="total-red">${fmt(s.e)}</td>
+        <td></td>
+      </tr>`;
+  }
+
+  /* ── Summary ── */
+  let rows = '', ai = 0, ae = 0;
+  MS.forEach((m,i) => {
+    const inc = sum(getI(pid,y).filter(e => e.month===i));
+    const exp = sum(getE(pid,y).filter(e => e.month===i));
+    const net = inc - exp;
+    ai += inc; ae += exp;
+    const nc = net>0?'amt-gold':net<0?'amt-red':'muted';
+    rows += `
+      <tr>
+        <td class="month">${m}</td>
+        <td class="amt-green">${inc ? fmt(inc) : '<span style="color:var(--dim)">—</span>'}</td>
+        <td class="amt-red">${exp ? fmt(exp) : '<span style="color:var(--dim)">—</span>'}</td>
+        <td class="${nc}">${inc||exp ? fmt(net) : '<span style="color:var(--dim)">—</span>'}</td>
+      </tr>`;
+  });
+  const an = ai - ae;
+  $('sumBody').innerHTML = rows;
+  $('sumFoot').innerHTML = `
+    <tr>
+      <td class="total-label">Annual</td>
+      <td class="total-green">${fmt(ai)}</td>
+      <td class="total-red">${fmt(ae)}</td>
+      <td class="${an>=0?'total-gold':'total-neg'}">${fmt(an)}</td>
+    </tr>`;
+}
+
+/* ─── BOOT ─── */
+load();
+initYear();
+initSelects();
+render();
+</script>
+</body>
+</html>
