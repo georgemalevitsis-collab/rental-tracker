@@ -2,15 +2,18 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#0d0f18">
 <title>Portfolio Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{background:#0d0f18;color:#e8e4dc;font-family:'DM Sans',system-ui,sans-serif;min-height:100%;font-size:14px;-webkit-font-smoothing:antialiased}
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500;600;700&display=swap');
+html,body{background:#0d0f18!important;color:#e8e4dc;font-family:'DM Sans',system-ui,sans-serif;min-height:100%;font-size:14px;-webkit-font-smoothing:antialiased}
+
 :root{
   --bg:#0d0f18;--sur:#161926;--s2:#1e2130;--s3:#252838;
   --bor:#232638;--bor2:#2e3248;
@@ -28,17 +31,17 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--gld)!imp
 /* layout */
 #app{min-height:100vh}
 .hdr{background:var(--sur);border-bottom:1px solid var(--bor);position:sticky;top:0;z-index:100}
-.hdr-i{max-width:1100px;margin:0 auto;padding:0 16px;height:50px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.hdr-i{max-width:1100px;margin:0 auto;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px}
 .logo{display:flex;align-items:center;gap:8px}
 .logo-mark{width:24px;height:24px;border-radius:6px;background:linear-gradient(135deg,#e8d5a3,#a07830);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
 .logo-text{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--gld)}
-.hdr-right{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.hdr-right{display:flex;gap:5px;align-items:center;flex-shrink:0}
 .nav{background:var(--sur);border-bottom:1px solid var(--bor);overflow-x:auto;-webkit-overflow-scrolling:touch}
 .nav::-webkit-scrollbar{display:none}
 .nav-i{max-width:1100px;margin:0 auto;padding:0 12px;display:flex;white-space:nowrap;min-width:fit-content}
 .nav-btn{padding:10px 14px;background:none;border:none;border-bottom:2px solid transparent;color:var(--mut);font-weight:600;font-size:12px;cursor:pointer;transition:all .15s;letter-spacing:.2px}
 .nav-btn.active{color:var(--gld);border-bottom-color:var(--gld)}
-.body{max-width:1100px;margin:0 auto;padding:16px 16px 60px}
+.body{max-width:1100px;margin:0 auto;padding:16px 16px calc(60px + env(safe-area-inset-bottom,0px))}
 /* cards */
 .card{background:var(--sur);border:1.5px solid var(--bor);border-radius:13px;overflow:hidden;margin-bottom:12px}
 .kpi-grid{display:grid;gap:10px;margin-bottom:12px}
@@ -50,7 +53,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--gld)!imp
 /* buttons */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;border-radius:8px;font-weight:700;cursor:pointer;border:none;transition:opacity .12s;white-space:nowrap;line-height:1}
 .btn:active{opacity:.75}
-.btn-sm{padding:5px 11px;font-size:12px}
+.btn-sm{padding:5px 9px;font-size:11px}
 .btn-md{padding:8px 14px;font-size:13px}
 .btn-full{width:100%;padding:11px;font-size:14px}
 .btn-gold{background:var(--gld);color:#0c0e16}
@@ -279,7 +282,13 @@ const masterTot=()=>{
 
 // ─── RENDER ENGINE ───────────────────────────
 function render(){
-  const app=$('#app');
+  const app=$('#app');app.style.background='#0d0f18';document.documentElement.style.background='#0d0f18';
+  // Add status bar spacer for iPhone
+  const safeSpacer=document.createElement('div');
+  safeSpacer.style.cssText='height:env(safe-area-inset-top,0px);background:#161926;position:fixed;top:0;left:0;right:0;z-index:999';
+  document.body.insertBefore(safeSpacer,document.body.firstChild);
+  // Add matching padding so content isn't hidden behind spacer
+  document.body.style.paddingTop='env(safe-area-inset-top,0px)';
   app.innerHTML='';
   if(!S.user){app.append(renderLogin());return;}
   app.append(renderHeader(),renderNav(),el('div',{class:'body'},renderSection()));
@@ -506,6 +515,58 @@ function sh(label,actionEl){
   return d;
 }
 
+
+// ── LOCAL NL PARSER (works without AI/backend) ──────────────────────────
+function extractAmount(text){
+  const m=text.match(/\$?([\d,]+(?:\.\d{1,2})?)/);
+  return m?parseFloat(m[1].replace(/,/g,'')):null;
+}
+function extractMonth(text){
+  const t=text.toLowerCase();
+  const names=['january','february','march','april','may','june','july','august','september','october','november','december'];
+  const shorts=['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+  for(let i=0;i<12;i++){if(t.includes(names[i])||t.includes(shorts[i]))return i;}
+  if(t.includes('last month'))return Math.max(0,new Date().getMonth()-1);
+  if(t.includes('this month')||t.includes('current'))return new Date().getMonth();
+  return new Date().getMonth();
+}
+function extractCategory(text,cats){
+  if(!cats||!cats.length)return 'Other';
+  const t=text.toLowerCase();
+  // Check for direct category matches
+  for(const c of cats){if(t.includes(c.toLowerCase()))return c;}
+  // Common keyword mappings
+  const map={mortgage:['mortgage','loan','payment'],repairs:['repair','fix','plumb','electric','hvac','roof','leak','broken'],maintenance:['maintenance','maint','clean','lawn','garden'],insurance:['insurance','insur'],taxes:['tax','property tax'],utilities:['utility','utilities','water','electric','gas','internet'],management:['management','manage','manager'],materials:['material','lumber','concrete','supply','supplies'],labor:['labor','labour','worker','crew','sub'],equipment:['equipment','tool','machine'],fuel:['fuel','gas','diesel'],permits:['permit','license','licens']};
+  for(const[key,keywords] of Object.entries(map)){
+    for(const kw of keywords){
+      if(t.includes(kw)){
+        // Find best matching cat
+        const match=cats.find(c=>c.toLowerCase().includes(key)||key.includes(c.toLowerCase()));
+        if(match)return match;
+      }
+    }
+  }
+  return cats[0]||'Other';
+}
+function extractClient(text){
+  // Look for patterns like "to/from/for [Name]" or just first proper noun
+  const m=text.match(/(?:to|from|for|invoice|client)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)/i);
+  return m?m[1]:'';
+}
+function parseNL(text,type,cats){
+  const amount=extractAmount(text);
+  const month=extractMonth(text);
+  if(!amount)return null;
+  // Remove the amount and month from text to get description
+  let desc=text.replace(/\$?[\d,]+(?:\.\d{1,2})?/,'').replace(/(january|february|march|april|may|june|july|august|september|october|november|december|jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec|last month|this month)/gi,'').replace(/\s+/g,' ').trim();
+  // Remove common words
+  desc=desc.replace(/^(paid|pay|payment|received|income|expense|for|from|to|the|a)\s+/i,'').trim();
+  if(type==='income')return{amount,month,note:desc};
+  if(type==='expense')return{amount,month,category:extractCategory(text,cats),description:desc};
+  if(type==='invoice')return{amount,month,client:extractClient(text)||desc,description:desc,status:'Draft'};
+  return null;
+}
+
 // ─── QUICK ADD ───────────────────────────────
 function quickAdd(type,cats,placeholder,onSave){
   let qaState='idle',qaParsed=null,qaEdited=null;
@@ -519,22 +580,15 @@ function quickAdd(type,cats,placeholder,onSave){
     const inp=el('textarea',{class:'qa-input',rows:'2',placeholder:placeholder||'Type to add...'});
     const addBtn=el('button',{class:'qa-btn'},'Add →');
     
-    addBtn.addEventListener('click',async()=>{
+    addBtn.addEventListener('click',()=>{
       const text=inp.value.trim();if(!text)return;
-      addBtn.textContent='…';addBtn.disabled=true;
-      const catList=cats||[];
-      const prompt=type==='income'
-        ?'Parse income entry: "'+text+'"\\nReturn ONLY JSON: {"month":<0-11>,"amount":<number>,"note":"<desc>"}'
-        :type==='invoice'
-        ?'Parse invoice: "'+text+'"\\nReturn ONLY JSON: {"client":"<n>","description":"<work>","amount":<number>,"month":<0-11>,"status":"Draft"}'
-        :'Parse expense: "'+text+'"\\nCategories: '+catList.join(', ')+'\\nReturn ONLY JSON: {"month":<0-11>,"amount":<number>,"category":"<best match>","description":"<brief>"}';
-      try{
-        const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:200,messages:[{role:'user',content:prompt}]})});
-        const data=await resp.json();
-        const raw=(data.content||[]).map(x=>x.text||'').join('');
-        JSON.parse(raw.replace(/[^{]*({.*})[^}]*/s,'$1'));
-        qaEdited={...qaParsed};qaState='preview';
-      }catch(e){qaState='error';}
+      // Local parser — no API needed
+      const parsed=parseNL(text,type,cats||[]);
+      if(parsed){qaParsed=parsed;qaEdited={...parsed};qaState='preview';}
+      else{// Show form fallback pre-filled with what we can extract
+        const amt=extractAmount(text);
+        qaParsed={amount:amt||'',month:new Date().getMonth(),note:text,description:text,category:(cats&&cats[0])||'Other',client:''};
+        qaEdited={...qaParsed};qaState='preview';}
       buildBox();
     });
     inp.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();addBtn.click();}});
@@ -1034,7 +1088,7 @@ function renderModal(){
   hdr.append(x);
   modal.append(hdr,el('div',{class:'modal-body'},content.body));
   overlay.append(modal);
-  document.body.append(overlay);
+  document.body.style.background='#0d0f18';document.body.append(overlay);
   setTimeout(()=>overlay.querySelector('input,textarea')?.focus(),80);
 }
 
