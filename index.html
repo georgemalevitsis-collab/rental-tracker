@@ -1,1121 +1,1353 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <meta name="theme-color" content="#0d0f18"/>
-  <meta name="apple-mobile-web-app-capable" content="yes"/>
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-  <title>Portfolio Hub</title>
-  <style>
-    *{box-sizing:border-box;margin:0;padding:0}
-    html,body,#root{min-height:100%;background:#0d0f18}
-    body{font-family:'DM Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0d0f18">
+<title>Portfolio Hub</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{background:#0d0f18;color:#e8e4dc;font-family:'DM Sans',system-ui,sans-serif;min-height:100%;font-size:14px;-webkit-font-smoothing:antialiased}
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500;600;700&display=swap');
+:root{
+  --bg:#0d0f18;--sur:#161926;--s2:#1e2130;--s3:#252838;
+  --bor:#232638;--bor2:#2e3248;
+  --txt:#e8e4dc;--mut:#6a7080;--dim:#3a3d4a;
+  --gld:#e8d5a3;--gldD:#a89060;
+  --grn:#5cb87a;--grnB:#152a1e;--grnBo:#1e4a2e;
+  --red:#e07070;--redB:#2a1515;--redBo:#4a2020;
+  --blu:#5b8dee;--bluB:#1a2340;--bluBo:#2a3a60;
+}
+input,select,textarea,button{font-family:inherit;font-size:inherit}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--gld)!important;box-shadow:0 0 0 3px rgba(232,213,163,.1)}
+::-webkit-scrollbar{width:3px;height:3px}
+::-webkit-scrollbar-thumb{background:var(--bor);border-radius:2px}
+.serif{font-family:'Playfair Display',Georgia,serif}
+/* layout */
+#app{min-height:100vh}
+.hdr{background:var(--sur);border-bottom:1px solid var(--bor);position:sticky;top:0;z-index:100}
+.hdr-i{max-width:1100px;margin:0 auto;padding:0 16px;height:50px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.logo{display:flex;align-items:center;gap:8px}
+.logo-mark{width:24px;height:24px;border-radius:6px;background:linear-gradient(135deg,#e8d5a3,#a07830);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+.logo-text{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--gld)}
+.hdr-right{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.nav{background:var(--sur);border-bottom:1px solid var(--bor);overflow-x:auto;-webkit-overflow-scrolling:touch}
+.nav::-webkit-scrollbar{display:none}
+.nav-i{max-width:1100px;margin:0 auto;padding:0 12px;display:flex;white-space:nowrap;min-width:fit-content}
+.nav-btn{padding:10px 14px;background:none;border:none;border-bottom:2px solid transparent;color:var(--mut);font-weight:600;font-size:12px;cursor:pointer;transition:all .15s;letter-spacing:.2px}
+.nav-btn.active{color:var(--gld);border-bottom-color:var(--gld)}
+.body{max-width:1100px;margin:0 auto;padding:16px 16px 60px}
+/* cards */
+.card{background:var(--sur);border:1.5px solid var(--bor);border-radius:13px;overflow:hidden;margin-bottom:12px}
+.kpi-grid{display:grid;gap:10px;margin-bottom:12px}
+.kpi-grid.c3{grid-template-columns:repeat(3,1fr)}
+.kpi-grid.c4{grid-template-columns:repeat(4,1fr)}
+.kpi{border-radius:11px;padding:11px 13px;border:1.5px solid}
+.kpi-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;font-weight:700;margin-bottom:4px;opacity:.8}
+.kpi-val{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1}
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;border-radius:8px;font-weight:700;cursor:pointer;border:none;transition:opacity .12s;white-space:nowrap;line-height:1}
+.btn:active{opacity:.75}
+.btn-sm{padding:5px 11px;font-size:12px}
+.btn-md{padding:8px 14px;font-size:13px}
+.btn-full{width:100%;padding:11px;font-size:14px}
+.btn-gold{background:var(--gld);color:#0c0e16}
+.btn-dark{background:var(--s2);color:var(--mut);border:1.5px solid var(--bor2)}
+.btn-ghost{background:transparent;color:var(--mut);border:1.5px solid var(--bor2)}
+.btn-green{background:var(--grnB);color:var(--grn);border:1.5px solid var(--grnBo)}
+.btn-blue{background:var(--bluB);color:var(--blu);border:1.5px solid var(--bluBo)}
+.btn-red{background:var(--redB);color:var(--red);border:1.5px solid var(--redBo)}
+.btn-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+/* forms */
+.finp{width:100%;background:var(--s2);border:1.5px solid var(--bor2);color:var(--txt);padding:10px 12px;border-radius:9px;font-size:14px;appearance:none;-webkit-appearance:none}
+.flabel{display:block;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--mut);margin-bottom:6px}
+.fgroup{margin-bottom:12px}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+/* pill bar */
+.pill-bar{background:var(--sur);border:1.5px solid var(--bor);border-radius:10px;padding:8px 12px;margin-bottom:11px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.pill{padding:5px 11px;border-radius:6px;font-weight:700;font-size:12px;cursor:pointer;border:1.5px solid var(--bor2);background:var(--s2);color:var(--mut);transition:all .15s}
+.pill.active-grn{border-color:var(--grn);background:var(--grn);color:#0c0e16}
+.pill-edit,.pill-del{background:none;border:none;cursor:pointer;font-size:11px;padding:1px 3px;line-height:1}
+.pill-del{color:var(--red)}
+.pill-edit{color:var(--dim)}
+/* tabs */
+.seg{display:inline-flex;background:var(--s2);border-radius:9px;padding:3px;margin-bottom:12px;gap:2px;border:1px solid var(--bor);flex-wrap:wrap}
+.seg-btn{padding:6px 12px;border-radius:7px;border:none;cursor:pointer;font-weight:700;font-size:12px;background:transparent;color:var(--mut);transition:all .15s}
+.seg-btn.active{background:var(--gld);color:#0c0e16}
+/* table */
+.tbl-wrap{width:100%;overflow:hidden}
+.tbl{width:100%;border-collapse:collapse;table-layout:fixed;font-size:12px}
+.tbl th{padding:8px 10px;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;color:var(--mut);border-bottom:1px solid var(--bor);text-align:left;background:var(--s3);white-space:nowrap}
+.tbl th.r{text-align:right}
+.tbl td{padding:8px 10px;border-bottom:1px solid var(--s3);color:var(--txt);vertical-align:middle;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tbl td.r{text-align:right;font-variant-numeric:tabular-nums}
+.tbl td.mut{color:var(--mut)}
+.tbl td.grn{color:var(--grn);font-weight:700}
+.tbl td.red{color:var(--red);font-weight:700}
+.tbl td.gld{color:var(--gld);font-weight:700}
+.tbl tfoot td{padding:8px 10px;border-top:1.5px solid var(--bor);background:#0b0d16;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mut);font-weight:700}
+.tbl tfoot td.r{font-size:13px;letter-spacing:0;text-transform:none;font-variant-numeric:tabular-nums}
+.tbl tr:hover td{background:rgba(255,255,255,.015)}
+.del-btn{background:none;border:none;cursor:pointer;color:var(--dim);font-size:15px;padding:2px 5px;line-height:1}
+.tag{display:inline-flex;align-items:center;background:var(--s3);color:var(--gldD);padding:3px 8px;border-radius:5px;font-size:11px;font-weight:600;border:1px solid var(--bor);white-space:nowrap}
+/* modal */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);z-index:200;display:flex;align-items:center;justify-content:center;padding:16px;overflow-y:auto}
+.modal{background:var(--sur);border:1.5px solid var(--bor2);border-radius:17px;width:100%;max-width:460px;max-height:92vh;overflow-y:auto;margin:auto;box-shadow:0 40px 100px rgba(0,0,0,.7)}
+.modal-hdr{padding:16px 20px 12px;border-bottom:1px solid var(--bor);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:var(--sur);z-index:1}
+.modal-title{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--gld)}
+.modal-x{background:var(--s3);border:none;border-radius:50%;width:25px;height:25px;cursor:pointer;font-size:14px;color:var(--mut);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.modal-body{padding:16px 20px 20px}
+/* section header */
+.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:6px}
+.sh-label{font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--mut)}
+/* empty state */
+.empty{padding:40px 20px;text-align:center}
+.empty-icon{font-size:30px;margin-bottom:10px}
+.empty-title{font-size:13px;color:var(--mut);font-weight:500;margin-bottom:4px}
+.empty-sub{font-size:11px;color:var(--dim)}
+/* master cards */
+.port-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px}
+.port-card{background:var(--sur);border-radius:12px;padding:13px;cursor:pointer;border:1.5px solid var(--bor)}
+/* toggle */
+.tog-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--bor)}
+.tog-label{font-size:13px;color:var(--txt);font-weight:500}
+.tog{width:40px;height:22px;border-radius:11px;background:var(--dim);cursor:pointer;position:relative;transition:background .2s;flex-shrink:0;border:none}
+.tog.on{background:var(--gld)}
+.tog-dot{position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:8px;background:#fff;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.4)}
+.tog.on .tog-dot{left:21px}
+/* quick add */
+.qa-box{background:var(--s2);border:1.5px solid var(--bor2);border-radius:12px;padding:12px;margin-bottom:11px}
+.qa-label{font-size:9px;color:var(--gldD);letter-spacing:2px;text-transform:uppercase;font-weight:700;margin-bottom:7px}
+.qa-row{display:flex;gap:8px;align-items:flex-end}
+.qa-input{flex:1;background:var(--s3);border:1px solid var(--bor);color:var(--txt);font-size:13px;resize:none;border-radius:9px;padding:8px 11px;line-height:1.5;caret-color:var(--gld)}
+.qa-btn{background:var(--gld);color:#0c0e16;border:none;border-radius:9px;padding:8px 13px;font-weight:700;font-size:12px;cursor:pointer;flex-shrink:0;height:50px}
+.qa-hint{display:flex;justify-content:space-between;align-items:center;margin-top:6px}
+.qa-preview{background:var(--grnB);border:1.5px solid var(--grnBo);border-radius:11px;padding:12px;margin-bottom:10px}
+.qa-preview-label{font-size:9px;color:var(--grn);letter-spacing:2px;text-transform:uppercase;font-weight:700;margin-bottom:9px}
+.qa-preview-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:11px}
+.qa-field-label{font-size:9px;color:var(--mut);letter-spacing:1.5px;text-transform:uppercase;font-weight:700;margin-bottom:2px}
+.qa-field-val{font-size:13px;font-weight:700;color:var(--gld)}
+.qa-preview-actions{display:flex;gap:7px}
+/* receipt drive icon */
+.drive-link{color:var(--blu);text-decoration:none;font-size:13px}
+/* warn box */
+.warn{background:var(--redB);border:1.5px solid var(--redBo);border-radius:10px;padding:13px;font-size:13px;color:var(--red);line-height:1.7;margin-bottom:14px}
+/* summary table */
+.sum-hdr{padding:9px 12px;border-bottom:1px solid var(--bor);font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--mut);background:var(--s3)}
+/* contact cards */
+.cont-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.cont-card{background:var(--s2);border:1.5px solid var(--bor);border-radius:12px;padding:13px}
+.cont-name{font-size:13px;font-weight:700;color:var(--gld);margin-bottom:2px}
+.cont-role{font-size:11px;color:var(--mut)}
+.cont-actions{display:flex;gap:5px}
+.cont-edit{background:var(--s3);border:none;border-radius:5px;width:22px;height:22px;cursor:pointer;font-size:9px;display:flex;align-items:center;justify-content:center}
+.cont-del{background:var(--redB);border:none;border-radius:5px;width:22px;height:22px;cursor:pointer;font-size:9px;display:flex;align-items:center;justify-content:center}
+.cont-divider{border-top:1px solid var(--bor);padding-top:8px;margin-top:8px;display:flex;flex-direction:column;gap:5px}
+.cont-row{display:flex;gap:8px;font-size:11px;align-items:flex-start}
+.cont-row-label{color:var(--mut);font-size:9px;width:44px;flex-shrink:0;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding-top:1px}
+.cont-row a{color:var(--blu);font-weight:600;text-decoration:none;word-break:break-all}
+/* util cards */
+.util-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.util-card{background:var(--sur);border:1.5px solid var(--bor);border-radius:12px;padding:13px}
+/* login */
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:var(--bg)}
+.login-card{background:var(--sur);border:1.5px solid var(--bor);border-radius:20px;padding:26px;width:100%;max-width:360px}
+.login-logo{text-align:center;margin-bottom:32px}
+.login-logo-mark{width:52px;height:52px;border-radius:13px;background:linear-gradient(135deg,#e8d5a3,#a07830);display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 12px}
+.login-title{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:var(--gld);margin-bottom:5px}
+.login-sub{font-size:13px;color:var(--mut)}
+.login-switch{text-align:center;font-size:13px;color:var(--mut);margin-top:16px}
+.login-switch span{color:var(--gld);font-weight:700;cursor:pointer}
+.login-note{margin-top:14px;padding:10px 12px;background:var(--s2);border-radius:8px;border:1px solid var(--bor);font-size:12px;color:var(--mut);text-align:center;line-height:1.6}
+/* receipt modal */
+.receipt-drop{border:2px dashed var(--bor2);border-radius:13px;padding:36px 20px;text-align:center;cursor:pointer;background:var(--s2)}
+.receipt-drop-icon{font-size:38px;margin-bottom:10px}
+/* misc */
+.bar{height:2px;background:var(--s3);border-radius:2px;overflow:hidden;margin-top:7px}
+.bar-fill{height:100%;border-radius:2px;transition:width .3s}
+.info-box{background:var(--s2);border:1px solid var(--bor);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--mut);line-height:1.6;margin-top:12px;text-align:center}
+</style>
 </head>
 <body>
-  <div id="root"></div>
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <script type="text/babel">
-    const { useState, useMemo, useRef } = React;
-
-
-const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-const MS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-const CY = new Date().getFullYear();
-const YEARS = Array.from({length:21},(_,i)=>CY-10+i);
-const uid = () => Math.random().toString(36).slice(2)+Date.now().toString(36);
-const fmt  = n => (+n||0).toLocaleString("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0});
-const fmtD = n => (+n||0).toLocaleString("en-US",{style:"currency",currency:"USD",minimumFractionDigits:2});
-
-const RE_CATS = ["Mortgage","Insurance","Taxes","Repairs","Maintenance","Management","Utilities","HOA","Other"];
-const INVOICE_STATUSES = ["Draft","Sent","Paid","Overdue","Cancelled"];
-const UTIL_TYPES = ["Electric","Gas","Water","Internet","Trash","Sewer","HOA","Security","Other"];
-const UTIL_ICONS = {Electric:"⚡",Gas:"🔥",Water:"💧",Internet:"📶",Trash:"🗑️",Sewer:"🚿",HOA:"🏘️",Security:"🔒",Other:"📋"};
-const BIZ_ICONS = ["💼","🏗️","⚡","🏡","💻","🏥","🚗","🍕","✂️","📦","🎨","🔧","🌿","📱","🏋️","🎵","📸","🛒","✈️","🏦"];
-const BIZ_COLORS = [
-  {label:"Blue",    val:"#5b8dee", bg:"#1a2340", border:"#2a3a60"},
-  {label:"Emerald", val:"#5cb87a", bg:"#152a1e", border:"#1e4a2e"},
-  {label:"Gold",    val:"#e8d5a3", bg:"#2a2410", border:"#4a3e18"},
-  {label:"Violet",  val:"#a78bfa", bg:"#1e1a35", border:"#3a2a60"},
-  {label:"Rose",    val:"#f472b6", bg:"#2a1525", border:"#5a2040"},
-  {label:"Cyan",    val:"#22d3ee", bg:"#0f2530", border:"#1a3e50"},
-  {label:"Orange",  val:"#fb923c", bg:"#2a1a0f", border:"#5a3010"},
-  {label:"Lime",    val:"#a3e635", bg:"#1a2810", border:"#2e4818"},
-  {label:"Fuchsia", val:"#e879f9", bg:"#2a1030", border:"#501850"},
-  {label:"Teal",    val:"#2dd4bf", bg:"#0f2525", border:"#1a4040"},
+<div id="app"></div>
+<script>
+'use strict';
+// ─── CONSTANTS ───────────────────────────────
+const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const MS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const CY=new Date().getFullYear();
+const YEARS=Array.from({length:21},(_,i)=>CY-10+i);
+const RE_CATS=['Mortgage','Insurance','Taxes','Repairs','Maintenance','Management','Utilities','HOA','Other'];
+const INV_ST=['Draft','Sent','Paid','Overdue','Cancelled'];
+const UTIL_T=['Electric','Gas','Water','Internet','Trash','Sewer','HOA','Security','Other'];
+const UTIL_I={Electric:'⚡',Gas:'🔥',Water:'💧',Internet:'📶',Trash:'🗑️',Sewer:'🚿',HOA:'🏘️',Security:'🔒',Other:'📋'};
+const BIZ_ICONS=['💼','🏗️','⚡','🏡','💻','🏥','🚗','🍕','✂️','📦','🎨','🔧','🌿','📱','🏋️','🎵','📸','🛒','✈️','🏦'];
+const BIZ_COLORS=[
+  {label:'Blue',    val:'#5b8dee',bg:'#1a2340',bor:'#2a3a60'},
+  {label:'Emerald', val:'#5cb87a',bg:'#152a1e',bor:'#1e4a2e'},
+  {label:'Gold',    val:'#e8d5a3',bg:'#2a2410',bor:'#4a3e18'},
+  {label:'Violet',  val:'#a78bfa',bg:'#1e1a35',bor:'#3a2a60'},
+  {label:'Rose',    val:'#f472b6',bg:'#2a1525',bor:'#5a2040'},
+  {label:'Cyan',    val:'#22d3ee',bg:'#0f2530',bor:'#1a3e50'},
+  {label:'Orange',  val:'#fb923c',bg:'#2a1a0f',bor:'#5a3010'},
+  {label:'Lime',    val:'#a3e635',bg:'#1a2810',bor:'#2e4818'},
 ];
+const API_URL='https://your-app.ondigitalocean.app';
 
-// ── DARK THEME TOKENS ──
-const D = {
-  bg:"#0d0f18",       surface:"#161926",   s2:"#1e2130",    s3:"#252838",
-  border:"#232638",   border2:"#2e3248",
-  text:"#e8e4dc",     muted:"#6a7080",     dim:"#3a3d4a",
-  gold:"#e8d5a3",     goldDim:"#a89060",
-  green:"#5cb87a",    greenBg:"#152a1e",   greenBorder:"#1e4a2e",
-  red:"#e07070",      redBg:"#2a1515",     redBorder:"#4a2020",
-  blue:"#5b8dee",     blueBg:"#1a2340",    blueBorder:"#2a3a60",
+// ─── HELPERS ─────────────────────────────────
+const uid=()=>Math.random().toString(36).slice(2)+Date.now().toString(36);
+const fmt=n=>(+n||0).toLocaleString('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0});
+const fmtD=n=>(+n||0).toLocaleString('en-US',{style:'currency',currency:'USD',minimumFractionDigits:2});
+const el=(tag,props,...kids)=>{
+  const e=document.createElement(tag);
+  if(props) for(const[k,v] of Object.entries(props)){
+    if(k==='class')e.className=v;
+    else if(k==='style'&&typeof v==='object')Object.assign(e.style,v);
+    else if(k.startsWith('on'))e.addEventListener(k.slice(2).toLowerCase(),v);
+    else e.setAttribute(k,v);
+  }
+  for(const k of kids){
+    if(k==null||k===false)continue;
+    e.append(typeof k==='string'||typeof k==='number'?document.createTextNode(String(k)):k);
+  }
+  return e;
 };
-const T = { serif:"'Playfair Display',Georgia,serif", sans:"'DM Sans',system-ui,sans-serif" };
-const iSt = {width:"100%",background:D.s2,border:`1.5px solid ${D.border2}`,color:D.text,padding:"10px 13px",borderRadius:9,fontSize:14,fontFamily:"inherit",outline:"none",appearance:"none",WebkitAppearance:"none",boxSizing:"border-box"};
+const $=s=>document.querySelector(s);
+const $$=s=>document.querySelectorAll(s);
 
-// ── PRIMITIVES ──
-function FI(p){return <input style={iSt} {...p}/>;}
-function FS({opts,...p}){return <select style={iSt} {...p}>{opts.map((o,i)=>typeof o==="string"?<option key={i}>{o}</option>:<option key={i} value={o.v}>{o.l}</option>)}</select>;}
-function FT(p){return <textarea style={{...iSt,resize:"none"}} {...p}/>;}
-function FF({label,children,mb=13}){return <div style={{marginBottom:mb}}><label style={{display:"block",fontSize:10,fontWeight:700,letterSpacing:1.5,textTransform:"uppercase",color:D.muted,marginBottom:7}}>{label}</label>{children}</div>;}
-function FR({children,cols="1fr 1fr",mb=13}){return <div style={{display:"grid",gridTemplateColumns:cols,gap:12,marginBottom:mb}}>{children}</div>;}
-
-function Toggle({on,onChange,label}){
-  return <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"11px 0",borderBottom:`1px solid ${D.border}`}}>
-    <span style={{fontSize:13,color:D.text,fontWeight:500}}>{label}</span>
-    <div onClick={()=>onChange(!on)} style={{width:42,height:23,borderRadius:12,background:on?D.gold:D.dim,cursor:"pointer",position:"relative",transition:"background .2s",flexShrink:0}}>
-      <div style={{position:"absolute",top:3,left:on?19:3,width:17,height:17,borderRadius:9,background:"#fff",transition:"left .2s",boxShadow:"0 1px 3px rgba(0,0,0,.4)"}}/>
-    </div>
-  </div>;
-}
-
-function Btn({v="primary",full,sm,onClick,children,style:s={}}){
-  const vars={
-    primary:{background:D.gold,color:"#0c0e16",border:"none"},
-    ghost:{background:"transparent",color:D.muted,border:`1.5px solid ${D.border2}`},
-    danger:{background:D.redBg,color:D.red,border:`1.5px solid ${D.redBorder}`},
-    green:{background:D.greenBg,color:D.green,border:`1.5px solid ${D.greenBorder}`},
-    blue:{background:D.blueBg,color:D.blue,border:`1.5px solid ${D.blueBorder}`},
-    dark:{background:D.s2,color:D.muted,border:`1.5px solid ${D.border2}`},
-  };
-  return <button onClick={onClick} style={{display:"inline-flex",alignItems:"center",justifyContent:"center",gap:6,borderRadius:9,fontWeight:700,fontSize:sm?12:13,cursor:"pointer",fontFamily:T.sans,padding:full?"11px 20px":sm?"6px 12px":"8px 15px",whiteSpace:"nowrap",lineHeight:1,width:full?"100%":"auto",transition:"opacity .12s",...vars[v],...s}}>{children}</button>;
-}
-function BtnRow({children}){return <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginTop:18}}>{children}</div>;}
-
-function Modal({open,onClose,title,children,width=460}){
-  if(!open) return null;
-  return <div onClick={e=>e.target===e.currentTarget&&onClose()} style={{position:"fixed",inset:0,background:"rgba(0,0,0,.85)",backdropFilter:"blur(8px)",zIndex:300,display:"flex",alignItems:"center",justifyContent:"center",padding:16,overflowY:"auto"}}>
-    <div style={{background:D.surface,border:`1.5px solid ${D.border2}`,borderRadius:18,width:"100%",maxWidth:width,boxShadow:"0 40px 100px rgba(0,0,0,.7)",maxHeight:"92vh",overflowY:"auto",margin:"auto"}}>
-      <div style={{padding:"18px 22px 13px",borderBottom:`1px solid ${D.border}`,display:"flex",justifyContent:"space-between",alignItems:"center",position:"sticky",top:0,background:D.surface,zIndex:1}}>
-        <span style={{fontFamily:T.serif,fontSize:16,fontWeight:700,color:D.gold}}>{title}</span>
-        <button onClick={onClose} style={{background:D.s3,border:"none",borderRadius:"50%",width:26,height:26,cursor:"pointer",fontSize:14,color:D.muted,display:"flex",alignItems:"center",justifyContent:"center"}}>×</button>
-      </div>
-      <div style={{padding:"16px 22px 22px"}}>{children}</div>
-    </div>
-  </div>;
-}
-
-function KPI({label,value,color,bg,border,sub}){
-  return <div style={{background:bg||D.s2,border:`1.5px solid ${border||D.border}`,borderRadius:12,padding:"12px 14px"}}>
-    <div style={{fontSize:9,color,letterSpacing:2,textTransform:"uppercase",fontWeight:700,marginBottom:5,opacity:.8}}>{label}</div>
-    <div style={{fontFamily:T.serif,fontSize:19,fontWeight:700,color,lineHeight:1,fontVariantNumeric:"tabular-nums"}}>{fmt(value)}</div>
-    {sub&&<div style={{fontSize:10,color,opacity:.5,marginTop:4}}>{sub}</div>}
-  </div>;
-}
-
-function SH({label,action}){
-  return <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:11,flexWrap:"wrap",gap:8}}>
-    <span style={{fontSize:9,fontWeight:700,letterSpacing:2.5,textTransform:"uppercase",color:D.muted}}>{label}</span>
-    {action}
-  </div>;
-}
-
-function Card({children,style={}}){
-  return <div style={{background:D.surface,border:`1.5px solid ${D.border}`,borderRadius:13,overflow:"hidden",marginBottom:13,...style}}>{children}</div>;
-}
-
-function TH({right,children}){
-  return <th style={{padding:"8px 11px",fontSize:9,letterSpacing:2,textTransform:"uppercase",fontWeight:700,color:D.muted,borderBottom:`1px solid ${D.border}`,textAlign:right?"right":"left",whiteSpace:"nowrap",background:D.s3}}>{children}</th>;
-}
-function TD({right,color,bold,muted,children}){
-  return <td style={{padding:"9px 11px",borderBottom:`1px solid ${D.s3}`,textAlign:right?"right":"left",fontWeight:bold?700:400,color:color||(muted?D.muted:D.text),verticalAlign:"middle",fontVariantNumeric:right?"tabular-nums":"normal",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{children}</td>;
-}
-function TFC({right,color,bold,children}){
-  return <td style={{padding:"9px 11px",borderTop:`1.5px solid ${D.border}`,background:"#0b0d16",textAlign:right?"right":"left",color:color||D.muted,fontWeight:bold?700:600,fontSize:right?13:9,letterSpacing:right?0:1.5,textTransform:right?"none":"uppercase",fontVariantNumeric:right?"tabular-nums":"normal"}}>{children}</td>;
-}
-function DelBtn({onClick}){
-  return <td style={{padding:"6px 8px",textAlign:"center",borderBottom:`1px solid ${D.s3}`,width:"36px"}}>
-    <button onClick={onClick} style={{background:"none",border:"none",cursor:"pointer",color:D.dim,fontSize:15,lineHeight:1,padding:"2px 5px"}}>×</button>
-  </td>;
-}
-function Empty({icon,title,sub}){
-  return <div style={{padding:"40px 20px",textAlign:"center"}}>
-    <div style={{fontSize:30,marginBottom:10}}>{icon}</div>
-    <div style={{fontSize:13,color:D.muted,marginBottom:4,fontWeight:500}}>{title}</div>
-    <div style={{fontSize:11,color:D.dim}}>{sub}</div>
-  </div>;
-}
-function Tag({children}){
-  return <span style={{display:"inline-flex",alignItems:"center",background:D.s3,color:D.goldDim,padding:"3px 9px",borderRadius:6,fontSize:11,fontWeight:600,whiteSpace:"nowrap",border:`1px solid ${D.border}`}}>{children}</span>;
-}
-
-function Seg({tabs,active,onChange}){
-  return <div style={{display:"inline-flex",background:D.s2,borderRadius:10,padding:3,marginBottom:13,gap:2,border:`1px solid ${D.border}`,flexWrap:"wrap"}}>
-    {tabs.map(t=><button key={t} onClick={()=>onChange(t)} style={{padding:"6px 13px",borderRadius:8,border:"none",cursor:"pointer",fontWeight:700,fontSize:12,fontFamily:T.sans,background:active===t?D.gold:"transparent",color:active===t?"#0c0e16":D.muted,transition:"all .15s"}}>{t.charAt(0).toUpperCase()+t.slice(1)}</button>)}
-  </div>;
-}
-
-function SummaryTable({rows,totI,totE,totN,incColor}){
-  const ic = incColor||D.green;
-  return <Card>
-    <div style={{padding:"9px 12px",borderBottom:`1px solid ${D.border}`,fontSize:9,fontWeight:700,letterSpacing:2,textTransform:"uppercase",color:D.muted,background:D.s3}}>Month-by-Month</div>
-    <table style={{width:"100%",borderCollapse:"collapse",tableLayout:"fixed"}}>
-      <thead><tr style={{background:D.s3}}>
-        {["Month","Income","Expenses","Net"].map((h,i)=><th key={h} style={{padding:"8px 11px",fontSize:9,letterSpacing:1.5,textTransform:"uppercase",fontWeight:700,color:D.muted,borderBottom:`1px solid ${D.border}`,textAlign:i===0?"left":"right",width:"25%"}}>{h}</th>)}
-      </tr></thead>
-      <tbody>{rows.map(({m,inc,exp,net})=><tr key={m}>
-        <td style={{padding:"8px 11px",borderBottom:`1px solid ${D.s3}`,fontWeight:600,color:D.text,fontSize:12}}>{m}</td>
-        <td style={{padding:"8px 11px",borderBottom:`1px solid ${D.s3}`,textAlign:"right",color:inc?ic:D.dim,fontWeight:inc?600:400,fontVariantNumeric:"tabular-nums",fontSize:12}}>{inc?fmt(inc):"—"}</td>
-        <td style={{padding:"8px 11px",borderBottom:`1px solid ${D.s3}`,textAlign:"right",color:exp?D.red:D.dim,fontWeight:exp?600:400,fontVariantNumeric:"tabular-nums",fontSize:12}}>{exp?fmt(exp):"—"}</td>
-        <td style={{padding:"8px 11px",borderBottom:`1px solid ${D.s3}`,textAlign:"right",fontWeight:700,color:net>0?D.green:net<0?D.red:D.dim,fontVariantNumeric:"tabular-nums",fontSize:12}}>{inc||exp?fmt(net):"—"}</td>
-      </tr>)}</tbody>
-      <tfoot><tr style={{background:"#0b0d16"}}>
-        <td style={{padding:"9px 11px",borderTop:`1.5px solid ${D.border}`,fontSize:9,fontWeight:700,letterSpacing:1.5,textTransform:"uppercase",color:D.muted}}>Annual</td>
-        <td style={{padding:"9px 11px",borderTop:`1.5px solid ${D.border}`,textAlign:"right",color:ic,fontWeight:700,fontSize:13,fontVariantNumeric:"tabular-nums"}}>{fmt(totI)}</td>
-        <td style={{padding:"9px 11px",borderTop:`1.5px solid ${D.border}`,textAlign:"right",color:D.red,fontWeight:700,fontSize:13,fontVariantNumeric:"tabular-nums"}}>{fmt(totE)}</td>
-        <td style={{padding:"9px 11px",borderTop:`1.5px solid ${D.border}`,textAlign:"right",color:totN>=0?D.gold:D.red,fontWeight:700,fontSize:13,fontVariantNumeric:"tabular-nums"}}>{fmt(totN)}</td>
-      </tr></tfoot>
-    </table>
-  </Card>;
-}
-
-function ContactsGrid({contacts,onEdit,onDel}){
-  if(!contacts.length) return <Empty icon="👤" title="No contacts yet" sub="Tap + Add Contact"/>;
-  return <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(230px,1fr))",gap:10}}>
-    {contacts.map(c=><div key={c.id} style={{background:D.s2,border:`1.5px solid ${D.border}`,borderRadius:12,padding:13}}>
-      <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:9}}>
-        <div><div style={{fontSize:13,fontWeight:700,color:D.gold,marginBottom:2}}>{c.name}</div>{c.role&&<div style={{fontSize:11,color:D.muted}}>{c.role}</div>}</div>
-        <div style={{display:"flex",gap:5}}>
-          <button onClick={()=>onEdit(c)} style={{background:D.s3,border:"none",borderRadius:6,width:24,height:24,cursor:"pointer",fontSize:10,display:"flex",alignItems:"center",justifyContent:"center"}}>✏️</button>
-          <button onClick={()=>onDel(c.id)} style={{background:D.redBg,border:"none",borderRadius:6,width:24,height:24,cursor:"pointer",fontSize:10,display:"flex",alignItems:"center",justifyContent:"center"}}>🗑️</button>
-        </div>
-      </div>
-      <div style={{borderTop:`1px solid ${D.border}`,paddingTop:8,display:"flex",flexDirection:"column",gap:5}}>
-        {c.phone&&<div style={{display:"flex",gap:8,fontSize:11}}><span style={{color:D.muted,fontSize:9,width:44,flexShrink:0,fontWeight:700,textTransform:"uppercase",letterSpacing:1}}>Phone</span><a href={`tel:${c.phone}`} style={{color:D.blue,fontWeight:600,textDecoration:"none"}}>{c.phone}</a></div>}
-        {c.email&&<div style={{display:"flex",gap:8,fontSize:11}}><span style={{color:D.muted,fontSize:9,width:44,flexShrink:0,fontWeight:700,textTransform:"uppercase",letterSpacing:1}}>Email</span><a href={`mailto:${c.email}`} style={{color:D.blue,fontWeight:600,textDecoration:"none",wordBreak:"break-all"}}>{c.email}</a></div>}
-        {c.notes&&<div style={{display:"flex",gap:8,fontSize:11}}><span style={{color:D.muted,fontSize:9,width:44,flexShrink:0,fontWeight:700,textTransform:"uppercase",letterSpacing:1}}>Notes</span><span style={{color:D.muted}}>{c.notes}</span></div>}
-      </div>
-    </div>)}
-  </div>;
-}
-
-function ContactForm({f,setF}){
-  return <>
-    <FF label="Name *"><FI value={f.name} onChange={e=>setF(x=>({...x,name:e.target.value}))} placeholder="Full name" autoFocus/></FF>
-    <FF label="Role / Title"><FI value={f.role} onChange={e=>setF(x=>({...x,role:e.target.value}))} placeholder="e.g. Tenant, Plumber, Supplier"/></FF>
-    <FR><FF label="Phone"><FI value={f.phone} onChange={e=>setF(x=>({...x,phone:e.target.value}))} type="tel" placeholder="555-0000"/></FF><FF label="Email"><FI value={f.email} onChange={e=>setF(x=>({...x,email:e.target.value}))} type="email" placeholder="name@email.com"/></FF></FR>
-    <FF label="Notes" mb={0}><FI value={f.notes} onChange={e=>setF(x=>({...x,notes:e.target.value}))} placeholder="Any notes"/></FF>
-  </>;
-}
-
-// ── QUICK ADD (Natural Language Input) ──
-function QuickAdd({onSave,cats,type,placeholder,apiKey}){
-  const [text,setText]=useState("");
-  const [state,setState]=useState("idle"); // idle | loading | preview | error
-  const [parsed,setParsed]=useState(null);
-  const [edited,setEdited]=useState(null);
-  const [showForm,setShowForm]=useState(false);
-
-  async function parse(){
-    if(!text.trim())return;
-    setState("loading");
-    const catList=cats||[];
-    const prompt=type==="income"
-      ?`Parse this income entry: "${text}"
-Return ONLY JSON: {"month":<0-11>,"amount":<number>,"note":"<description>"}`
-      :type==="invoice"
-      ?`Parse this invoice: "${text}"
-Return ONLY JSON: {"client":"<name>","description":"<work>","amount":<number>,"month":<0-11>,"status":"Draft"}`
-      :`Parse this expense: "${text}"
-Categories: ${catList.join(", ")}
-Return ONLY JSON: {"month":<0-11>,"amount":<number>,"category":"<best match>","description":"<brief>"}`;
-    try{
-      const resp=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:200,messages:[{role:"user",content:prompt}]})});
-      const data=await resp.json();
-      const raw=data.content?.map(x=>x.text||"").join("")||"";
-      const p=JSON.parse(raw.replace(/```json|```/g,"").trim());
-      setParsed(p);setEdited({...p});setState("preview");setText("");
-    }catch{setState("error");}
-  }
-
-  function save(){onSave(edited);setState("idle");setParsed(null);setEdited(null);}
-
-  const MONTHS=["January","February","March","April","May","June","July","August","September","October","November","December"];
-
-  return <div style={{marginBottom:12}}>
-    {/* Quick text input — always visible */}
-    <div style={{background:D.s2,border:`1.5px solid ${state==="preview"?D.green:D.border2}`,borderRadius:12,padding:12,marginBottom:state==="preview"?10:0,transition:"border-color .2s"}}>
-      <div style={{fontSize:9,color:D.goldDim,letterSpacing:2,textTransform:"uppercase",fontWeight:700,marginBottom:7}}>✦ Quick Add</div>
-      <div style={{display:"flex",gap:8,alignItems:"flex-end"}}>
-        <textarea value={text} onChange={e=>setText(e.target.value)}
-          onKeyDown={e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();parse();}}}
-          placeholder={placeholder||`Type naturally e.g. "$1,200 rent January" or "paid plumber $340 last month"`}
-          rows={2}
-          style={{flex:1,background:D.s3,border:`1px solid ${D.border}`,color:D.text,fontSize:13,fontFamily:T.sans,resize:"none",outline:"none",lineHeight:1.5,borderRadius:9,padding:"8px 11px",caretColor:D.gold}}
-        />
-        <button onClick={parse} disabled={state==="loading"||!text.trim()} style={{background:state==="loading"?D.s3:D.gold,color:"#0c0e16",border:"none",borderRadius:9,padding:"8px 14px",fontWeight:700,fontSize:12,cursor:"pointer",fontFamily:T.sans,flexShrink:0,height:52,opacity:!text.trim()?.5:1,transition:"all .15s"}}>
-          {state==="loading"?"…":"Add →"}
-        </button>
-      </div>
-      {state==="error"&&<div style={{fontSize:11,color:D.red,marginTop:6}}>⚠ Couldn't parse — fill the form below instead.</div>}
-      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:7}}>
-        <span style={{fontSize:10,color:D.dim}}>Enter to submit · Shift+Enter for new line</span>
-        <button onClick={()=>setShowForm(f=>!f)} style={{background:"transparent",border:"none",color:D.muted,fontSize:11,cursor:"pointer",fontFamily:T.sans,fontWeight:600}}>{showForm?"✕ Hide form":"⊞ Manual form"}</button>
-      </div>
-    </div>
-
-    {/* AI Preview card */}
-    {state==="preview"&&edited&&<div style={{background:D.greenBg,border:`1.5px solid ${D.greenBorder}`,borderRadius:12,padding:13,marginBottom:10}}>
-      <div style={{fontSize:9,color:D.green,letterSpacing:2,textTransform:"uppercase",fontWeight:700,marginBottom:10}}>✓ AI Parsed — review &amp; confirm</div>
-      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:12}}>
-        {type!=="invoice"&&<div>
-          <div style={{fontSize:9,color:D.muted,letterSpacing:1.5,textTransform:"uppercase",fontWeight:700,marginBottom:4}}>Month</div>
-          <select value={edited.month} onChange={e=>setEdited(x=>({...x,month:+e.target.value}))} style={{...iSt,padding:"6px 10px",fontSize:12}}>
-            {MONTHS.map((m,i)=><option key={i} value={i}>{m}</option>)}
-          </select>
-        </div>}
-        {type==="invoice"&&<div>
-          <div style={{fontSize:9,color:D.muted,letterSpacing:1.5,textTransform:"uppercase",fontWeight:700,marginBottom:4}}>Client</div>
-          <input value={edited.client||""} onChange={e=>setEdited(x=>({...x,client:e.target.value}))} style={{...iSt,padding:"6px 10px",fontSize:12}}/>
-        </div>}
-        <div>
-          <div style={{fontSize:9,color:D.muted,letterSpacing:1.5,textTransform:"uppercase",fontWeight:700,marginBottom:4}}>Amount</div>
-          <input type="number" value={edited.amount||""} onChange={e=>setEdited(x=>({...x,amount:e.target.value}))} style={{...iSt,padding:"6px 10px",fontSize:12}}/>
-        </div>
-        {type==="expense"&&<div>
-          <div style={{fontSize:9,color:D.muted,letterSpacing:1.5,textTransform:"uppercase",fontWeight:700,marginBottom:4}}>Category</div>
-          <select value={edited.category||""} onChange={e=>setEdited(x=>({...x,category:e.target.value}))} style={{...iSt,padding:"6px 10px",fontSize:12}}>
-            {(cats||[]).map(c=><option key={c}>{c}</option>)}
-          </select>
-        </div>}
-        <div>
-          <div style={{fontSize:9,color:D.muted,letterSpacing:1.5,textTransform:"uppercase",fontWeight:700,marginBottom:4}}>{type==="income"?"Note":type==="invoice"?"Description":"Description"}</div>
-          <input value={edited.description||edited.note||""} onChange={e=>setEdited(x=>({...x,description:e.target.value,note:e.target.value}))} style={{...iSt,padding:"6px 10px",fontSize:12}}/>
-        </div>
-      </div>
-      <div style={{display:"flex",gap:7}}>
-        <button onClick={save} style={{flex:1,background:D.green,color:"#0c0e16",border:"none",borderRadius:8,padding:"8px",fontWeight:700,fontSize:12,cursor:"pointer",fontFamily:T.sans}}>✓ Save</button>
-        <button onClick={()=>{setState("idle");setParsed(null);setEdited(null);}} style={{background:"transparent",color:D.red,border:`1.5px solid ${D.redBorder}`,borderRadius:8,padding:"8px 12px",fontWeight:700,fontSize:12,cursor:"pointer",fontFamily:T.sans}}>✕</button>
-      </div>
-    </div>}
-
-    {/* Collapsible manual form */}
-    {showForm&&<div style={{background:D.s2,border:`1.5px solid ${D.border2}`,borderRadius:12,padding:12,marginBottom:0}}>
-      <div style={{fontSize:9,color:D.muted,letterSpacing:2,textTransform:"uppercase",fontWeight:700,marginBottom:10}}>Manual Entry</div>
-      <div style={{fontSize:11,color:"#6a7080",textAlign:"center",padding:"8px 0"}}>Use the text box above to add entries quickly.</div>
-    </div>}
-  </div>;
-}
-
-function PillBar({items,sel,onSel,onEdit,onDel,color}){
-  return <div style={{background:D.surface,border:`1.5px solid ${D.border}`,borderRadius:10,padding:"9px 12px",marginBottom:12,display:"flex",gap:6,flexWrap:"wrap",alignItems:"center"}}>
-    {items.map(p=><span key={p.id} style={{display:"inline-flex",alignItems:"center",gap:2}}>
-      <button onClick={()=>onSel(p.id)} style={{padding:"5px 11px",borderRadius:6,fontWeight:700,fontSize:12,cursor:"pointer",fontFamily:T.sans,border:`1.5px solid ${p.id===sel?(color||D.gold):D.border2}`,background:p.id===sel?(color||D.gold):D.s2,color:p.id===sel?"#0c0e16":D.muted,transition:"all .15s"}}>{p.name}</button>
-      {onEdit&&<button onClick={e=>{e.stopPropagation();onEdit(p)}} style={{background:"none",border:"none",cursor:"pointer",color:D.dim,fontSize:11,padding:"1px 3px"}}>✏️</button>}
-      {onDel&&<button onClick={e=>{e.stopPropagation();onDel(p.id)}} style={{background:"none",border:"none",cursor:"pointer",color:D.red,fontSize:13,padding:"1px 3px",fontWeight:700,lineHeight:1}}>✕</button>}
-    </span>)}
-    {items.length===0&&<span style={{fontSize:11,color:D.muted}}>None yet</span>}
-  </div>;
-}
-
-// ── MAIN APP ──
-function App({authToken, currentUser, onLogout}){
-  const [selYear,setSelYear]=useState(CY);
-  const [activePort,setActivePort]=useState("master");
-  const [modal,setModal]=useState(null);
-  const open=m=>setModal(m);
-  const close=()=>setModal(null);
-
+// ─── STATE ───────────────────────────────────
+const S={
+  selYear:CY,
+  activePort:'master',
   // RE
-  const [properties,setProps]=useState([{id:"p1",name:"123 Oak Street",address:"123 Oak St, Austin TX",notes:""}]);
-  const [reInc,setReInc]=useState({});
-  const [reExp,setReExp]=useState({});
-  const [reUtils,setReUtils]=useState({});
-  const [reCont,setReCont]=useState({});
-  const [selProp,setSelProp]=useState("p1");
-  const [reTab,setReTab]=useState("income");
-  const [fProp,setFProp]=useState({name:"",address:"",notes:""});
-  const [fEProp,setFEProp]=useState({name:"",address:"",notes:""});
-  const [editPId,setEditPId]=useState(null);
-  const [delPId,setDelPId]=useState(null);
-  const [fRI,setFRI]=useState({month:new Date().getMonth(),amount:"",note:""});
-  const [fRE,setFRE]=useState({month:new Date().getMonth(),cat:RE_CATS[0],amount:"",desc:""});
-  const [fUtil,setFUtil]=useState({type:UTIL_TYPES[0],provider:"",acct:"",phone:"",web:"",notes:""});
-  const [fEUtil,setFEUtil]=useState({type:UTIL_TYPES[0],provider:"",acct:"",phone:"",web:"",notes:""});
-  const [editUtilId,setEditUtilId]=useState(null);
-  const [fRCont,setFRCont]=useState({name:"",role:"",phone:"",email:"",notes:""});
-  const [fERCont,setFERCont]=useState({name:"",role:"",phone:"",email:"",notes:""});
-  const [editRContId,setEditRContId]=useState(null);
+  properties:[{id:'p1',name:'My Property',address:'',notes:''}],
+  selProp:'p1',
+  reTab:'income',
+  reInc:{},reExp:{},reUtils:{},reCont:{},
+  // Biz
+  bizs:[],
+  selBizEnt:{},
+  bizTab:{},
+  // UI
+  modal:null,
+  modalData:{},
+  // Auth
+  user:null,
+  token:null,
+};
 
-  // Businesses
-  const [bizs,setBizs]=useState([]);
-  const [selBizEnt,setSelBizEnt]=useState({});
-  const [bizTab,setBizTab]=useState({});
-  const [fBiz,setFBiz]=useState({name:"",icon:"💼",colorIdx:0,cats:"",hasInvoicing:true,hasContacts:false});
-  const [fEnt,setFEnt]=useState({name:"",notes:""});
-  const [fEEnt,setFEEnt]=useState({name:"",notes:""});
-  const [editEntId,setEditEntId]=useState(null);
-  const [delEntId,setDelEntId]=useState(null);
-  const [activeBizId,setActiveBizId]=useState(null);
-  const [fBI,setFBI]=useState({month:new Date().getMonth(),amount:"",note:""});
-  const [fBE,setFBE]=useState({month:new Date().getMonth(),cat:"",amount:"",desc:""});
-  const [fInv,setFInv]=useState({client:"",desc:"",amount:"",month:new Date().getMonth(),status:"Draft",notes:""});
-  const [fBCont,setFBCont]=useState({name:"",role:"",phone:"",email:"",notes:""});
-  const [fEBCont,setFEBCont]=useState({name:"",role:"",phone:"",email:"",notes:""});
-  const [editBContId,setEditBContId]=useState(null);
-
-  // AI
-  const [aiState,setAiState]=useState("idle");
-  const [aiData,setAiData]=useState(null);
-  const [rExp,setRExp]=useState({month:new Date().getMonth(),cat:"",amount:"",desc:""});
-  const [aiCtx,setAiCtx]=useState(null);
-  const fileRef=useRef();
-  const receiptFileRef=useRef();
-
-  // Drive + API
-  const API = "https://your-app.ondigitalocean.app"; // ← replace with your DO URL
-  const [authToken,setAuthToken]=useState(()=>localStorage.getItem("ph_token")||null);
-  const [driveStatus,setDriveStatus]=useState(null); // null | {connected:bool}
-  const [driveUploading,setDriveUploading]=useState(false);
-
-  async function uploadToDrive(file, meta){
-    if(!authToken){console.warn("No auth token — Drive upload skipped");return null;}
-    setDriveUploading(true);
-    try{
-      const fd=new FormData();
-      fd.append("file",file);
-      fd.append("portType",meta.portType||"re");
-      fd.append("month",meta.month??new Date().getMonth());
-      fd.append("year",meta.year??new Date().getFullYear());
-      fd.append("label",meta.label||"");
-      if(meta.expenseId) fd.append("expenseId",meta.expenseId);
-      const resp=await fetch(`${API}/api/drive/upload`,{method:"POST",headers:{Authorization:`Bearer ${authToken}`},body:fd});
-      const data=await resp.json();
-      if(data.url) return data;
-      return null;
-    }catch(e){console.error("Drive upload error",e);return null;}
-    finally{setDriveUploading(false);}
+// Load from localStorage
+try{
+  const saved=localStorage.getItem('ph_state');
+  if(saved){
+    const d=JSON.parse(saved);
+    ['properties','reInc','reExp','reUtils','reCont','bizs','selBizEnt','bizTab'].forEach(k=>{if(d[k]!==undefined)S[k]=d[k];});
+    if(S.properties.length) S.selProp=S.properties[0].id;
   }
+  const u=localStorage.getItem('ph_user');
+  if(u)S.user=JSON.parse(u);
+  S.token=localStorage.getItem('ph_token')||null;
+}catch(e){}
 
-  // Backup / Restore
-  function backupData(){
-    const payload={version:2,exportedAt:new Date().toISOString(),data:{properties,reInc,reExp,reUtils,reCont,bizs,selBizEnt,bizTab}};
-    const a=document.createElement("a");
-    a.href=URL.createObjectURL(new Blob([JSON.stringify(payload,null,2)],{type:"application/json"}));
-    a.download=`portfolio-hub-backup-${new Date().toISOString().slice(0,10)}.json`;
-    a.click();
-  }
-  function restoreData(e){
-    const file=e.target.files[0];if(!file)return;
-    const reader=new FileReader();
-    reader.onload=ev=>{
-      try{
-        const payload=JSON.parse(ev.target.result);
-        const d=payload.data||payload;
-        if(d.properties)setProps(d.properties);
-        if(d.reInc)setReInc(d.reInc);
-        if(d.reExp)setReExp(d.reExp);
-        if(d.reUtils)setReUtils(d.reUtils);
-        if(d.reCont)setReCont(d.reCont);
-        if(d.bizs)setBizs(d.bizs);
-        if(d.selBizEnt)setSelBizEnt(d.selBizEnt);
-        if(d.bizTab)setBizTab(d.bizTab);
-        alert("✓ Data restored successfully!");
-      }catch{alert("⚠ Could not read backup file. Is it a valid Portfolio Hub backup?");}
-    };
-    reader.readAsText(file);
-    e.target.value="";
-  }
-  const restoreRef=useRef();
-
-  // ── RE helpers ──
-  const getRI=(p,y)=>reInc[p]?.[y]??[];
-  const getRE=(p,y)=>reExp[p]?.[y]??[];
-  const getRU=p=>reUtils[p]??[];
-  const getRC=p=>reCont[p]??[];
-  const reSums=(p,y)=>{const i=getRI(p,y).reduce((s,e)=>s+e.amount,0),x=getRE(p,y).reduce((s,e)=>s+e.amount,0);return{i,e:x,n:i-x};};
-  const reTot=y=>properties.reduce((a,p)=>{const s=reSums(p.id,y);return{i:a.i+s.i,e:a.e+s.e,n:a.n+s.n}},{i:0,e:0,n:0});
-
-  // ── Biz helpers ──
-  const getBiz=id=>bizs.find(b=>b.id===id);
-  const getBI=(b,eid,y)=>b.income[eid]?.[y]??[];
-  const getBE=(b,eid,y)=>b.expenses[eid]?.[y]??[];
-  const getInv=(b,eid)=>b.invoices[eid]??[];
-  const getBC=(b,eid)=>b.contacts[eid]??[];
-  const bizEntS=(b,eid,y)=>{const i=getBI(b,eid,y).reduce((s,e)=>s+e.amount,0),x=getBE(b,eid,y).reduce((s,e)=>s+e.amount,0);return{i,e:x,n:i-x};};
-  const bizTot=(b,y)=>b.entities.reduce((a,en)=>{const s=bizEntS(b,en.id,y);return{i:a.i+s.i,e:a.e+s.e,n:a.n+s.n}},{i:0,e:0,n:0});
-
-  const masterTot=useMemo(()=>{
-    const re=reTot(selYear);
-    const biz=bizs.reduce((a,b)=>{const t=bizTot(b,selYear);return{i:a.i+t.i,e:a.e+t.e,n:a.n+t.n}},{i:0,e:0,n:0});
-    return{i:re.i+biz.i,e:re.e+biz.e,n:re.n+biz.n};
-  },[reInc,reExp,bizs,selYear,properties]);
-
-  // ── RE Actions ──
-  function addProp(){if(!fProp.name.trim())return;const id=uid();setProps(p=>[...p,{id,...fProp}]);setSelProp(id);setFProp({name:"",address:"",notes:""});close();}
-  function saveEProp(){if(!fEProp.name.trim())return;setProps(ps=>ps.map(p=>p.id===editPId?{...p,...fEProp}:p));close();}
-  function delProp(){const id=delPId;const rem=properties.filter(p=>p.id!==id);setProps(rem);setReInc(v=>{const n={...v};delete n[id];return n});setReExp(v=>{const n={...v};delete n[id];return n});setReUtils(v=>{const n={...v};delete n[id];return n});setReCont(v=>{const n={...v};delete n[id];return n});if(selProp===id)setSelProp(rem[0]?.id??null);close();}
-  function addRI(){const a=parseFloat(fRI.amount);if(!a||isNaN(a))return;setReInc(v=>{const n={...v};(n[selProp]??={})[selYear]??=[];n[selProp][selYear]=[...n[selProp][selYear],{id:uid(),month:+fRI.month,amount:a,note:fRI.note}];return n});setFRI(f=>({...f,amount:"",note:""}));close();}
-  function delRI(id){setReInc(v=>{const n={...v};n[selProp][selYear]=n[selProp][selYear].filter(e=>e.id!==id);return n});}
-  function addRE(){const a=parseFloat(fRE.amount);if(!a||isNaN(a))return;setReExp(v=>{const n={...v};(n[selProp]??={})[selYear]??=[];n[selProp][selYear]=[...n[selProp][selYear],{id:uid(),month:+fRE.month,cat:fRE.cat,desc:fRE.desc,amount:a}];return n});setFRE(f=>({...f,amount:"",desc:""}));close();}
-  function delRE(id){setReExp(v=>{const n={...v};n[selProp][selYear]=n[selProp][selYear].filter(e=>e.id!==id);return n});}
-  function addUtil(){if(!fUtil.provider.trim())return;setReUtils(v=>{const n={...v};n[selProp]=[...(n[selProp]||[]),{id:uid(),...fUtil}];return n});setFUtil({type:UTIL_TYPES[0],provider:"",acct:"",phone:"",web:"",notes:""});close();}
-  function saveEUtil(){setReUtils(v=>{const n={...v};n[selProp]=n[selProp].map(u=>u.id===editUtilId?{...u,...fEUtil}:u);return n});close();}
-  function delUtil(id){setReUtils(v=>{const n={...v};n[selProp]=(n[selProp]||[]).filter(u=>u.id!==id);return n});}
-  function addRCont(){if(!fRCont.name.trim())return;setReCont(v=>{const n={...v};n[selProp]=[...(n[selProp]||[]),{id:uid(),...fRCont}];return n});setFRCont({name:"",role:"",phone:"",email:"",notes:""});close();}
-  function saveERCont(){setReCont(v=>{const n={...v};n[selProp]=n[selProp].map(c=>c.id===editRContId?{...c,...fERCont}:c);return n});close();}
-  function delRCont(id){setReCont(v=>{const n={...v};n[selProp]=(n[selProp]||[]).filter(c=>c.id!==id);return n});}
-
-  // ── Biz Actions ──
-  function createBiz(){
-    if(!fBiz.name.trim())return;
-    const cats=fBiz.cats.split(",").map(c=>c.trim()).filter(Boolean);
-    if(!cats.length){alert("Add at least one expense category");return;}
-    const col=BIZ_COLORS[fBiz.colorIdx];
-    const id=uid();const eid=uid();
-    setBizs(b=>[...b,{id,name:fBiz.name,icon:fBiz.icon,color:col.val,bg:col.bg,border:col.border,cats,hasInvoicing:fBiz.hasInvoicing,hasContacts:fBiz.hasContacts,entities:[{id:eid,name:fBiz.name,notes:""}],income:{},expenses:{},invoices:{},contacts:{}}]);
-    setSelBizEnt(s=>({...s,[id]:eid}));setBizTab(s=>({...s,[id]:"income"}));
-    setFBiz({name:"",icon:"💼",colorIdx:0,cats:"",hasInvoicing:true,hasContacts:false});
-    setActivePort(id);close();
-  }
-  function updBiz(id,fn){setBizs(bs=>bs.map(b=>b.id===id?fn(b):b));}
-  function delBiz(id){setBizs(b=>b.filter(x=>x.id!==id));if(activePort===id)setActivePort("master");close();}
-  function addEnt(bizId){if(!fEnt.name.trim())return;const eid=uid();updBiz(bizId,b=>({...b,entities:[...b.entities,{id:eid,...fEnt}]}));setSelBizEnt(s=>({...s,[bizId]:eid}));setFEnt({name:"",notes:""});close();}
-  function saveEEnt(bizId){updBiz(bizId,b=>({...b,entities:b.entities.map(e=>e.id===editEntId?{...e,...fEEnt}:e)}));close();}
-  function delEnt(bizId){updBiz(bizId,b=>{const ents=b.entities.filter(e=>e.id!==delEntId);setSelBizEnt(s=>({...s,[bizId]:ents[0]?.id??null}));return{...b,entities:ents}});close();}
-  function addBI(bizId){const a=parseFloat(fBI.amount);if(!a||isNaN(a))return;const eid=selBizEnt[bizId];updBiz(bizId,b=>{const inc={...b.income};(inc[eid]??={})[selYear]??=[];inc[eid][selYear]=[...inc[eid][selYear],{id:uid(),month:+fBI.month,amount:a,note:fBI.note}];return{...b,income:inc}});setFBI(f=>({...f,amount:"",note:""}));close();}
-  function delBI(bizId,id){const eid=selBizEnt[bizId];updBiz(bizId,b=>{const inc={...b.income};inc[eid][selYear]=inc[eid][selYear].filter(e=>e.id!==id);return{...b,income:inc}});}
-  function addBE(bizId,src){const s=src||fBE;const a=parseFloat(s.amount);if(!a||isNaN(a))return;const eid=selBizEnt[bizId];updBiz(bizId,b=>{const exp={...b.expenses};(exp[eid]??={})[selYear]??=[];exp[eid][selYear]=[...exp[eid][selYear],{id:uid(),month:+s.month,cat:s.cat,desc:s.desc,amount:a}];return{...b,expenses:exp}});setFBE(f=>({...f,amount:"",desc:""}));setAiState("idle");setAiData(null);close();}
-  function delBE(bizId,id){const eid=selBizEnt[bizId];updBiz(bizId,b=>{const exp={...b.expenses};exp[eid][selYear]=exp[eid][selYear].filter(e=>e.id!==id);return{...b,expenses:exp}});}
-  function addInv(bizId){const a=parseFloat(fInv.amount);if(!a||!fInv.client.trim())return;const eid=selBizEnt[bizId];updBiz(bizId,b=>{const inv={...b.invoices};(inv[eid]??=[]);inv[eid]=[...inv[eid],{id:uid(),...fInv,amount:a,year:selYear}];return{...b,invoices:inv}});setFInv({client:"",desc:"",amount:"",month:new Date().getMonth(),status:"Draft",notes:""});close();}
-  function updInvS(bizId,id,status){const eid=selBizEnt[bizId];updBiz(bizId,b=>{const inv={...b.invoices};inv[eid]=inv[eid].map(i=>i.id===id?{...i,status}:i);return{...b,invoices:inv}});}
-  function delInv(bizId,id){const eid=selBizEnt[bizId];updBiz(bizId,b=>{const inv={...b.invoices};inv[eid]=(inv[eid]||[]).filter(i=>i.id!==id);return{...b,invoices:inv}});}
-  function addBC(bizId){if(!fBCont.name.trim())return;const eid=selBizEnt[bizId];updBiz(bizId,b=>{const c={...b.contacts};c[eid]=[...(c[eid]||[]),{id:uid(),...fBCont}];return{...b,contacts:c}});setFBCont({name:"",role:"",phone:"",email:"",notes:""});close();}
-  function saveEBC(bizId){const eid=selBizEnt[bizId];updBiz(bizId,b=>{const c={...b.contacts};c[eid]=c[eid].map(x=>x.id===editBContId?{...x,...fEBCont}:x);return{...b,contacts:c}});close();}
-  function delBC(bizId,id){const eid=selBizEnt[bizId];updBiz(bizId,b=>{const c={...b.contacts};c[eid]=(c[eid]||[]).filter(x=>x.id!==id);return{...b,contacts:c}});}
-
-  // ── AI ──
-  async function handleReceipt(e){
-    const file=e.target.files[0];if(!file)return;
-    setAiState("loading");
-    const cats=aiCtx?.cats||RE_CATS;
-    const reader=new FileReader();
-    reader.onload=async ev=>{
-      const base64=ev.target.result.split(",")[1];
-      try{
-        const resp=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:600,messages:[{role:"user",content:[{type:"image",source:{type:"base64",media_type:file.type||"image/jpeg",data:base64}},{type:"text",text:`Read this receipt. Return ONLY valid JSON:
-{"amount":<number>,"description":"<max 60 chars>","category":"<one of: ${cats.join(", ")}>","vendor":"<n>","date":"<MM/DD/YYYY or null>"}`}]}]})});
-        const data=await resp.json();
-        const text=data.content?.map(x=>x.text||"").join("")||"";
-        const parsed=JSON.parse(text.replace(/```json|```/g,"").trim());
-        setAiData(parsed);
-        setRExp(r=>({...r,amount:parsed.amount||"",desc:parsed.description||"",cat:cats.includes(parsed.category)?parsed.category:cats[0],month:parsed.date?parseInt(parsed.date.split("/")[0])-1:r.month}));
-        setAiState("done");
-      }catch{setAiState("error");}
-    };
-    reader.readAsDataURL(file);
-  }
-
-  // ── Export ──
-  function exportPort(portId){
-    let rows,name;
-    if(portId==="re"){
-      name="Real_Estate";rows=[["Property","Year","Type","Month","Category","Note","Amount"]];
-      properties.forEach(p=>{YEARS.forEach(y=>{getRI(p.id,y).forEach(e=>rows.push([p.name,y,"Income",MONTHS[e.month],"Rental Income",e.note||"",e.amount]));getRE(p.id,y).forEach(e=>rows.push([p.name,y,"Expense",MONTHS[e.month],e.cat,e.desc||"",e.amount]));});getRU(p.id).forEach(u=>rows.push([p.name,"","Utility","",u.type,u.provider,""]))});
-    }else{
-      const b=getBiz(portId);if(!b)return;
-      name=b.name.replace(/\s+/g,"_");rows=[["Entity","Year","Type","Month","Category","Note","Amount","Status"]];
-      b.entities.forEach(en=>{YEARS.forEach(y=>{getBI(b,en.id,y).forEach(e=>rows.push([en.name,y,"Income",MONTHS[e.month],"Revenue",e.note||"",e.amount,""]));getBE(b,en.id,y).forEach(e=>rows.push([en.name,y,"Expense",MONTHS[e.month],e.cat,e.desc||"",e.amount,""]));});getInv(b,en.id).forEach(inv=>rows.push([en.name,inv.year,"Invoice",MONTHS[inv.month],inv.desc||"",inv.client,inv.amount,inv.status]));});
-    }
-    const csv=rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(",")).join("
-");
-    const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\uFEFF"+csv],{type:"text/csv"}));a.download=`${name}_${selYear}.csv`;a.click();
-  }
-
-  // ── Computed ──
-  const activeBiz=useMemo(()=>bizs.find(b=>b.id===activePort),[bizs,activePort]);
-  const curBizEid=activeBiz?selBizEnt[activeBiz.id]:null;
-  const curBizEnt=activeBiz?.entities.find(e=>e.id===curBizEid);
-  const curBizTab=activeBiz?bizTab[activeBiz.id]||"income":"income";
-  const curBizS=activeBiz&&curBizEnt?bizEntS(activeBiz,curBizEid,selYear):{i:0,e:0,n:0};
-  const curBizInc=useMemo(()=>activeBiz&&curBizEnt?[...getBI(activeBiz,curBizEid,selYear)].sort((a,b)=>a.month-b.month):[],[activeBiz,curBizEid,selYear]);
-  const curBizExp=useMemo(()=>activeBiz&&curBizEnt?[...getBE(activeBiz,curBizEid,selYear)].sort((a,b)=>a.month-b.month):[],[activeBiz,curBizEid,selYear]);
-  const curBizInv=activeBiz&&curBizEnt?getInv(activeBiz,curBizEid):[];
-  const curBizCont=activeBiz&&curBizEnt?getBC(activeBiz,curBizEid):[];
-  const curBizMonthly=useMemo(()=>activeBiz&&curBizEnt?MS.map((m,i)=>{const inc=getBI(activeBiz,curBizEid,selYear).filter(e=>e.month===i).reduce((s,e)=>s+e.amount,0),exp=getBE(activeBiz,curBizEid,selYear).filter(e=>e.month===i).reduce((s,e)=>s+e.amount,0);return{m,inc,exp,net:inc-exp}}):[],[activeBiz,curBizEid,selYear]);
-  const rePS=useMemo(()=>reSums(selProp,selYear),[reInc,reExp,selProp,selYear]);
-  const reIncList=useMemo(()=>[...getRI(selProp,selYear)].sort((a,b)=>a.month-b.month),[reInc,selProp,selYear]);
-  const reExpList=useMemo(()=>[...getRE(selProp,selYear)].sort((a,b)=>a.month-b.month),[reExp,selProp,selYear]);
-  const reMonthly=useMemo(()=>MS.map((m,i)=>{const inc=getRI(selProp,selYear).filter(e=>e.month===i).reduce((s,e)=>s+e.amount,0),exp=getRE(selProp,selYear).filter(e=>e.month===i).reduce((s,e)=>s+e.amount,0);return{m,inc,exp,net:inc-exp}}),[reInc,reExp,selProp,selYear]);
-  const propObj=properties.find(p=>p.id===selProp);
-  const invTotal=curBizInv.reduce((s,i)=>s+i.amount,0);
-  const invPaid=curBizInv.filter(i=>i.status==="Paid").reduce((s,i)=>s+i.amount,0);
-  const invOut=curBizInv.filter(i=>["Sent","Overdue"].includes(i.status)).reduce((s,i)=>s+i.amount,0);
-  const navItems=[{id:"master",icon:"📊",label:"Master",color:D.gold},{id:"re",icon:"🏠",label:"Real Estate",color:D.green},...bizs.map(b=>({id:b.id,icon:b.icon,label:b.name,color:b.color}))];
-
-  return(
-    <div style={{background:D.bg,minHeight:"100%",fontFamily:T.sans,color:D.text,fontSize:14}}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@400;500;600;700&display=swap');*{box-sizing:border-box}button:active{opacity:.8}::-webkit-scrollbar{width:3px;height:3px}::-webkit-scrollbar-thumb{background:${D.border};border-radius:2px}input:focus,select:focus,textarea:focus{border-color:${D.gold}!important;box-shadow:0 0 0 3px rgba(232,213,163,.1)!important}option{background:${D.s2};color:${D.text}}`}</style>
-
-      {/* HEADER */}
-      <div style={{background:D.surface,borderBottom:`1px solid ${D.border}`}}>
-        <div style={{maxWidth:1100,margin:"0 auto",padding:"0 20px",display:"flex",alignItems:"center",justifyContent:"space-between",height:52,gap:10}}>
-          <div style={{display:"flex",alignItems:"center",gap:10}}>
-            <div style={{width:26,height:26,borderRadius:7,background:`linear-gradient(135deg,${D.gold},#a07830)`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:13}}>📊</div>
-            <div>
-              <div style={{fontSize:9,letterSpacing:3,textTransform:"uppercase",color:D.muted,fontWeight:700,lineHeight:1}}>Portfolio</div>
-              <div style={{fontFamily:T.serif,fontSize:16,fontWeight:700,color:D.gold,lineHeight:1.2}}>Hub</div>
-            </div>
-          </div>
-          <div style={{display:"flex",gap:7,alignItems:"center"}}>
-            <select value={selYear} onChange={e=>setSelYear(+e.target.value)} style={{...iSt,width:"auto",padding:"5px 10px",fontSize:12,background:D.s3,border:`1px solid ${D.border2}`}}>
-              {YEARS.map(y=><option key={y} value={y}>{y}</option>)}
-            </select>
-            <input ref={restoreRef} type="file" accept=".json" style={{display:"none"}} onChange={restoreData}/>
-            <Btn v="dark" sm onClick={backupData} style={{fontSize:11}}>💾 Backup</Btn>
-            <Btn v="dark" sm onClick={()=>restoreRef.current?.click()} style={{fontSize:11}}>📂 Restore</Btn>
-            <Btn v="primary" sm onClick={()=>open("newBiz")}>+ New Business</Btn>
-            {onLogout&&<button onClick={onLogout} title={`Signed in as ${currentUser?.name||"you"}`} style={{background:D.s2,border:`1px solid ${D.border2}`,borderRadius:8,padding:"5px 10px",color:D.muted,fontSize:11,cursor:"pointer",fontFamily:T.sans,fontWeight:600}}>👤 {currentUser?.name?.split(" ")[0]||"Me"}</button>}
-          </div>
-        </div>
-      </div>
-
-      {/* NAV */}
-      <div style={{background:D.surface,borderBottom:`1px solid ${D.border}`,overflowX:"auto"}}>
-        <div style={{maxWidth:1100,margin:"0 auto",padding:"0 16px",display:"flex",minWidth:"fit-content"}}>
-          {navItems.map(p=><button key={p.id} onClick={()=>setActivePort(p.id)} style={{padding:"10px 15px",background:"none",border:"none",borderBottom:`2px solid ${activePort===p.id?p.color:"transparent"}`,color:activePort===p.id?p.color:D.muted,fontWeight:activePort===p.id?700:500,fontSize:12,cursor:"pointer",fontFamily:T.sans,whiteSpace:"nowrap",letterSpacing:.3,transition:"all .15s"}}>{p.icon} {p.label}</button>)}
-        </div>
-      </div>
-
-      <div style={{maxWidth:1100,margin:"0 auto",padding:"18px 20px 48px"}}>
-
-        {/* ══ MASTER ══ */}
-        {activePort==="master"&&(<>
-          <div style={{marginBottom:14}}>
-            <div style={{fontFamily:T.serif,fontSize:17,fontWeight:700,color:D.gold,lineHeight:1}}>Portfolio Overview</div>
-            <div style={{fontSize:11,color:D.muted,marginTop:3}}>{selYear} · All portfolios</div>
-          </div>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10,marginBottom:18}}>
-            <KPI label="Total Income"    value={masterTot.i} color={D.green} bg={D.greenBg} border={D.greenBorder}/>
-            <KPI label="Total Expenses"  value={masterTot.e} color={D.red}   bg={D.redBg}   border={D.redBorder}/>
-            <KPI label="Net"             value={masterTot.n} color={masterTot.n>=0?D.gold:D.red} bg={masterTot.n>=0?"#1e1a0a":D.redBg} border={masterTot.n>=0?"#3a3010":D.redBorder}/>
-          </div>
-          <SH label="Portfolios"/>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(200px,1fr))",gap:10}}>
-            {[{id:"re",icon:"🏠",label:"Real Estate",color:D.green,bg:D.greenBg,border:D.greenBorder,tot:reTot(selYear),sub:`${properties.length} properties`},...bizs.map(b=>({id:b.id,icon:b.icon,label:b.name,color:b.color,bg:b.bg,border:b.border,tot:bizTot(b,selYear),sub:`${b.entities.length} ${b.entities.length===1?"entity":"entities"}`}))].map(p=>(
-              <div key={p.id} onClick={()=>setActivePort(p.id)} style={{background:D.surface,border:`1.5px solid ${p.border}`,borderRadius:12,padding:13,cursor:"pointer"}}>
-                <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:9}}><span style={{fontSize:18}}>{p.icon}</span><div><div style={{fontWeight:700,fontSize:12,color:D.text}}>{p.label}</div><div style={{fontSize:10,color:D.muted}}>{p.sub}</div></div></div>
-                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,marginBottom:8}}>
-                  <div><div style={{fontSize:8,color:D.muted,letterSpacing:1.5,textTransform:"uppercase",fontWeight:700,marginBottom:2}}>Income</div><div style={{fontSize:13,fontWeight:700,color:D.green,fontVariantNumeric:"tabular-nums"}}>{fmt(p.tot.i)}</div></div>
-                  <div><div style={{fontSize:8,color:D.muted,letterSpacing:1.5,textTransform:"uppercase",fontWeight:700,marginBottom:2}}>Net</div><div style={{fontSize:13,fontWeight:700,color:p.tot.n>=0?D.gold:D.red,fontVariantNumeric:"tabular-nums"}}>{fmt(p.tot.n)}</div></div>
-                </div>
-                <div style={{height:2,background:D.s3,borderRadius:2,overflow:"hidden"}}><div style={{width:p.tot.i+p.tot.e>0?`${Math.round(p.tot.i/(p.tot.i+p.tot.e)*100)}%`:"0%",height:"100%",background:p.color}}/></div>
-                <div style={{fontSize:10,color:D.dim,textAlign:"right",marginTop:6}}>Open →</div>
-              </div>
-            ))}
-            <div onClick={()=>open("newBiz")} style={{background:D.surface,border:`2px dashed ${D.border2}`,borderRadius:12,padding:13,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column",gap:6,minHeight:110}}>
-              <div style={{width:28,height:28,borderRadius:7,background:`linear-gradient(135deg,${D.gold},#a07830)`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:14}}>➕</div>
-              <div style={{fontSize:11,color:D.muted,fontWeight:600}}>New Business</div>
-            </div>
-          </div>
-        </>)}
-
-        {/* ══ REAL ESTATE ══ */}
-        {activePort==="re"&&(<>
-          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:13,flexWrap:"wrap",gap:8}}>
-            <div style={{display:"flex",alignItems:"center",gap:8}}>
-              <span style={{fontSize:16}}>🏠</span>
-              <div><div style={{fontFamily:T.serif,fontSize:16,fontWeight:700,color:D.gold,lineHeight:1}}>Real Estate</div><div style={{fontSize:10,color:D.muted,marginTop:2}}>{properties.length} properties · {selYear}</div></div>
-            </div>
-            <div style={{display:"flex",gap:7}}><Btn v="green" sm onClick={()=>exportPort("re")}>↓ Export</Btn><Btn v="primary" sm onClick={()=>open("addProp")}>+ Property</Btn></div>
-          </div>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10,marginBottom:12}}>
-            <KPI label="Income"   value={reTot(selYear).i} color={D.green} bg={D.greenBg} border={D.greenBorder}/>
-            <KPI label="Expenses" value={reTot(selYear).e} color={D.red}   bg={D.redBg}   border={D.redBorder}/>
-            <KPI label="Net"      value={reTot(selYear).n} color={reTot(selYear).n>=0?D.gold:D.red} bg={reTot(selYear).n>=0?"#1e1a0a":D.redBg} border={reTot(selYear).n>=0?"#3a3010":D.redBorder}/>
-          </div>
-          <PillBar
-            items={properties}
-            sel={selProp}
-            onSel={setSelProp}
-            onEdit={p=>{setEditPId(p.id);setFEProp({name:p.name,address:p.address||"",notes:p.notes||""});open("editProp")}}
-            onDel={id=>{setDelPId(id);open("delProp")}}
-          />
-          {propObj&&(<>
-            <Seg tabs={["income","expenses","utilities","contacts","summary"]} active={reTab} onChange={setReTab}/>
-            {reTab==="income"&&(<>
-              <SH label={`Income · ${selYear}`} action={null}/>
-              <QuickAdd type="income" cats={[]} placeholder={`"$1,250 rent January" or "tenant paid Feb rent $1,400"`}
-                onSave={p=>{const a=parseFloat(p.amount);if(!a||isNaN(a))return;setReInc(v=>{const n={...v};(n[selProp]??={})[selYear]??=[];n[selProp][selYear]=[...n[selProp][selYear],{id:uid(),month:+(p.month??new Date().getMonth()),amount:a,note:p.note||p.description||""}];return n});}}/>
-              <Card>{reIncList.length===0?<Empty icon="💰" title="No income recorded" sub="Type above to add quickly"/>:
-                <table style={{width:"100%",borderCollapse:"collapse",tableLayout:"fixed"}}>
-                  <thead><tr><TH>Month</TH><TH>Note</TH><TH right>Amount</TH><TH></TH></tr></thead>
-                  <tbody>{reIncList.map(r=><tr key={r.id}><TD bold>{MONTHS[r.month]}</TD><TD muted={!r.note}>{r.note||"—"}</TD><TD right color={D.green} bold>{fmtD(r.amount)}</TD><DelBtn onClick={()=>delRI(r.id)}/></tr>)}</tbody>
-                  <tfoot><tr><TFC>Total</TFC><TFC></TFC><TFC right color={D.green} bold>{fmt(rePS.i)}</TFC><TFC></TFC></tr></tfoot>
-                </table>}
-              </Card>
-            </>)}
-            {reTab==="expenses"&&(<>
-              <SH label={`Expenses · ${selYear}`} action={<Btn v="blue" sm onClick={()=>{setAiCtx({port:"re",cats:RE_CATS});setAiState("idle");setAiData(null);setRExp({month:new Date().getMonth(),cat:RE_CATS[0],amount:"",desc:""});open("receipt")}}>📷 Scan → Drive</Btn>}/>
-              <QuickAdd type="expense" cats={RE_CATS} placeholder={`"$340 plumber January" or "mortgage $1,200 March"`}
-                onSave={p=>{const a=parseFloat(p.amount);if(!a||isNaN(a))return;setReExp(v=>{const n={...v};(n[selProp]??={})[selYear]??=[];n[selProp][selYear]=[...n[selProp][selYear],{id:uid(),month:+(p.month??new Date().getMonth()),cat:p.category||RE_CATS[0],desc:p.description||"",amount:a}];return n});}}/>
-              <Card>{reExpList.length===0?<Empty icon="🧾" title="No expenses recorded" sub="Type above or scan a receipt"/>:
-                <table style={{width:"100%",borderCollapse:"collapse",tableLayout:"fixed"}}>
-                  <thead><tr><TH>Month</TH><TH>Category</TH><TH>Description</TH><TH right>Amount</TH><TH></TH></tr></thead>
-                  <tbody>{reExpList.map(r=><tr key={r.id}><TD bold>{MONTHS[r.month]}</TD><td style={{padding:"9px 11px",borderBottom:`1px solid ${D.s3}`}}><Tag>{r.cat}</Tag></td><TD muted={!r.desc}>{r.desc||"—"}</TD><TD right color={D.red} bold>{fmtD(r.amount)}</TD><td style={{padding:"9px 11px",borderBottom:`1px solid ${D.s3}`,textAlign:"center",width:32}}>{r.receiptUrl?<a href={r.receiptUrl} target="_blank" rel="noreferrer" title="View receipt in Drive" style={{color:D.blue,textDecoration:"none",fontSize:13}}>📁</a>:<span style={{color:D.dim,fontSize:11}}>—</span>}</td><DelBtn onClick={()=>delRE(r.id)}/></tr>)}</tbody>
-                  <tfoot><tr><TFC></TFC><TFC>Total</TFC><TFC></TFC><TFC right color={D.red} bold>{fmt(rePS.e)}</TFC><TFC></TFC></tr></tfoot>
-                </table>}
-              </Card>
-            </>)}
-            {reTab==="utilities"&&(<>
-              <SH label="Utilities" action={<Btn v="primary" sm onClick={()=>open("addUtil")}>+ Add Utility</Btn>}/>
-              {getRU(selProp).length===0?<Empty icon="⚡" title="No utilities saved" sub="Store account numbers, phone numbers and more"/>:
-              <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))",gap:10}}>
-                {getRU(selProp).map(u=><div key={u.id} style={{background:D.surface,border:`1.5px solid ${D.border}`,borderRadius:12,padding:13}}>
-                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:9}}>
-                    <div><div style={{fontSize:9,color:D.muted,textTransform:"uppercase",letterSpacing:2,fontWeight:700,marginBottom:2}}>{UTIL_ICONS[u.type]||"📋"} {u.type}</div><div style={{fontSize:13,fontWeight:700,color:D.gold}}>{u.provider}</div></div>
-                    <div style={{display:"flex",gap:4}}>
-                      <button onClick={()=>{setEditUtilId(u.id);setFEUtil({type:u.type,provider:u.provider,acct:u.acct||"",phone:u.phone||"",web:u.web||"",notes:u.notes||""});open("editUtil")}} style={{background:D.s3,border:"none",borderRadius:5,width:22,height:22,cursor:"pointer",fontSize:9,display:"flex",alignItems:"center",justifyContent:"center"}}>✏️</button>
-                      <button onClick={()=>delUtil(u.id)} style={{background:D.redBg,border:"none",borderRadius:5,width:22,height:22,cursor:"pointer",fontSize:9,display:"flex",alignItems:"center",justifyContent:"center"}}>🗑️</button>
-                    </div>
-                  </div>
-                  <div style={{borderTop:`1px solid ${D.border}`,paddingTop:7,display:"flex",flexDirection:"column",gap:4}}>
-                    {u.acct&&<div style={{display:"flex",gap:8,fontSize:11}}><span style={{color:D.muted,fontSize:9,width:48,flexShrink:0,fontWeight:700,textTransform:"uppercase",letterSpacing:1}}>Account</span><span style={{color:D.text,fontWeight:600}}>{u.acct}</span></div>}
-                    {u.phone&&<div style={{display:"flex",gap:8,fontSize:11}}><span style={{color:D.muted,fontSize:9,width:48,flexShrink:0,fontWeight:700,textTransform:"uppercase",letterSpacing:1}}>Phone</span><a href={`tel:${u.phone}`} style={{color:D.blue,fontWeight:600,textDecoration:"none"}}>{u.phone}</a></div>}
-                    {u.web&&<div style={{display:"flex",gap:8,fontSize:11}}><span style={{color:D.muted,fontSize:9,width:48,flexShrink:0,fontWeight:700,textTransform:"uppercase",letterSpacing:1}}>Web</span><a href={u.web.startsWith("http")?u.web:`https://${u.web}`} target="_blank" rel="noreferrer" style={{color:D.blue,fontWeight:600,textDecoration:"none",wordBreak:"break-all"}}>{u.web}</a></div>}
-                    {u.notes&&<div style={{display:"flex",gap:8,fontSize:11}}><span style={{color:D.muted,fontSize:9,width:48,flexShrink:0,fontWeight:700,textTransform:"uppercase",letterSpacing:1}}>Notes</span><span style={{color:D.muted}}>{u.notes}</span></div>}
-                  </div>
-                </div>)}
-              </div>}
-            </>)}
-            {reTab==="contacts"&&(<>
-              <SH label="Contacts" action={<Btn v="primary" sm onClick={()=>{setFRCont({name:"",role:"",phone:"",email:"",notes:""});open("addRCont")}}>+ Add Contact</Btn>}/>
-              <ContactsGrid contacts={getRC(selProp)} onEdit={c=>{setEditRContId(c.id);setFERCont({name:c.name,role:c.role||"",phone:c.phone||"",email:c.email||"",notes:c.notes||""});open("editRCont")}} onDel={delRCont}/>
-            </>)}
-            {reTab==="summary"&&<SummaryTable rows={reMonthly} totI={rePS.i} totE={rePS.e} totN={rePS.n}/>}
-          </>)}
-        </>)}
-
-        {/* ══ BUSINESS ══ */}
-        {activeBiz&&(<>
-          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:13,flexWrap:"wrap",gap:8}}>
-            <div style={{display:"flex",alignItems:"center",gap:8}}>
-              <span style={{fontSize:18}}>{activeBiz.icon}</span>
-              <div><div style={{fontFamily:T.serif,fontSize:16,fontWeight:700,color:activeBiz.color,lineHeight:1}}>{activeBiz.name}</div><div style={{fontSize:10,color:D.muted,marginTop:2}}>{activeBiz.entities.length} entities · {selYear}</div></div>
-            </div>
-            <div style={{display:"flex",gap:7,flexWrap:"wrap"}}>
-              <Btn v="green" sm onClick={()=>exportPort(activeBiz.id)}>↓ Export</Btn>
-              <Btn v="dark"  sm onClick={()=>{setActiveBizId(activeBiz.id);open("addEnt")}}>+ Entity</Btn>
-              <Btn v="danger" sm onClick={()=>{setActiveBizId(activeBiz.id);open("delBiz")}}>Delete</Btn>
-            </div>
-          </div>
-          <div style={{display:"grid",gridTemplateColumns:activeBiz.hasInvoicing?"repeat(4,1fr)":"repeat(3,1fr)",gap:10,marginBottom:12}}>
-            <KPI label="Income"   value={bizTot(activeBiz,selYear).i} color={activeBiz.color} bg={activeBiz.bg} border={activeBiz.border}/>
-            <KPI label="Expenses" value={bizTot(activeBiz,selYear).e} color={D.red} bg={D.redBg} border={D.redBorder}/>
-            <KPI label="Net"      value={bizTot(activeBiz,selYear).n} color={bizTot(activeBiz,selYear).n>=0?D.gold:D.red} bg={bizTot(activeBiz,selYear).n>=0?"#1e1a0a":D.redBg} border={bizTot(activeBiz,selYear).n>=0?"#3a3010":D.redBorder}/>
-            {activeBiz.hasInvoicing&&<KPI label="Outstanding" value={invOut} color="#fb923c" bg="#2a1a0f" border="#5a3010" sub={`${curBizInv.filter(i=>["Sent","Overdue"].includes(i.status)).length} open`}/>}
-          </div>
-          <PillBar
-            items={activeBiz.entities}
-            sel={curBizEid}
-            color={activeBiz.color}
-            onSel={id=>setSelBizEnt(s=>({...s,[activeBiz.id]:id}))}
-            onEdit={en=>{setEditEntId(en.id);setFEEnt({name:en.name,notes:en.notes||""});setActiveBizId(activeBiz.id);open("editEnt")}}
-            onDel={id=>{setDelEntId(id);setActiveBizId(activeBiz.id);open("delEnt")}}
-          />
-          {curBizEnt&&(<>
-            <Seg tabs={["income","expenses",activeBiz.hasInvoicing&&"invoices",activeBiz.hasContacts&&"contacts","summary"].filter(Boolean)} active={curBizTab} onChange={t=>setBizTab(s=>({...s,[activeBiz.id]:t}))}/>
-            {curBizTab==="income"&&(<>
-              <SH label={`Income · ${selYear}`} action={null}/>
-              <QuickAdd type="income" cats={[]} placeholder={`"$5,000 from client April" or "Johnson Corp paid $3,200 March"`}
-                onSave={p=>{const a=parseFloat(p.amount);if(!a||isNaN(a))return;const eid=selBizEnt[activeBiz.id];updBiz(activeBiz.id,b=>{const inc={...b.income};(inc[eid]??={})[selYear]??=[];inc[eid][selYear]=[...inc[eid][selYear],{id:uid(),month:+(p.month??new Date().getMonth()),amount:a,note:p.note||p.description||""}];return{...b,income:inc}});}}/>
-              <Card>{curBizInc.length===0?<Empty icon="💰" title="No income" sub="Type above to add quickly"/>:
-                <table style={{width:"100%",borderCollapse:"collapse",tableLayout:"fixed"}}>
-                  <thead><tr><TH>Month</TH><TH>Note</TH><TH right>Amount</TH><TH></TH></tr></thead>
-                  <tbody>{curBizInc.map(r=><tr key={r.id}><TD bold>{MONTHS[r.month]}</TD><TD muted={!r.note}>{r.note||"—"}</TD><TD right color={activeBiz.color} bold>{fmtD(r.amount)}</TD><DelBtn onClick={()=>delBI(activeBiz.id,r.id)}/></tr>)}</tbody>
-                  <tfoot><tr><TFC>Total</TFC><TFC></TFC><TFC right color={activeBiz.color} bold>{fmt(curBizS.i)}</TFC><TFC></TFC></tr></tfoot>
-                </table>}
-              </Card>
-            </>)}
-            {curBizTab==="expenses"&&(<>
-              <SH label={`Expenses · ${selYear}`} action={<Btn v="blue" sm onClick={()=>{setAiCtx({port:activeBiz.id,cats:activeBiz.cats});setAiState("idle");setAiData(null);setRExp({month:new Date().getMonth(),cat:activeBiz.cats[0],amount:"",desc:""});open("receipt")}}>📷 Scan → Drive</Btn>}/>
-              <QuickAdd type="expense" cats={activeBiz.cats} placeholder={`"$200 materials March" or "paid subcontractor $1,500 last month"`}
-                onSave={p=>{const a=parseFloat(p.amount);if(!a||isNaN(a))return;const eid=selBizEnt[activeBiz.id];updBiz(activeBiz.id,b=>{const exp={...b.expenses};(exp[eid]??={})[selYear]??=[];exp[eid][selYear]=[...exp[eid][selYear],{id:uid(),month:+(p.month??new Date().getMonth()),cat:p.category||activeBiz.cats[0],desc:p.description||"",amount:a}];return{...b,expenses:exp}});}}/>
-              <Card>{curBizExp.length===0?<Empty icon="🧾" title="No expenses" sub="Type above or scan a receipt"/>:
-                <table style={{width:"100%",borderCollapse:"collapse",tableLayout:"fixed"}}>
-                  <thead><tr><TH>Month</TH><TH>Category</TH><TH>Description</TH><TH right>Amount</TH><TH></TH></tr></thead>
-                  <tbody>{curBizExp.map(r=><tr key={r.id}><TD bold>{MONTHS[r.month]}</TD><td style={{padding:"9px 11px",borderBottom:`1px solid ${D.s3}`}}><Tag>{r.cat}</Tag></td><TD muted={!r.desc}>{r.desc||"—"}</TD><TD right color={D.red} bold>{fmtD(r.amount)}</TD><td style={{padding:"9px 11px",borderBottom:`1px solid ${D.s3}`,textAlign:"center",width:32}}>{r.receiptUrl?<a href={r.receiptUrl} target="_blank" rel="noreferrer" title="View receipt in Drive" style={{color:D.blue,textDecoration:"none",fontSize:13}}>📁</a>:<span style={{color:D.dim,fontSize:11}}>—</span>}</td><DelBtn onClick={()=>delBE(activeBiz.id,r.id)}/></tr>)}</tbody>
-                  <tfoot><tr><TFC></TFC><TFC>Total</TFC><TFC></TFC><TFC right color={D.red} bold>{fmt(curBizS.e)}</TFC><TFC></TFC></tr></tfoot>
-                </table>}
-              </Card>
-            </>)}
-            {curBizTab==="invoices"&&activeBiz.hasInvoicing&&(<>
-              <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10,marginBottom:12}}>
-                <KPI label="Total Invoiced" value={invTotal} color={D.text}  bg={D.s2}      border={D.border}/>
-                <KPI label="Paid"           value={invPaid}  color={D.green} bg={D.greenBg} border={D.greenBorder}/>
-                <KPI label="Outstanding"    value={invOut}   color="#fb923c" bg="#2a1a0f"   border="#5a3010"/>
-              </div>
-              <SH label="Invoices" action={null}/>
-              <QuickAdd type="invoice" cats={[]} placeholder={`"Invoice Johnson $4,500 electrical work March" or "$2,000 Smith Corp sent"`}
-                onSave={p=>{const a=parseFloat(p.amount);if(!a||!p.client)return;const eid=selBizEnt[activeBiz.id];updBiz(activeBiz.id,b=>{const inv={...b.invoices};(inv[eid]??=[]);inv[eid]=[...inv[eid],{id:uid(),client:p.client,desc:p.description||"",amount:a,month:+(p.month??new Date().getMonth()),status:p.status||"Draft",notes:"",year:selYear}];return{...b,invoices:inv}});}}/>
-              <Card>{curBizInv.length===0?<Empty icon="📄" title="No invoices" sub="Type above to create quickly"/>:
-                <table style={{width:"100%",borderCollapse:"collapse",tableLayout:"fixed"}}>
-                  <thead><tr><TH>Client</TH><TH>Description</TH><TH>Month</TH><TH right>Amount</TH><TH>Status</TH><TH></TH></tr></thead>
-                  <tbody>{curBizInv.map(inv=><tr key={inv.id}>
-                    <TD bold>{inv.client}</TD><TD muted={!inv.desc}>{inv.desc||"—"}</TD><TD>{MONTHS[inv.month]}</TD><TD right bold>{fmtD(inv.amount)}</TD>
-                    <td style={{padding:"9px 11px",borderBottom:`1px solid ${D.s3}`}}>
-                      <select value={inv.status} onChange={e=>updInvS(activeBiz.id,inv.id,e.target.value)} style={{background:"transparent",border:"none",fontFamily:T.sans,fontSize:11,fontWeight:700,cursor:"pointer",outline:"none",color:{Paid:D.green,Overdue:D.red,Sent:D.blue,Draft:D.muted,Cancelled:D.dim}[inv.status]||D.muted}}>
-                        {INVOICE_STATUSES.map(s=><option key={s}>{s}</option>)}
-                      </select>
-                    </td>
-                    <DelBtn onClick={()=>delInv(activeBiz.id,inv.id)}/>
-                  </tr>)}</tbody>
-                </table>}
-              </Card>
-            </>)}
-            {curBizTab==="contacts"&&activeBiz.hasContacts&&(<>
-              <SH label="Contacts" action={<Btn v="primary" sm onClick={()=>{setActiveBizId(activeBiz.id);setFBCont({name:"",role:"",phone:"",email:"",notes:""});open("addBC")}}>+ Add Contact</Btn>}/>
-              <ContactsGrid contacts={curBizCont} onEdit={c=>{setEditBContId(c.id);setFEBCont({name:c.name,role:c.role||"",phone:c.phone||"",email:c.email||"",notes:c.notes||""});setActiveBizId(activeBiz.id);open("editBC")}} onDel={id=>delBC(activeBiz.id,id)}/>
-            </>)}
-            {curBizTab==="summary"&&<SummaryTable rows={curBizMonthly} totI={curBizS.i} totE={curBizS.e} totN={curBizS.n} incColor={activeBiz.color}/>}
-          </>)}
-        </>)}
-
-      </div>
-
-      {/* ══ MODALS ══ */}
-
-      {/* New Business */}
-      <Modal open={modal==="newBiz"} onClose={close} title="✦ Create New Business" width={500}>
-        <FF label="Business Name *"><FI value={fBiz.name} onChange={e=>setFBiz(f=>({...f,name:e.target.value}))} placeholder="e.g. Smith Construction Co." autoFocus/></FF>
-        <FR cols="1fr 1fr">
-          <FF label="Icon"><select value={fBiz.icon} onChange={e=>setFBiz(f=>({...f,icon:e.target.value}))} style={{...iSt,fontSize:18}}>{BIZ_ICONS.map(ic=><option key={ic} value={ic}>{ic}</option>)}</select></FF>
-          <FF label="Color"><select value={fBiz.colorIdx} onChange={e=>setFBiz(f=>({...f,colorIdx:+e.target.value}))} style={iSt}>{BIZ_COLORS.map((c,i)=><option key={i} value={i}>{c.label}</option>)}</select></FF>
-        </FR>
-        <FF label="Expense Categories (comma separated) *">
-          <FI value={fBiz.cats} onChange={e=>setFBiz(f=>({...f,cats:e.target.value}))} placeholder="Materials, Labor, Equipment, Fuel, Other"/>
-          <div style={{fontSize:11,color:D.muted,marginTop:5}}>Type your own categories, separated by commas</div>
-        </FF>
-        <div style={{marginBottom:10}}>
-          <Toggle on={fBiz.hasInvoicing} onChange={v=>setFBiz(f=>({...f,hasInvoicing:v}))} label="Enable Invoicing — track clients & payments"/>
-          <Toggle on={fBiz.hasContacts}  onChange={v=>setFBiz(f=>({...f,hasContacts:v}))}  label="Enable Contacts — store vendors & suppliers"/>
-        </div>
-        <div style={{background:BIZ_COLORS[fBiz.colorIdx].bg,border:`1.5px solid ${BIZ_COLORS[fBiz.colorIdx].border}`,borderRadius:10,padding:"10px 14px",marginBottom:4,display:"flex",alignItems:"center",gap:8}}>
-          <span style={{fontSize:20}}>{fBiz.icon}</span>
-          <div><div style={{fontWeight:700,color:BIZ_COLORS[fBiz.colorIdx].val,fontSize:13}}>{fBiz.name||"Business Name"}</div><div style={{fontSize:10,color:D.muted,marginTop:1}}>Preview</div></div>
-        </div>
-        <BtnRow><Btn v="primary" full onClick={createBiz}>Create Business</Btn><Btn v="ghost" full onClick={close}>Cancel</Btn></BtnRow>
-      </Modal>
-
-      <Modal open={modal==="delBiz"} onClose={close} title="Delete Business">
-        <div style={{background:D.redBg,border:`1.5px solid ${D.redBorder}`,borderRadius:10,padding:14,fontSize:13,color:D.red,lineHeight:1.7,marginBottom:4}}>⚠ Permanently delete <strong style={{color:D.red}}>{activeBiz?.name}</strong> and all its data? This cannot be undone.</div>
-        <BtnRow><Btn v="danger" full onClick={()=>delBiz(activeBizId)}>Yes, Delete</Btn><Btn v="ghost" full onClick={close}>Cancel</Btn></BtnRow>
-      </Modal>
-
-      {/* Property */}
-      <Modal open={modal==="addProp"} onClose={close} title="New Property">
-        <FF label="Property Name *"><FI value={fProp.name} onChange={e=>setFProp(f=>({...f,name:e.target.value}))} placeholder="e.g. 123 Oak Street" autoFocus/></FF>
-        <FF label="Address"><FI value={fProp.address} onChange={e=>setFProp(f=>({...f,address:e.target.value}))} placeholder="Full address"/></FF>
-        <FF label="Notes" mb={0}><FT value={fProp.notes} onChange={e=>setFProp(f=>({...f,notes:e.target.value}))} rows={2} placeholder="Any notes..."/></FF>
-        <BtnRow><Btn v="primary" full onClick={addProp}>Add Property</Btn><Btn v="ghost" full onClick={close}>Cancel</Btn></BtnRow>
-      </Modal>
-      <Modal open={modal==="editProp"} onClose={close} title="Edit Property">
-        <FF label="Property Name *"><FI value={fEProp.name} onChange={e=>setFEProp(f=>({...f,name:e.target.value}))}/></FF>
-        <FF label="Address"><FI value={fEProp.address} onChange={e=>setFEProp(f=>({...f,address:e.target.value}))}/></FF>
-        <FF label="Notes" mb={0}><FT value={fEProp.notes} onChange={e=>setFEProp(f=>({...f,notes:e.target.value}))} rows={2}/></FF>
-        <BtnRow><Btn v="primary" full onClick={saveEProp}>Save Changes</Btn><Btn v="ghost" full onClick={close}>Cancel</Btn></BtnRow>
-      </Modal>
-      <Modal open={modal==="delProp"} onClose={close} title="Delete Property">
-        <div style={{background:D.redBg,border:`1.5px solid ${D.redBorder}`,borderRadius:10,padding:14,fontSize:13,color:D.red,lineHeight:1.7,marginBottom:4}}>⚠ Delete <strong style={{color:D.red}}>{properties.find(p=>p.id===delPId)?.name}</strong> and all its data? Cannot be undone.</div>
-        <BtnRow><Btn v="danger" full onClick={delProp}>Yes, Delete</Btn><Btn v="ghost" full onClick={close}>Cancel</Btn></BtnRow>
-      </Modal>
-
-      {/* RE Income / Expense */}
-      <Modal open={modal==="addRI"} onClose={close} title="Add Income">
-        <FR><FF label="Month"><FS opts={MONTHS.map((m,i)=>({v:i,l:m}))} value={fRI.month} onChange={e=>setFRI(f=>({...f,month:e.target.value}))}/></FF><FF label="Amount ($)"><FI type="number" inputMode="decimal" value={fRI.amount} onChange={e=>setFRI(f=>({...f,amount:e.target.value}))} placeholder="0.00" autoFocus/></FF></FR>
-        <FF label="Note (optional)" mb={0}><FI value={fRI.note} onChange={e=>setFRI(f=>({...f,note:e.target.value}))} placeholder="e.g. Tenant A – full payment"/></FF>
-        <BtnRow><Btn v="primary" full onClick={addRI}>Save Income</Btn><Btn v="ghost" full onClick={close}>Cancel</Btn></BtnRow>
-      </Modal>
-      <Modal open={modal==="addRE"} onClose={close} title="Add Expense">
-        <FR><FF label="Month"><FS opts={MONTHS.map((m,i)=>({v:i,l:m}))} value={fRE.month} onChange={e=>setFRE(f=>({...f,month:e.target.value}))}/></FF><FF label="Category"><FS opts={RE_CATS} value={fRE.cat} onChange={e=>setFRE(f=>({...f,cat:e.target.value}))}/></FF></FR>
-        <FF label="Amount ($)"><FI type="number" inputMode="decimal" value={fRE.amount} onChange={e=>setFRE(f=>({...f,amount:e.target.value}))} placeholder="0.00" autoFocus/></FF>
-        <FF label="Description (optional)" mb={0}><FI value={fRE.desc} onChange={e=>setFRE(f=>({...f,desc:e.target.value}))} placeholder="e.g. Plumber"/></FF>
-        <BtnRow><Btn v="primary" full onClick={addRE}>Save Expense</Btn><Btn v="ghost" full onClick={close}>Cancel</Btn></BtnRow>
-      </Modal>
-
-      {/* Utilities */}
-      <Modal open={modal==="addUtil"} onClose={close} title="Add Utility">
-        <FR><FF label="Type"><FS opts={UTIL_TYPES} value={fUtil.type} onChange={e=>setFUtil(f=>({...f,type:e.target.value}))}/></FF><FF label="Provider *"><FI value={fUtil.provider} onChange={e=>setFUtil(f=>({...f,provider:e.target.value}))} placeholder="e.g. PG&E" autoFocus/></FF></FR>
-        <FR><FF label="Account #"><FI value={fUtil.acct} onChange={e=>setFUtil(f=>({...f,acct:e.target.value}))} placeholder="Account #"/></FF><FF label="Phone"><FI value={fUtil.phone} onChange={e=>setFUtil(f=>({...f,phone:e.target.value}))} type="tel" placeholder="1-800-000-0000"/></FF></FR>
-        <FF label="Website"><FI value={fUtil.web} onChange={e=>setFUtil(f=>({...f,web:e.target.value}))} placeholder="www.provider.com"/></FF>
-        <FF label="Notes" mb={0}><FI value={fUtil.notes} onChange={e=>setFUtil(f=>({...f,notes:e.target.value}))} placeholder="e.g. Auto-pay on 15th"/></FF>
-        <BtnRow><Btn v="primary" full onClick={addUtil}>Save Utility</Btn><Btn v="ghost" full onClick={close}>Cancel</Btn></BtnRow>
-      </Modal>
-      <Modal open={modal==="editUtil"} onClose={close} title="Edit Utility">
-        <FR><FF label="Type"><FS opts={UTIL_TYPES} value={fEUtil.type} onChange={e=>setFEUtil(f=>({...f,type:e.target.value}))}/></FF><FF label="Provider"><FI value={fEUtil.provider} onChange={e=>setFEUtil(f=>({...f,provider:e.target.value}))}/></FF></FR>
-        <FR><FF label="Account #"><FI value={fEUtil.acct} onChange={e=>setFEUtil(f=>({...f,acct:e.target.value}))}/></FF><FF label="Phone"><FI value={fEUtil.phone} onChange={e=>setFEUtil(f=>({...f,phone:e.target.value}))} type="tel"/></FF></FR>
-        <FF label="Website"><FI value={fEUtil.web} onChange={e=>setFEUtil(f=>({...f,web:e.target.value}))}/></FF>
-        <FF label="Notes" mb={0}><FI value={fEUtil.notes} onChange={e=>setFEUtil(f=>({...f,notes:e.target.value}))}/></FF>
-        <BtnRow><Btn v="primary" full onClick={saveEUtil}>Save Changes</Btn><Btn v="ghost" full onClick={close}>Cancel</Btn></BtnRow>
-      </Modal>
-
-      {/* RE Contacts */}
-      <Modal open={modal==="addRCont"} onClose={close} title="Add Contact"><ContactForm f={fRCont} setF={setFRCont}/><BtnRow><Btn v="primary" full onClick={addRCont}>Save Contact</Btn><Btn v="ghost" full onClick={close}>Cancel</Btn></BtnRow></Modal>
-      <Modal open={modal==="editRCont"} onClose={close} title="Edit Contact"><ContactForm f={fERCont} setF={setFERCont}/><BtnRow><Btn v="primary" full onClick={saveERCont}>Save Changes</Btn><Btn v="ghost" full onClick={close}>Cancel</Btn></BtnRow></Modal>
-
-      {/* Entities */}
-      <Modal open={modal==="addEnt"} onClose={close} title="Add Entity">
-        <FF label="Name *"><FI value={fEnt.name} onChange={e=>setFEnt(f=>({...f,name:e.target.value}))} placeholder="e.g. Main Operations" autoFocus/></FF>
-        <FF label="Notes" mb={0}><FT value={fEnt.notes} onChange={e=>setFEnt(f=>({...f,notes:e.target.value}))} rows={2} placeholder="Any notes..."/></FF>
-        <BtnRow><Btn v="primary" full onClick={()=>addEnt(activeBizId)}>Add Entity</Btn><Btn v="ghost" full onClick={close}>Cancel</Btn></BtnRow>
-      </Modal>
-      <Modal open={modal==="editEnt"} onClose={close} title="Edit Entity">
-        <FF label="Name *"><FI value={fEEnt.name} onChange={e=>setFEEnt(f=>({...f,name:e.target.value}))}/></FF>
-        <FF label="Notes" mb={0}><FT value={fEEnt.notes} onChange={e=>setFEEnt(f=>({...f,notes:e.target.value}))} rows={2}/></FF>
-        <BtnRow><Btn v="primary" full onClick={()=>saveEEnt(activeBizId)}>Save Changes</Btn><Btn v="ghost" full onClick={close}>Cancel</Btn></BtnRow>
-      </Modal>
-      <Modal open={modal==="delEnt"} onClose={close} title="Delete Entity">
-        <div style={{background:D.redBg,border:`1.5px solid ${D.redBorder}`,borderRadius:10,padding:14,fontSize:13,color:D.red,lineHeight:1.7,marginBottom:4}}>⚠ Delete this entity and all its data? Cannot be undone.</div>
-        <BtnRow><Btn v="danger" full onClick={()=>delEnt(activeBizId)}>Yes, Delete</Btn><Btn v="ghost" full onClick={close}>Cancel</Btn></BtnRow>
-      </Modal>
-
-      {/* Biz Income / Expense */}
-      <Modal open={modal==="addBI"} onClose={close} title="Add Income">
-        <FR><FF label="Month"><FS opts={MONTHS.map((m,i)=>({v:i,l:m}))} value={fBI.month} onChange={e=>setFBI(f=>({...f,month:e.target.value}))}/></FF><FF label="Amount ($)"><FI type="number" inputMode="decimal" value={fBI.amount} onChange={e=>setFBI(f=>({...f,amount:e.target.value}))} placeholder="0.00" autoFocus/></FF></FR>
-        <FF label="Note (optional)" mb={0}><FI value={fBI.note} onChange={e=>setFBI(f=>({...f,note:e.target.value}))} placeholder="e.g. Client payment"/></FF>
-        <BtnRow><Btn v="primary" full onClick={()=>addBI(activeBizId)}>Save Income</Btn><Btn v="ghost" full onClick={close}>Cancel</Btn></BtnRow>
-      </Modal>
-      <Modal open={modal==="addBE"} onClose={close} title="Add Expense">
-        <FR><FF label="Month"><FS opts={MONTHS.map((m,i)=>({v:i,l:m}))} value={fBE.month} onChange={e=>setFBE(f=>({...f,month:e.target.value}))}/></FF><FF label="Category"><FS opts={activeBiz?.cats||[]} value={fBE.cat} onChange={e=>setFBE(f=>({...f,cat:e.target.value}))}/></FF></FR>
-        <FF label="Amount ($)"><FI type="number" inputMode="decimal" value={fBE.amount} onChange={e=>setFBE(f=>({...f,amount:e.target.value}))} placeholder="0.00" autoFocus/></FF>
-        <FF label="Description (optional)" mb={0}><FI value={fBE.desc} onChange={e=>setFBE(f=>({...f,desc:e.target.value}))} placeholder="e.g. Materials"/></FF>
-        <BtnRow><Btn v="primary" full onClick={()=>addBE(activeBizId)}>Save Expense</Btn><Btn v="ghost" full onClick={close}>Cancel</Btn></BtnRow>
-      </Modal>
-
-      {/* Invoice */}
-      <Modal open={modal==="addInv"} onClose={close} title="New Invoice">
-        <FF label="Client Name *"><FI value={fInv.client} onChange={e=>setFInv(f=>({...f,client:e.target.value}))} placeholder="Client or company name" autoFocus/></FF>
-        <FF label="Description"><FI value={fInv.desc} onChange={e=>setFInv(f=>({...f,desc:e.target.value}))} placeholder="Work description"/></FF>
-        <FR><FF label="Amount ($)"><FI type="number" inputMode="decimal" value={fInv.amount} onChange={e=>setFInv(f=>({...f,amount:e.target.value}))} placeholder="0.00"/></FF><FF label="Month"><FS opts={MONTHS.map((m,i)=>({v:i,l:m}))} value={fInv.month} onChange={e=>setFInv(f=>({...f,month:e.target.value}))}/></FF></FR>
-        <FF label="Status"><FS opts={INVOICE_STATUSES} value={fInv.status} onChange={e=>setFInv(f=>({...f,status:e.target.value}))}/></FF>
-        <FF label="Notes" mb={0}><FI value={fInv.notes} onChange={e=>setFInv(f=>({...f,notes:e.target.value}))} placeholder="Any notes"/></FF>
-        <BtnRow><Btn v="primary" full onClick={()=>addInv(activeBizId)}>Create Invoice</Btn><Btn v="ghost" full onClick={close}>Cancel</Btn></BtnRow>
-      </Modal>
-
-      {/* Biz Contacts */}
-      <Modal open={modal==="addBC"} onClose={close} title="Add Contact"><ContactForm f={fBCont} setF={setFBCont}/><BtnRow><Btn v="primary" full onClick={()=>addBC(activeBizId)}>Save Contact</Btn><Btn v="ghost" full onClick={close}>Cancel</Btn></BtnRow></Modal>
-      <Modal open={modal==="editBC"} onClose={close} title="Edit Contact"><ContactForm f={fEBCont} setF={setFEBCont}/><BtnRow><Btn v="primary" full onClick={()=>saveEBC(activeBizId)}>Save Changes</Btn><Btn v="ghost" full onClick={close}>Cancel</Btn></BtnRow></Modal>
-
-      {/* AI Receipt + Drive Upload */}
-      <Modal open={modal==="receipt"} onClose={()=>{close();setAiState("idle");setAiData(null);}} title="📷 Scan Receipt → Drive" width={480}>
-        <input ref={fileRef} type="file" accept="image/*" style={{display:"none"}} onChange={async e=>{
-          const file=e.target.files[0];if(!file)return;
-          setAiState("loading");
-          const cats=aiCtx?.cats||RE_CATS;
-          // Run AI + Drive upload in parallel
-          const reader=new FileReader();
-          reader.onload=async ev=>{
-            const base64=ev.target.result.split(",")[1];
-            const [aiResp,driveResp]=await Promise.allSettled([
-              fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:600,messages:[{role:"user",content:[{type:"image",source:{type:"base64",media_type:file.type||"image/jpeg",data:base64}},{type:"text",text:`Read this receipt. Return ONLY valid JSON:
-{"amount":<number>,"description":"<max 60 chars>","category":"<one of: ${cats.join(", ")}>","vendor":"<n>","date":"<MM/DD/YYYY or null>"}`}]}]})}).then(r=>r.json()),
-              uploadToDrive(file,{portType:aiCtx?.port==="re"?"re":"biz",month:new Date().getMonth(),year:selYear,label:aiCtx?.port==="re"?"Real Estate":(activeBiz?.name||"Business")}),
-            ]);
-            // Process AI result
-            try{
-              const data=aiResp.value||aiResp.reason;
-              const text=data.content?.map(x=>x.text||"").join("")||"";
-              const parsed=JSON.parse(text.replace(/```json|```/g,"").trim());
-              setAiData({...parsed,driveUrl:driveResp.value?.url||null});
-              setRExp(r=>({...r,amount:parsed.amount||"",desc:parsed.description||"",cat:cats.includes(parsed.category)?parsed.category:cats[0],month:parsed.date?parseInt(parsed.date.split("/")[0])-1:r.month}));
-              setAiState("done");
-            }catch{setAiState("error");}
-          };
-          reader.readAsDataURL(file);
-        }}/>
-        {aiState==="idle"&&(
-          <div onClick={()=>fileRef.current?.click()} style={{border:`2px dashed ${D.border2}`,borderRadius:14,padding:"38px 20px",textAlign:"center",cursor:"pointer",background:D.s2,marginBottom:4}}>
-            <div style={{fontSize:40,marginBottom:12}}>📸</div>
-            <div style={{fontSize:14,fontWeight:700,color:D.gold,marginBottom:6}}>Take a photo or upload</div>
-            <div style={{fontSize:12,color:D.muted,marginBottom:4}}>AI reads the receipt and fills in expense details</div>
-            {authToken&&<div style={{fontSize:11,color:D.green,marginTop:6}}>✓ Will auto-save to Google Drive</div>}
-            {!authToken&&<div style={{fontSize:11,color:D.goldDim,marginTop:6}}>Connect backend to auto-save to Drive</div>}
-          </div>
-        )}
-        {aiState==="loading"&&(
-          <div style={{textAlign:"center",padding:"38px 20px",background:D.s2,borderRadius:14,marginBottom:14}}>
-            <div style={{fontSize:36,marginBottom:12}}>🤖</div>
-            <div style={{fontWeight:700,color:D.gold,marginBottom:4}}>Reading receipt{driveUploading?" + uploading to Drive":""}...</div>
-            <div style={{fontSize:12,color:D.muted}}>AI is extracting the details</div>
-          </div>
-        )}
-        {aiState==="error"&&(
-          <div style={{background:D.redBg,border:`1.5px solid ${D.redBorder}`,borderRadius:10,padding:13,fontSize:12,color:D.red,marginBottom:14}}>
-            ⚠ Couldn't read clearly. Fill in the details manually below.
-          </div>
-        )}
-        {aiState==="done"&&aiData&&(
-          <div style={{background:D.greenBg,border:`1.5px solid ${D.greenBorder}`,borderRadius:12,padding:14,marginBottom:14}}>
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
-              <div style={{fontSize:9,color:D.green,letterSpacing:2,textTransform:"uppercase",fontWeight:700}}>✓ AI Detected</div>
-              {aiData.driveUrl&&<a href={aiData.driveUrl} target="_blank" rel="noreferrer" style={{fontSize:10,color:D.blue,fontWeight:700,textDecoration:"none"}}>📁 View in Drive →</a>}
-              {!aiData.driveUrl&&<span style={{fontSize:10,color:D.goldDim}}>Drive: not connected</span>}
-            </div>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,fontSize:12}}>
-              {[["Vendor",aiData.vendor||"—",D.text],["Amount",aiData.amount?fmtD(aiData.amount):"—",D.green],["Category",aiData.category||"—",D.gold],["Date",aiData.date||"—",D.text]].map(([l,v,c])=>(
-                <div key={l}><div style={{fontSize:9,color:D.muted,textTransform:"uppercase",letterSpacing:1.5,fontWeight:700,marginBottom:3}}>{l}</div><div style={{fontWeight:700,color:c}}>{v}</div></div>
-              ))}
-            </div>
-          </div>
-        )}
-        {(aiState==="done"||aiState==="error")&&(<>
-          <FR><FF label="Month"><FS opts={MONTHS.map((m,i)=>({v:i,l:m}))} value={rExp.month} onChange={e=>setRExp(r=>({...r,month:e.target.value}))}/></FF><FF label="Category"><FS opts={aiCtx?.cats||RE_CATS} value={rExp.cat} onChange={e=>setRExp(r=>({...r,cat:e.target.value}))}/></FF></FR>
-          <FF label="Amount ($)"><FI type="number" inputMode="decimal" value={rExp.amount} onChange={e=>setRExp(r=>({...r,amount:e.target.value}))} placeholder="0.00"/></FF>
-          <FF label="Description" mb={0}><FI value={rExp.desc} onChange={e=>setRExp(r=>({...r,desc:e.target.value}))}/></FF>
-          <BtnRow>
-            <Btn v="primary" full onClick={()=>{
-              const driveUrl=aiData?.driveUrl||null;
-              if(aiCtx?.port==="re"){const a=parseFloat(rExp.amount);if(!a||isNaN(a))return;setReExp(v=>{const n={...v};(n[selProp]??={})[selYear]??=[];n[selProp][selYear]=[...n[selProp][selYear],{id:uid(),month:+rExp.month,cat:rExp.cat,desc:rExp.desc,amount:a,receiptUrl:driveUrl}];return n});setAiState("idle");setAiData(null);close();}
-              else{const a=parseFloat(rExp.amount);if(!a||isNaN(a))return;const bizId=aiCtx?.port;const eid=selBizEnt[bizId];updBiz(bizId,b=>{const exp={...b.expenses};(exp[eid]??={})[selYear]??=[];exp[eid][selYear]=[...exp[eid][selYear],{id:uid(),month:+rExp.month,cat:rExp.cat,desc:rExp.desc,amount:a,receiptUrl:driveUrl}];return{...b,expenses:exp}});setAiState("idle");setAiData(null);close();}
-            }}>Save Expense</Btn>
-            <Btn v="ghost" full onClick={()=>{setAiState("idle");setAiData(null);if(fileRef.current)fileRef.current.value="";}}>Scan Again</Btn>
-          </BtnRow>
-        </>)}
-      </Modal>
-
-    </div>
-  );
+function save(){
+  try{localStorage.setItem('ph_state',JSON.stringify({properties:S.properties,reInc:S.reInc,reExp:S.reExp,reUtils:S.reUtils,reCont:S.reCont,bizs:S.bizs,selBizEnt:S.selBizEnt,bizTab:S.bizTab}));}catch(e){}
 }
 
+// ─── RE HELPERS ──────────────────────────────
+const getRI=(p,y)=>(S.reInc[p]||{})[y]||[];
+const getRE=(p,y)=>(S.reExp[p]||{})[y]||[];
+const getRU=p=>S.reUtils[p]||[];
+const getRC=p=>S.reCont[p]||[];
+const reSums=(p,y)=>{const i=getRI(p,y).reduce((s,e)=>s+e.amount,0),x=getRE(p,y).reduce((s,e)=>s+e.amount,0);return{i,e:x,n:i-x};};
+const reTot=y=>S.properties.reduce((a,p)=>{const s=reSums(p.id,y);return{i:a.i+s.i,e:a.e+s.e,n:a.n+s.n}},{i:0,e:0,n:0});
 
-// ══════════════════════════════════════
-//  LOGIN SCREEN
-// ══════════════════════════════════════
-const API_URL = "https://your-app.ondigitalocean.app"; // ← update this when backend is live
+// ─── BIZ HELPERS ─────────────────────────────
+const getBiz=id=>S.bizs.find(b=>b.id===id);
+const getBI=(b,eid,y)=>(b.income[eid]||{})[y]||[];
+const getBE=(b,eid,y)=>(b.expenses[eid]||{})[y]||[];
+const getInv=(b,eid)=>b.invoices[eid]||[];
+const getBC=(b,eid)=>b.contacts[eid]||[];
+const bizEntS=(b,eid,y)=>{const i=getBI(b,eid,y).reduce((s,e)=>s+e.amount,0),x=getBE(b,eid,y).reduce((s,e)=>s+e.amount,0);return{i,e:x,n:i-x};};
+const bizTot=(b,y)=>b.entities.reduce((a,en)=>{const s=bizEntS(b,en.id,y);return{i:a.i+s.i,e:a.e+s.e,n:a.n+s.n}},{i:0,e:0,n:0});
+const masterTot=()=>{
+  const re=reTot(S.selYear);
+  const biz=S.bizs.reduce((a,b)=>{const t=bizTot(b,S.selYear);return{i:a.i+t.i,e:a.e+t.e,n:a.n+t.n}},{i:0,e:0,n:0});
+  return{i:re.i+biz.i,e:re.e+biz.e,n:re.n+biz.n};
+};
 
-function LoginScreen({ onLogin }) {
-  const [mode, setMode] = useState("login");
-  const [form, setForm] = useState({ name:"", email:"", password:"" });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+// ─── RENDER ENGINE ───────────────────────────
+function render(){
+  const app=$('#app');
+  app.innerHTML='';
+  if(!S.user){app.append(renderLogin());return;}
+  app.append(renderHeader(),renderNav(),el('div',{class:'body'},renderSection()));
+}
 
-  const LD = {
-    bg:"#0d0f18", surface:"#161926", s2:"#1e2130",
-    border:"#232638", border2:"#2e3248",
-    text:"#e8e4dc", muted:"#6a7080",
-    gold:"#e8d5a3", red:"#e07070", redBg:"#2a1515", redBorder:"#4a2020",
-  };
-  const LT = { serif:"'Playfair Display',Georgia,serif", sans:"'DM Sans',system-ui,sans-serif" };
-  const inp = { width:"100%", background:LD.s2, border:`1.5px solid ${LD.border2}`, color:LD.text,
-    padding:"13px 15px", borderRadius:10, fontSize:15, fontFamily:LT.sans,
-    outline:"none", boxSizing:"border-box", marginBottom:12 };
+// ─── LOGIN ───────────────────────────────────
+let loginMode='login';
+function renderLogin(){
+  const wrap=el('div',{class:'login-wrap'});
+  const card=el('div',{class:'login-card'});
+  const logo=el('div',{class:'login-logo'},
+    el('div',{class:'login-logo-mark'},'📊'),
+    el('div',{class:'login-title serif'},'Portfolio Hub'),
+    el('div',{class:'login-sub'},loginMode==='login'?'Welcome back':'Create your account')
+  );
 
-  async function submit() {
-    setError("");
-    if(!form.email||!form.password){setError("Please fill in all fields");return;}
-    if(mode==="register"&&!form.name){setError("Please enter your name");return;}
+  let nameInp=null;
+  if(loginMode==='register'){
+    nameInp=el('input',{class:'finp',placeholder:'Your name',type:'text',style:{marginBottom:'10px'}});
+    nameInp.style.width='100%';
+  }
+  const emailInp=el('input',{class:'finp',placeholder:'Email address',type:'email'});
+  emailInp.style.marginBottom='10px';emailInp.style.width='100%';
+  const passInp=el('input',{class:'finp',placeholder:'Password',type:'password'});
+  passInp.style.marginBottom='14px';passInp.style.width='100%';
+  const errBox=el('div',{style:{display:'none',background:'var(--redB)',border:'1px solid var(--redBo)',borderRadius:'8px',padding:'10px 12px',fontSize:'13px',color:'var(--red)',marginBottom:'12px'}});
 
-    // No backend yet → skip straight to app
-    if(API_URL.includes("your-app")){
-      onLogin({name:form.name||form.email.split("@")[0],email:form.email},null);
-      return;
+  const submitBtn=el('button',{class:'btn btn-gold btn-full'},loginMode==='login'?'Sign In →':'Create Account →');
+  submitBtn.addEventListener('click',async()=>{
+    errBox.style.display='none';
+    const email=emailInp.value.trim();
+    const pass=passInp.value;
+    const name=nameInp?nameInp.value.trim():'';
+    if(!email||!pass){errBox.textContent='Please fill in all fields';errBox.style.display='block';return;}
+    if(loginMode==='register'&&!name){errBox.textContent='Please enter your name';errBox.style.display='block';return;}
+    // No backend yet — skip straight to app
+    if(API_URL.includes('your-app')){
+      S.user={name:name||email.split('@')[0],email};
+      localStorage.setItem('ph_user',JSON.stringify(S.user));
+      render();return;
     }
-    setLoading(true);
+    submitBtn.textContent='Please wait...';submitBtn.disabled=true;
     try{
-      const ep=mode==="login"?"/api/auth/login":"/api/auth/register";
-      const body=mode==="login"
-        ?{email:form.email,password:form.password}
-        :{email:form.email,password:form.password,name:form.name};
-      const res=await fetch(API_URL+ep,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+      const ep=loginMode==='login'?'/api/auth/login':'/api/auth/register';
+      const body=loginMode==='login'?{email,password:pass}:{email,password:pass,name};
+      const res=await fetch(API_URL+ep,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
       const data=await res.json();
-      if(!res.ok){setError(data.error||"Something went wrong");return;}
-      localStorage.setItem("ph_token",data.token);
-      localStorage.setItem("ph_user",JSON.stringify(data.user));
-      onLogin(data.user,data.token);
+      if(!res.ok){errBox.textContent=data.error||'Something went wrong';errBox.style.display='block';return;}
+      S.token=data.token;S.user=data.user;
+      localStorage.setItem('ph_token',data.token);localStorage.setItem('ph_user',JSON.stringify(data.user));
+      render();
     }catch(e){
-      setError("Can't reach server — using local mode.");
-      onLogin({name:form.email.split("@")[0],email:form.email},null);
-    }finally{setLoading(false);}
-  }
+      S.user={name:email.split('@')[0],email};localStorage.setItem('ph_user',JSON.stringify(S.user));render();
+    }finally{submitBtn.textContent=loginMode==='login'?'Sign In →':'Create Account →';submitBtn.disabled=false;}
+  });
+  [emailInp,passInp,nameInp&&nameInp].forEach(inp=>{if(inp)inp.addEventListener('keydown',e=>{if(e.key==='Enter')submitBtn.click();});});
 
-  return (
-    <div style={{background:LD.bg,minHeight:"100vh",display:"flex",alignItems:"center",
-      justifyContent:"center",padding:20,fontFamily:LT.sans}}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;600;700&display=swap');`}</style>
-      <div style={{width:"100%",maxWidth:380}}>
-        <div style={{textAlign:"center",marginBottom:36}}>
-          <div style={{width:54,height:54,borderRadius:14,background:`linear-gradient(135deg,${LD.gold},#a07830)`,
-            display:"flex",alignItems:"center",justifyContent:"center",fontSize:28,margin:"0 auto 14px"}}>📊</div>
-          <div style={{fontFamily:LT.serif,fontSize:28,fontWeight:700,color:LD.gold,marginBottom:6}}>Portfolio Hub</div>
-          <div style={{fontSize:13,color:LD.muted}}>{mode==="login"?"Welcome back":"Create your account"}</div>
-        </div>
-        <div style={{background:LD.surface,border:`1.5px solid ${LD.border}`,borderRadius:20,padding:28}}>
-          {mode==="register"&&<input style={inp} placeholder="Your name" value={form.name}
-            onChange={e=>setForm(f=>({...f,name:e.target.value}))} onKeyDown={e=>e.key==="Enter"&&submit()} autoFocus/>}
-          <input style={inp} placeholder="Email address" type="email" value={form.email}
-            onChange={e=>setForm(f=>({...f,email:e.target.value}))} onKeyDown={e=>e.key==="Enter"&&submit()}
-            autoFocus={mode==="login"}/>
-          <input style={{...inp,marginBottom:error?8:18}} placeholder="Password" type="password" value={form.password}
-            onChange={e=>setForm(f=>({...f,password:e.target.value}))} onKeyDown={e=>e.key==="Enter"&&submit()}/>
-          {error&&<div style={{background:LD.redBg,border:`1px solid ${LD.redBorder}`,borderRadius:8,
-            padding:"10px 13px",fontSize:13,color:LD.red,marginBottom:14}}>{error}</div>}
-          <button onClick={submit} disabled={loading} style={{width:"100%",background:LD.gold,color:"#0c0e16",
-            border:"none",borderRadius:10,padding:"14px",fontWeight:700,fontSize:15,
-            cursor:loading?"wait":"pointer",fontFamily:LT.sans,marginBottom:14,opacity:loading?0.7:1}}>
-            {loading?"Please wait...":mode==="login"?"Sign In →":"Create Account →"}
-          </button>
-          <button onClick={()=>window.location.href=API_URL+"/api/auth/google"}
-            disabled={API_URL.includes("your-app")}
-            style={{width:"100%",background:LD.s2,color:LD.text,border:`1.5px solid ${LD.border2}`,
-              borderRadius:10,padding:"13px",fontWeight:600,fontSize:14,cursor:"pointer",
-              fontFamily:LT.sans,marginBottom:18,display:"flex",alignItems:"center",
-              justifyContent:"center",gap:10,opacity:API_URL.includes("your-app")?0.4:1}}>
-            <span style={{fontSize:18}}>🔵</span>
-            {API_URL.includes("your-app")?"Sign in with Google (setup required)":"Sign in with Google"}
-          </button>
-          <div style={{textAlign:"center",fontSize:13,color:LD.muted}}>
-            {mode==="login"?"Don't have an account? ":"Already have an account? "}
-            <span onClick={()=>{setMode(mode==="login"?"register":"login");setError("");}}
-              style={{color:LD.gold,fontWeight:700,cursor:"pointer"}}>
-              {mode==="login"?"Register":"Sign in"}
-            </span>
-          </div>
-          {API_URL.includes("your-app")&&<div style={{marginTop:16,padding:"10px 13px",
-            background:LD.s2,borderRadius:8,border:`1px solid ${LD.border}`,
-            fontSize:12,color:LD.muted,textAlign:"center",lineHeight:1.6}}>
-            💡 Backend not set up yet — tap Sign In to use the app. Your data saves in this browser.
-          </div>}
-        </div>
-      </div>
-    </div>
+  const switchRow=el('div',{class:'login-switch'});
+  switchRow.innerHTML=loginMode==='login'?"Don't have an account? <span>Register</span>":"Already have an account? <span>Sign In</span>";
+  switchRow.querySelector('span').addEventListener('click',()=>{loginMode=loginMode==='login'?'register':'login';render();});
+
+  const noteBox=API_URL.includes('your-app')?el('div',{class:'login-note'},'💡 Backend not set up yet — tap Sign In to use the app locally. Your data saves in this browser.'):null;
+
+  card.append(logo,...(nameInp?[nameInp]:[]),emailInp,passInp,errBox,submitBtn,switchRow,...(noteBox?[noteBox]:[]));
+  wrap.append(card);
+  setTimeout(()=>{(nameInp||emailInp).focus();},100);
+  return wrap;
+}
+
+// ─── HEADER ──────────────────────────────────
+function renderHeader(){
+  const yearSel=el('select',{class:'finp',style:{width:'auto',padding:'5px 9px',fontSize:'12px',background:'var(--s3)',border:'1px solid var(--bor2)'}});
+  YEARS.forEach(y=>{const o=el('option',{},y);if(y===S.selYear)o.selected=true;yearSel.append(o);});
+  yearSel.addEventListener('change',()=>{S.selYear=+yearSel.value;render();});
+
+  const backupBtn=el('button',{class:'btn btn-dark btn-sm'},'💾');
+  backupBtn.title='Backup data';
+  backupBtn.addEventListener('click',backupData);
+
+  const restoreInp=el('input',{type:'file',accept:'.json',style:{display:'none'}});
+  restoreInp.addEventListener('change',restoreData);
+  const restoreBtn=el('button',{class:'btn btn-dark btn-sm'},'📂');
+  restoreBtn.title='Restore backup';
+  restoreBtn.addEventListener('click',()=>restoreInp.click());
+
+  const newBizBtn=el('button',{class:'btn btn-gold btn-sm'},'+ Business');
+  newBizBtn.addEventListener('click',()=>openModal('newBiz'));
+
+  const userBtn=el('button',{class:'btn btn-dark btn-sm'},('👤 '+(S.user?.name?.split(' ')[0]||'Me')));
+  userBtn.addEventListener('click',()=>{if(confirm('Sign out?')){localStorage.removeItem('ph_token');localStorage.removeItem('ph_user');S.user=null;S.token=null;render();}});
+
+  return el('div',{class:'hdr'},
+    el('div',{class:'hdr-i'},
+      el('div',{class:'logo'},el('div',{class:'logo-mark'},'📊'),el('div',{class:'logo-text serif'},'Portfolio Hub')),
+      el('div',{class:'hdr-right'},yearSel,backupBtn,restoreBtn,restoreInp,newBizBtn,userBtn)
+    )
   );
 }
 
-// ══ ROOT — shows login OR the main app ══
-function Root() {
-  const [user,setUser]=useState(()=>{try{return JSON.parse(localStorage.getItem("ph_user"));}catch{return null;}});
-  const [token,setToken]=useState(()=>localStorage.getItem("ph_token")||null);
-
-  // Pick up Google OAuth token from URL
-  const [,]=useState(()=>{
-    const params=new URLSearchParams(window.location.search);
-    const t=params.get("token");
-    if(t){
-      localStorage.setItem("ph_token",t);
-      setToken(t);
-      fetch(API_URL+"/api/auth/me",{headers:{Authorization:`Bearer ${t}`}})
-        .then(r=>r.json()).then(u=>{localStorage.setItem("ph_user",JSON.stringify(u));setUser(u);}).catch(()=>{});
-      window.history.replaceState({},"",window.location.pathname);
-    }
+// ─── NAV ─────────────────────────────────────
+function renderNav(){
+  const navI=el('div',{class:'nav-i'});
+  const ports=[
+    {id:'master',icon:'📊',label:'Master',color:'var(--gld)'},
+    {id:'re',icon:'🏠',label:'Real Estate',color:'var(--grn)'},
+    ...S.bizs.map(b=>({id:b.id,icon:b.icon,label:b.name,color:b.color}))
+  ];
+  ports.forEach(p=>{
+    const btn=el('button',{class:'nav-btn'+(S.activePort===p.id?' active':'')},p.icon+' '+p.label);
+    if(S.activePort===p.id)btn.style.color=p.color,btn.style.borderBottomColor=p.color;
+    btn.addEventListener('click',()=>{S.activePort=p.id;render();});
+    navI.append(btn);
   });
-
-  function handleLogin(u,t){setUser(u);setToken(t);if(u)localStorage.setItem("ph_user",JSON.stringify(u));}
-  function handleLogout(){localStorage.removeItem("ph_token");localStorage.removeItem("ph_user");setUser(null);setToken(null);}
-
-  if(!user) return <LoginScreen onLogin={handleLogin}/>;
-  return <App authToken={token} currentUser={user} onLogout={handleLogout}/>;
+  return el('div',{class:'nav'},navI);
 }
 
-    const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(<Root/>);
-  </script>
+// ─── SECTION ROUTER ──────────────────────────
+function renderSection(){
+  if(S.activePort==='master')return renderMaster();
+  if(S.activePort==='re')return renderRE();
+  const biz=getBiz(S.activePort);
+  if(biz)return renderBiz(biz);
+  return el('div',{},'Not found');
+}
+
+// ─── KPI ─────────────────────────────────────
+function kpi(label,value,color,bg,bor){
+  const d=el('div',{class:'kpi',style:{background:bg,borderColor:bor}});
+  d.append(el('div',{class:'kpi-label',style:{color}},label),el('div',{class:'kpi-val serif',style:{color}},fmt(value)));
+  return d;
+}
+
+// ─── PILL BAR ────────────────────────────────
+function pillBar(items,sel,activeColor,onSel,onEdit,onDel){
+  const bar=el('div',{class:'pill-bar'});
+  if(!items.length){bar.append(el('span',{style:{fontSize:'11px',color:'var(--mut)'}},'None yet'));return bar;}
+  items.forEach(item=>{
+    const p=el('button',{class:'pill'+(item.id===sel?' active':'')},item.name);
+    if(item.id===sel){p.style.background=activeColor||'var(--gld)';p.style.borderColor=activeColor||'var(--gld)';p.style.color='#0c0e16';}
+    p.addEventListener('click',()=>onSel(item.id));
+    const ed=el('button',{class:'pill-edit'},'✏️');
+    ed.addEventListener('click',e=>{e.stopPropagation();onEdit(item);});
+    const dl=el('button',{class:'pill-del'},'✕');
+    dl.addEventListener('click',e=>{e.stopPropagation();onDel(item.id);});
+    bar.append(el('span',{style:{display:'inline-flex',alignItems:'center',gap:'2px'}},p,ed,dl));
+  });
+  return bar;
+}
+
+// ─── SEGMENT TABS ────────────────────────────
+function seg(tabs,active,onChange){
+  const d=el('div',{class:'seg'});
+  tabs.forEach(t=>{
+    const b=el('button',{class:'seg-btn'+(t===active?' active':'')},t.charAt(0).toUpperCase()+t.slice(1));
+    b.addEventListener('click',()=>onChange(t));
+    d.append(b);
+  });
+  return d;
+}
+
+// ─── SUMMARY TABLE ───────────────────────────
+function summaryTable(rows,totI,totE,totN,incColor){
+  const ic=incColor||'var(--grn)';
+  const tbl=el('table',{class:'tbl',style:{tableLayout:'fixed'}});
+  const thead=el('thead',{},el('tr',{},
+    el('th',{style:{width:'25%'}},'Month'),
+    el('th',{class:'r',style:{width:'25%'}},'Income'),
+    el('th',{class:'r',style:{width:'25%'}},'Expenses'),
+    el('th',{class:'r',style:{width:'25%'}},'Net')
+  ));
+  const tbody=el('tbody',{});
+  rows.forEach(({m,inc,exp,net})=>{
+    tbody.append(el('tr',{},
+      el('td',{style:{fontWeight:'600',color:'var(--txt)'}},m),
+      el('td',{class:'r',style:{color:inc?ic:'var(--dim)',fontWeight:inc?'600':'400'}},inc?fmt(inc):'—'),
+      el('td',{class:'r',style:{color:exp?'var(--red)':'var(--dim)',fontWeight:exp?'600':'400'}},exp?fmt(exp):'—'),
+      el('td',{class:'r',style:{fontWeight:'700',color:net>0?'var(--grn)':net<0?'var(--red)':'var(--dim)'}},inc||exp?fmt(net):'—')
+    ));
+  });
+  const tfoot=el('tfoot',{},el('tr',{},
+    el('td',{},'Annual'),
+    el('td',{class:'r',style:{color:ic,fontSize:'13px',letterSpacing:'0',textTransform:'none',fontVariantNumeric:'tabular-nums'}},fmt(totI)),
+    el('td',{class:'r',style:{color:'var(--red)',fontSize:'13px',letterSpacing:'0',textTransform:'none',fontVariantNumeric:'tabular-nums'}},fmt(totE)),
+    el('td',{class:'r',style:{color:totN>=0?'var(--gld)':'var(--red)',fontSize:'13px',letterSpacing:'0',textTransform:'none',fontVariantNumeric:'tabular-nums'}},fmt(totN))
+  ));
+  const wrap=el('div',{class:'card'});
+  wrap.append(el('div',{class:'sum-hdr'},'Month-by-Month'),el('div',{class:'tbl-wrap'},tbl));
+  tbl.append(thead,tbody,tfoot);
+  return wrap;
+}
+
+// ─── CONTACTS GRID ───────────────────────────
+function contactsGrid(contacts,onEdit,onDel){
+  if(!contacts.length)return emptyState('👤','No contacts yet','Tap + Add Contact');
+  const grid=el('div',{class:'cont-grid'});
+  contacts.forEach(c=>{
+    const card=el('div',{class:'cont-card'});
+    const hdr=el('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:'9px'}});
+    const info=el('div',{},el('div',{class:'cont-name'},c.name));
+    if(c.role)info.append(el('div',{class:'cont-role'},c.role));
+    const acts=el('div',{class:'cont-actions'});
+    const ed=el('button',{class:'cont-edit'},'✏️');ed.addEventListener('click',()=>onEdit(c));
+    const dl=el('button',{class:'cont-del'},'🗑️');dl.addEventListener('click',()=>onDel(c.id));
+    acts.append(ed,dl);hdr.append(info,acts);
+    const divider=el('div',{class:'cont-divider'});
+    if(c.phone){const r=el('div',{class:'cont-row'},el('span',{class:'cont-row-label'},'Phone'),el('a',{href:'tel:'+c.phone},c.phone));divider.append(r);}
+    if(c.email){const r=el('div',{class:'cont-row'},el('span',{class:'cont-row-label'},'Email'),el('a',{href:'mailto:'+c.email},c.email));divider.append(r);}
+    if(c.notes){const r=el('div',{class:'cont-row'},el('span',{class:'cont-row-label'},'Notes'),el('span',{style:{color:'var(--mut)'}},c.notes));divider.append(r);}
+    card.append(hdr,divider);grid.append(card);
+  });
+  return grid;
+}
+
+// ─── EMPTY STATE ─────────────────────────────
+function emptyState(icon,title,sub){
+  return el('div',{class:'empty'},el('div',{class:'empty-icon'},icon),el('div',{class:'empty-title'},title),el('div',{class:'empty-sub'},sub));
+}
+
+// ─── SH (section header) ─────────────────────
+function sh(label,actionEl){
+  const d=el('div',{class:'sh'});
+  d.append(el('span',{class:'sh-label'},label));
+  if(actionEl)d.append(actionEl);
+  return d;
+}
+
+// ─── QUICK ADD ───────────────────────────────
+function quickAdd(type,cats,placeholder,onSave){
+  let qaState='idle',qaParsed=null,qaEdited=null;
+  const wrap=el('div',{});
+  
+  function buildBox(){
+    wrap.innerHTML='';
+    const box=el('div',{class:'qa-box'});
+    box.append(el('div',{class:'qa-label'},'✦ Quick Add'));
+    const row=el('div',{class:'qa-row'});
+    const inp=el('textarea',{class:'qa-input',rows:'2',placeholder:placeholder||'Type to add...'});
+    const addBtn=el('button',{class:'qa-btn'},'Add →');
+    
+    addBtn.addEventListener('click',async()=>{
+      const text=inp.value.trim();if(!text)return;
+      addBtn.textContent='…';addBtn.disabled=true;
+      const catList=cats||[];
+      const prompt=type==='income'
+        ?'Parse income entry: "'+text+'"\\nReturn ONLY JSON: {"month":<0-11>,"amount":<number>,"note":"<desc>"}'
+        :type==='invoice'
+        ?'Parse invoice: "'+text+'"\\nReturn ONLY JSON: {"client":"<n>","description":"<work>","amount":<number>,"month":<0-11>,"status":"Draft"}'
+        :'Parse expense: "'+text+'"\\nCategories: '+catList.join(', ')+'\\nReturn ONLY JSON: {"month":<0-11>,"amount":<number>,"category":"<best match>","description":"<brief>"}';
+      try{
+        const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:200,messages:[{role:'user',content:prompt}]})});
+        const data=await resp.json();
+        const raw=(data.content||[]).map(x=>x.text||'').join('');
+        JSON.parse(raw.replace(/[^{]*({.*})[^}]*/s,'$1'));
+        qaEdited={...qaParsed};qaState='preview';
+      }catch(e){qaState='error';}
+      buildBox();
+    });
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();addBtn.click();}});
+    row.append(inp,addBtn);
+    box.append(row);
+    const hint=el('div',{class:'qa-hint'});
+    hint.append(el('span',{style:{fontSize:'10px',color:'var(--dim)'}},'Enter to submit'));
+    if(qaState==='error')box.append(el('div',{style:{fontSize:'11px',color:'var(--red)',marginTop:'6px'}},'⚠ Couldn\'t parse. Edit below.'));
+    wrap.append(box);
+
+    // Preview card
+    if(qaState==='preview'&&qaEdited){
+      const prev=el('div',{class:'qa-preview'});
+      prev.append(el('div',{class:'qa-preview-label'},'✓ AI Parsed — review & confirm'));
+      const grid=el('div',{class:'qa-preview-grid'});
+      
+      if(type!=='invoice'){
+        const mSel=el('select',{class:'finp',style:{padding:'5px 8px',fontSize:'12px'}});
+        MONTHS.forEach((m,i)=>{const o=el('option',{},m);if(i===+qaEdited.month)o.selected=true;mSel.append(o);});
+        mSel.addEventListener('change',()=>qaEdited.month=+mSel.value);
+        grid.append(fld('Month',mSel));
+      } else {
+        const ci=el('input',{class:'finp',style:{padding:'5px 8px',fontSize:'12px'}});
+        ci.value=qaEdited.client||'';ci.addEventListener('input',()=>qaEdited.client=ci.value);
+        grid.append(fld('Client',ci));
+      }
+      const ai=el('input',{class:'finp',type:'number',style:{padding:'5px 8px',fontSize:'12px'}});
+      ai.value=qaEdited.amount||'';ai.addEventListener('input',()=>qaEdited.amount=+ai.value);
+      grid.append(fld('Amount',ai));
+      
+      if(type==='expense'){
+        const cSel=el('select',{class:'finp',style:{padding:'5px 8px',fontSize:'12px'}});
+        (cats||[]).forEach(c=>{const o=el('option',{},c);if(c===qaEdited.category)o.selected=true;cSel.append(o);});
+        cSel.addEventListener('change',()=>qaEdited.category=cSel.value);
+        grid.append(fld('Category',cSel));
+      }
+      const di=el('input',{class:'finp',style:{padding:'5px 8px',fontSize:'12px'}});
+      di.value=qaEdited.description||qaEdited.note||'';di.addEventListener('input',()=>{qaEdited.description=di.value;qaEdited.note=di.value;});
+      grid.append(fld(type==='income'?'Note':'Description',di));
+      
+      const acts=el('div',{class:'qa-preview-actions'});
+      const saveB=el('button',{class:'btn btn-green btn-sm',style:{flex:'1'}},'✓ Save');
+      saveB.addEventListener('click',()=>{onSave({...qaEdited});qaState='idle';qaParsed=null;qaEdited=null;buildBox();});
+      const discB=el('button',{class:'btn btn-red btn-sm'},'✕');
+      discB.addEventListener('click',()=>{qaState='idle';qaParsed=null;qaEdited=null;buildBox();});
+      acts.append(saveB,discB);
+      prev.append(grid,acts);
+      wrap.append(prev);
+    }
+  }
+  
+  function fld(label,inputEl){
+    const d=el('div',{});
+    d.append(el('div',{class:'qa-field-label'},label),inputEl);
+    return d;
+  }
+  
+  buildBox();
+  return wrap;
+}
+
+// ─── MASTER ──────────────────────────────────
+function renderMaster(){
+  const tot=masterTot();
+  const frag=document.createDocumentFragment();
+  
+  const titleDiv=el('div',{style:{marginBottom:'14px'}});
+  titleDiv.append(el('div',{class:'serif',style:{fontSize:'16px',fontWeight:'700',color:'var(--gld)',lineHeight:'1'}},'Portfolio Overview'));
+  titleDiv.append(el('div',{style:{fontSize:'10px',color:'var(--mut)',marginTop:'3px'}},S.selYear+' · All portfolios'));
+  frag.append(titleDiv);
+
+  const grid=el('div',{class:'kpi-grid c3'});
+  grid.append(kpi('Total Income',tot.i,'var(--grn)','var(--grnB)','var(--grnBo)'));
+  grid.append(kpi('Total Expenses',tot.e,'var(--red)','var(--redB)','var(--redBo)'));
+  grid.append(kpi('Net',tot.n,tot.n>=0?'var(--gld)':'var(--red)',tot.n>=0?'#1e1a0a':'var(--redB)',tot.n>=0?'#3a3010':'var(--redBo)'));
+  frag.append(grid);
+  frag.append(sh('Portfolios'));
+
+  const portGrid=el('div',{class:'port-grid'});
+  const ports=[
+    {id:'re',icon:'🏠',label:'Real Estate',color:'var(--grn)',bg:'var(--grnB)',bor:'var(--grnBo)',tot:reTot(S.selYear),sub:S.properties.length+' properties'},
+    ...S.bizs.map(b=>({id:b.id,icon:b.icon,label:b.name,color:b.color,bg:b.bg,bor:b.bor,tot:bizTot(b,S.selYear),sub:b.entities.length+' entities'}))
+  ];
+  ports.forEach(p=>{
+    const card=el('div',{class:'port-card',style:{borderColor:p.bor,background:p.bg}});
+    const top=el('div',{style:{display:'flex',alignItems:'center',gap:'8px',marginBottom:'9px'}});
+    top.append(el('span',{style:{fontSize:'18px'}},p.icon));
+    const inf=el('div',{});
+    inf.append(el('div',{style:{fontWeight:'700',fontSize:'12px',color:'var(--txt)'}},p.label));
+    inf.append(el('div',{style:{fontSize:'10px',color:'var(--mut)'}},p.sub));
+    top.append(inf);card.append(top);
+    const nums=el('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'6px',marginBottom:'7px'}});
+    ['Income','Net'].forEach((lbl,i)=>{
+      const v=i===0?p.tot.i:p.tot.n;
+      const c=i===0?'var(--grn)':(v>=0?'var(--gld)':'var(--red)');
+      const d=el('div',{});
+      d.append(el('div',{style:{fontSize:'8px',color:'var(--mut)',letterSpacing:'1.5px',textTransform:'uppercase',fontWeight:'700',marginBottom:'2px'}},lbl));
+      d.append(el('div',{style:{fontSize:'13px',fontWeight:'700',color:c,fontVariantNumeric:'tabular-nums'}},fmt(v)));
+      nums.append(d);
+    });
+    card.append(nums);
+    if(p.tot.i+p.tot.e>0){
+      const bar=el('div',{class:'bar'});
+      const fill=el('div',{class:'bar-fill',style:{width:Math.round(p.tot.i/(p.tot.i+p.tot.e)*100)+'%',background:p.color}});
+      bar.append(fill);card.append(bar);
+    }
+    card.append(el('div',{style:{fontSize:'10px',color:'var(--dim)',textAlign:'right',marginTop:'6px'}},'Open →'));
+    card.addEventListener('click',()=>{S.activePort=p.id;render();});
+    portGrid.append(card);
+  });
+  // Add new business card
+  const addCard=el('div',{class:'port-card',style:{border:'2px dashed var(--bor2)',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:'6px',minHeight:'110px',cursor:'pointer'}});
+  addCard.append(el('div',{style:{width:'28px',height:'28px',borderRadius:'7px',background:'linear-gradient(135deg,var(--gld),#a07830)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'14px'}},'➕'));
+  addCard.append(el('div',{style:{fontSize:'11px',color:'var(--mut)',fontWeight:'600'}},'New Business'));
+  addCard.addEventListener('click',()=>openModal('newBiz'));
+  portGrid.append(addCard);
+  frag.append(portGrid);
+  
+  const wrap=el('div',{});wrap.append(frag);return wrap;
+}
+
+// ─── REAL ESTATE ─────────────────────────────
+function renderRE(){
+  const wrap=el('div',{});
+  const tot=reTot(S.selYear);
+  
+  // Header
+  const hdr=el('div',{style:{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'13px',flexWrap:'wrap',gap:'8px'}});
+  const hl=el('div',{style:{display:'flex',alignItems:'center',gap:'8px'}});
+  hl.append(el('span',{style:{fontSize:'16px'}},'🏠'));
+  const hi=el('div',{});
+  hi.append(el('div',{class:'serif',style:{fontSize:'15px',fontWeight:'700',color:'var(--gld)',lineHeight:'1'}},'Real Estate'));
+  hi.append(el('div',{style:{fontSize:'10px',color:'var(--mut)',marginTop:'2px'}},S.properties.length+' properties · '+S.selYear));
+  hl.append(hi);hdr.append(hl);
+  const hr=el('div',{style:{display:'flex',gap:'7px'}});
+  const expBtn=el('button',{class:'btn btn-green btn-sm'},'↓ Export');
+  expBtn.addEventListener('click',()=>exportPort('re'));
+  const addPBtn=el('button',{class:'btn btn-gold btn-sm'},'+ Property');
+  addPBtn.addEventListener('click',()=>openModal('addProp'));
+  hr.append(expBtn,addPBtn);hdr.append(hr);
+  wrap.append(hdr);
+
+  // KPIs
+  const kpis=el('div',{class:'kpi-grid c3'});
+  kpis.append(kpi('Income',tot.i,'var(--grn)','var(--grnB)','var(--grnBo)'));
+  kpis.append(kpi('Expenses',tot.e,'var(--red)','var(--redB)','var(--redBo)'));
+  kpis.append(kpi('Net',tot.n,tot.n>=0?'var(--gld)':'var(--red)',tot.n>=0?'#1e1a0a':'var(--redB)',tot.n>=0?'#3a3010':'var(--redBo)'));
+  wrap.append(kpis);
+
+  // Property pills
+  const propPills=pillBar(
+    S.properties,'p'+(S.selProp||S.properties[0]?.id||''),
+    'var(--grn)',
+    id=>{S.selProp=id;render();},
+    p=>{S.modalData={prop:p};openModal('editProp');},
+    id=>{if(confirm('Delete this property and all its data?')){
+      const rem=S.properties.filter(p=>p.id!==id);
+      S.properties=rem;
+      delete S.reInc[id];delete S.reExp[id];delete S.reUtils[id];delete S.reCont[id];
+      if(S.selProp===id)S.selProp=rem[0]?.id||null;
+      save();render();
+    }}
+  );
+  // Fix: match by actual id
+  const propPills2=el('div',{class:'pill-bar'});
+  S.properties.forEach(p=>{
+    const pill=el('button',{class:'pill'+(p.id===S.selProp?' active':'')},p.name);
+    if(p.id===S.selProp){pill.style.background='var(--grn)';pill.style.borderColor='var(--grn)';pill.style.color='#0c0e16';}
+    pill.addEventListener('click',()=>{S.selProp=p.id;render();});
+    const ed=el('button',{class:'pill-edit'},'✏️');
+    ed.addEventListener('click',e=>{e.stopPropagation();S.modalData={prop:p};openModal('editProp');});
+    const dl=el('button',{class:'pill-del'},'✕');
+    dl.addEventListener('click',e=>{e.stopPropagation();if(confirm('Delete '+p.name+' and all its data?')){
+      const rem=S.properties.filter(x=>x.id!==p.id);
+      S.properties=rem;delete S.reInc[p.id];delete S.reExp[p.id];delete S.reUtils[p.id];delete S.reCont[p.id];
+      if(S.selProp===p.id)S.selProp=rem[0]?.id||null;
+      save();render();
+    }});
+    propPills2.append(el('span',{style:{display:'inline-flex',alignItems:'center',gap:'2px'}},pill,ed,dl));
+  });
+  if(!S.properties.length)propPills2.append(el('span',{style:{fontSize:'11px',color:'var(--mut)'}},'No properties yet'));
+  wrap.append(propPills2);
+
+  // Tabs + content
+  if(!S.selProp||!S.properties.find(p=>p.id===S.selProp)){wrap.append(el('div',{class:'empty'},el('div',{class:'empty-icon'},'🏠'),el('div',{class:'empty-title'},'Add a property to get started')));return wrap;}
+  
+  const tabs=['income','expenses','utilities','contacts','summary'];
+  const curTab=S.reTab||'income';
+  wrap.append(seg(tabs,curTab,t=>{S.reTab=t;render();}));
+  wrap.append(renderRETab(curTab));
+  return wrap;
+}
+
+function renderRETab(tab){
+  const p=S.selProp,y=S.selYear;
+  const ps=reSums(p,y);
+  
+  if(tab==='income'){
+    const w=el('div',{});
+    w.append(sh('Income · '+y));
+    w.append(quickAdd('income',[],'"$1,250 rent January" or "tenant paid Feb"',parsed=>{
+      const a=parseFloat(parsed.amount);if(!a)return;
+      if(!S.reInc[p])S.reInc[p]={};if(!S.reInc[p][y])S.reInc[p][y]=[];
+      S.reInc[p][y].push({id:uid(),month:+(parsed.month??new Date().getMonth()),amount:a,note:parsed.note||parsed.description||''});
+      save();render();
+    }));
+    const list=[...getRI(p,y)].sort((a,b)=>a.month-b.month);
+    if(!list.length){w.append(el('div',{class:'card'},emptyState('💰','No income recorded','Type above to add')));return w;}
+    const card=el('div',{class:'card'});
+    const tbl=el('table',{class:'tbl'});
+    tbl.append(el('thead',{},el('tr',{},el('th',{style:{width:'30%'}},'Month'),el('th',{},'Note'),el('th',{class:'r',style:{width:'25%'}},'Amount'),el('th',{style:{width:'36px'}},{}))));
+    const tbody=el('tbody',{});
+    list.forEach(r=>{
+      const del=el('button',{class:'del-btn'},'×');
+      del.addEventListener('click',()=>{S.reInc[p][y]=S.reInc[p][y].filter(e=>e.id!==r.id);save();render();});
+      tbody.append(el('tr',{},el('td',{style:{fontWeight:'600'}},MONTHS[r.month]),el('td',{class:r.note?'':'mut'},r.note||'—'),el('td',{class:'r grn'},fmtD(r.amount)),el('td',{style:{textAlign:'center'}},del)));
+    });
+    const tfoot=el('tfoot',{},el('tr',{},el('td',{},'Total'),el('td',{}),el('td',{class:'r',style:{color:'var(--grn)',fontSize:'13px',letterSpacing:'0',textTransform:'none',fontVariantNumeric:'tabular-nums'}},fmt(ps.i)),el('td',{})));
+    tbl.append(tbody,tfoot);
+    card.append(el('div',{class:'tbl-wrap'},tbl));w.append(card);return w;
+  }
+  
+  if(tab==='expenses'){
+    const w=el('div',{});
+    const scanBtn=el('button',{class:'btn btn-blue btn-sm'},'📷 Scan');
+    scanBtn.addEventListener('click',()=>{S.modalData={port:'re',cats:RE_CATS};openModal('receipt');});
+    w.append(sh('Expenses · '+y,scanBtn));
+    w.append(quickAdd('expense',RE_CATS,'"$340 plumber January" or "mortgage $1,200 March"',parsed=>{
+      const a=parseFloat(parsed.amount);if(!a)return;
+      if(!S.reExp[p])S.reExp[p]={};if(!S.reExp[p][y])S.reExp[p][y]=[];
+      S.reExp[p][y].push({id:uid(),month:+(parsed.month??new Date().getMonth()),cat:parsed.category||RE_CATS[0],desc:parsed.description||'',amount:a});
+      save();render();
+    }));
+    const list=[...getRE(p,y)].sort((a,b)=>a.month-b.month);
+    if(!list.length){w.append(el('div',{class:'card'},emptyState('🧾','No expenses recorded','Type above or scan a receipt')));return w;}
+    const card=el('div',{class:'card'});
+    const tbl=el('table',{class:'tbl'});
+    tbl.append(el('thead',{},el('tr',{},el('th',{style:{width:'22%'}},'Month'),el('th',{style:{width:'22%'}},'Category'),el('th',{},'Description'),el('th',{class:'r',style:{width:'22%'}},'Amount'),el('th',{style:{width:'36px'}},{}))));
+    const tbody=el('tbody',{});
+    list.forEach(r=>{
+      const del=el('button',{class:'del-btn'},'×');
+      del.addEventListener('click',()=>{S.reExp[p][y]=S.reExp[p][y].filter(e=>e.id!==r.id);save();render();});
+      const tagEl=el('span',{class:'tag'},r.cat);
+      const rcptEl=r.receiptUrl?el('a',{class:'drive-link',href:r.receiptUrl,target:'_blank'},'📁'):el('span',{style:{color:'var(--dim)',fontSize:'11px'}},'—');
+      tbody.append(el('tr',{},el('td',{style:{fontWeight:'600'}},MONTHS[r.month]),el('td',{},tagEl),el('td',{class:r.desc?'':'mut'},r.desc||'—'),el('td',{class:'r red'},fmtD(r.amount)),el('td',{style:{textAlign:'center'}},rcptEl),el('td',{style:{textAlign:'center'}},del)));
+    });
+    const tfoot=el('tfoot',{},el('tr',{},el('td',{},'Total'),el('td',{}),el('td',{}),el('td',{class:'r',style:{color:'var(--red)',fontSize:'13px',letterSpacing:'0',textTransform:'none',fontVariantNumeric:'tabular-nums'}},fmt(ps.e)),el('td',{}),el('td',{})));
+    tbl.append(tbody,tfoot);
+    card.append(el('div',{class:'tbl-wrap'},tbl));w.append(card);return w;
+  }
+
+  if(tab==='utilities'){
+    const w=el('div',{});
+    const addBtn=el('button',{class:'btn btn-gold btn-sm'},'+ Add Utility');
+    addBtn.addEventListener('click',()=>openModal('addUtil'));
+    w.append(sh('Utilities',addBtn));
+    const utils=getRU(p);
+    if(!utils.length){w.append(emptyState('⚡','No utilities saved','Store account numbers & contacts'));return w;}
+    const grid=el('div',{class:'util-grid'});
+    utils.forEach(u=>{
+      const card=el('div',{class:'util-card'});
+      const top=el('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:'9px'}});
+      const inf=el('div',{});
+      inf.append(el('div',{style:{fontSize:'9px',color:'var(--mut)',textTransform:'uppercase',letterSpacing:'2px',fontWeight:'700',marginBottom:'2px'}},(UTIL_I[u.type]||'📋')+' '+u.type));
+      inf.append(el('div',{style:{fontSize:'13px',fontWeight:'700',color:'var(--gld)'}},u.provider));
+      const acts=el('div',{class:'cont-actions'});
+      const ed=el('button',{class:'cont-edit'},'✏️');ed.addEventListener('click',()=>{S.modalData={util:u};openModal('editUtil');});
+      const dl=el('button',{class:'cont-del'},'🗑️');dl.addEventListener('click',()=>{S.reUtils[p]=S.reUtils[p].filter(x=>x.id!==u.id);save();render();});
+      acts.append(ed,dl);top.append(inf,acts);card.append(top);
+      const div2=el('div',{class:'cont-divider'});
+      if(u.acct)div2.append(el('div',{class:'cont-row'},el('span',{class:'cont-row-label'},'Account'),el('span',{style:{color:'var(--txt)',fontWeight:'600'}},u.acct)));
+      if(u.phone)div2.append(el('div',{class:'cont-row'},el('span',{class:'cont-row-label'},'Phone'),el('a',{href:'tel:'+u.phone},u.phone)));
+      if(u.web)div2.append(el('div',{class:'cont-row'},el('span',{class:'cont-row-label'},'Web'),el('a',{href:u.web.startsWith('http')?u.web:'https://'+u.web,target:'_blank'},u.web)));
+      if(u.notes)div2.append(el('div',{class:'cont-row'},el('span',{class:'cont-row-label'},'Notes'),el('span',{style:{color:'var(--mut)'}},u.notes)));
+      card.append(div2);grid.append(card);
+    });
+    w.append(grid);return w;
+  }
+
+  if(tab==='contacts'){
+    const w=el('div',{});
+    const addBtn=el('button',{class:'btn btn-gold btn-sm'},'+ Add Contact');
+    addBtn.addEventListener('click',()=>{S.modalData={contType:'re'};openModal('addCont');});
+    w.append(sh('Contacts',addBtn));
+    const conts=getRC(p);
+    w.append(contactsGrid(conts,c=>{S.modalData={cont:c,contType:'re'};openModal('editCont');},id=>{S.reCont[p]=S.reCont[p].filter(c=>c.id!==id);save();render();}));
+    return w;
+  }
+
+  if(tab==='summary'){
+    const rows=MS.map((m,i)=>{
+      const inc=getRI(p,y).filter(e=>e.month===i).reduce((s,e)=>s+e.amount,0);
+      const exp=getRE(p,y).filter(e=>e.month===i).reduce((s,e)=>s+e.amount,0);
+      return{m,inc,exp,net:inc-exp};
+    });
+    return summaryTable(rows,ps.i,ps.e,ps.n);
+  }
+  return el('div',{});
+}
+
+// ─── BUSINESS ────────────────────────────────
+function renderBiz(biz){
+  const wrap=el('div',{});
+  const tot=bizTot(biz,S.selYear);
+  const eid=S.selBizEnt[biz.id];
+  const ent=biz.entities.find(e=>e.id===eid);
+  const curTab=S.bizTab[biz.id]||'income';
+  const invAll=ent?getInv(biz,eid):[];
+  const invPaid=invAll.filter(i=>i.status==='Paid').reduce((s,i)=>s+i.amount,0);
+  const invOut=invAll.filter(i=>['Sent','Overdue'].includes(i.status)).reduce((s,i)=>s+i.amount,0);
+
+  // Header
+  const hdr=el('div',{style:{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'13px',flexWrap:'wrap',gap:'8px'}});
+  const hl=el('div',{style:{display:'flex',alignItems:'center',gap:'8px'}});
+  hl.append(el('span',{style:{fontSize:'18px'}},biz.icon));
+  const hi=el('div',{});
+  hi.append(el('div',{class:'serif',style:{fontSize:'15px',fontWeight:'700',color:biz.color,lineHeight:'1'}},biz.name));
+  hi.append(el('div',{style:{fontSize:'10px',color:'var(--mut)',marginTop:'2px'}},biz.entities.length+' entities · '+S.selYear));
+  hl.append(hi);hdr.append(hl);
+  const hr=el('div',{style:{display:'flex',gap:'6px',flexWrap:'wrap'}});
+  const expBtn=el('button',{class:'btn btn-green btn-sm'},'↓ Export');expBtn.addEventListener('click',()=>exportPort(biz.id));
+  const entBtn=el('button',{class:'btn btn-dark btn-sm'},'+ Entity');entBtn.addEventListener('click',()=>{S.modalData={bizId:biz.id};openModal('addEnt');});
+  const delBtn=el('button',{class:'btn btn-red btn-sm'},'Delete');delBtn.addEventListener('click',()=>{if(confirm('Delete '+biz.name+' and all its data?')){S.bizs=S.bizs.filter(b=>b.id!==biz.id);if(S.activePort===biz.id)S.activePort='master';save();render();}});
+  hr.append(expBtn,entBtn,delBtn);hdr.append(hr);
+  wrap.append(hdr);
+
+  // KPIs
+  const kpiCols=biz.hasInvoicing?'c4':'c3';
+  const kpis=el('div',{class:'kpi-grid '+kpiCols});
+  kpis.append(kpi('Income',tot.i,biz.color,biz.bg,biz.bor));
+  kpis.append(kpi('Expenses',tot.e,'var(--red)','var(--redB)','var(--redBo)'));
+  kpis.append(kpi('Net',tot.n,tot.n>=0?'var(--gld)':'var(--red)',tot.n>=0?'#1e1a0a':'var(--redB)',tot.n>=0?'#3a3010':'var(--redBo)'));
+  if(biz.hasInvoicing)kpis.append(kpi('Outstanding',invOut,'#fb923c','#2a1a0f','#5a3010'));
+  wrap.append(kpis);
+
+  // Entity pills
+  const entPills=el('div',{class:'pill-bar'});
+  biz.entities.forEach(e=>{
+    const pill=el('button',{class:'pill'+(e.id===eid?' active':'')},e.name);
+    if(e.id===eid){pill.style.background=biz.color;pill.style.borderColor=biz.color;pill.style.color='#0c0e16';}
+    pill.addEventListener('click',()=>{S.selBizEnt[biz.id]=e.id;render();});
+    const ed=el('button',{class:'pill-edit'},'✏️');
+    ed.addEventListener('click',ev=>{ev.stopPropagation();S.modalData={bizId:biz.id,ent:e};openModal('editEnt');});
+    const dl=el('button',{class:'pill-del'},'✕');
+    dl.addEventListener('click',ev=>{ev.stopPropagation();if(confirm('Delete '+e.name+'?')){
+      const ents=biz.entities.filter(x=>x.id!==e.id);
+      const idx=S.bizs.findIndex(b=>b.id===biz.id);
+      S.bizs[idx].entities=ents;
+      S.selBizEnt[biz.id]=ents[0]?.id||null;
+      save();render();
+    }});
+    entPills.append(el('span',{style:{display:'inline-flex',alignItems:'center',gap:'2px'}},pill,ed,dl));
+  });
+  wrap.append(entPills);
+
+  if(!ent){wrap.append(emptyState('📂','Select an entity above'));return wrap;}
+
+  // Tabs
+  const entS=bizEntS(biz,eid,S.selYear);
+  const tabs=['income','expenses',...(biz.hasInvoicing?['invoices']:[]),...(biz.hasContacts?['contacts']:[]),'summary'];
+  wrap.append(seg(tabs,curTab,t=>{S.bizTab[biz.id]=t;render();}));
+  wrap.append(renderBizTab(biz,ent,curTab,entS,invAll,invPaid,invOut));
+  return wrap;
+}
+
+function renderBizTab(biz,ent,tab,entS,invAll,invPaid,invOut){
+  const eid=ent.id,y=S.selYear,idx=S.bizs.findIndex(b=>b.id===biz.id);
+  
+  if(tab==='income'){
+    const w=el('div',{});
+    w.append(sh('Income · '+y));
+    w.append(quickAdd('income',[],'"$5,000 from client April" or "Johnson paid March $3,200"',parsed=>{
+      const a=parseFloat(parsed.amount);if(!a)return;
+      if(!S.bizs[idx].income[eid])S.bizs[idx].income[eid]={};
+      if(!S.bizs[idx].income[eid][y])S.bizs[idx].income[eid][y]=[];
+      S.bizs[idx].income[eid][y].push({id:uid(),month:+(parsed.month??new Date().getMonth()),amount:a,note:parsed.note||parsed.description||''});
+      save();render();
+    }));
+    const list=[...getBI(biz,eid,y)].sort((a,b)=>a.month-b.month);
+    if(!list.length){w.append(el('div',{class:'card'},emptyState('💰','No income','Type above')));return w;}
+    const card=el('div',{class:'card'});
+    const tbl=el('table',{class:'tbl'});
+    tbl.append(el('thead',{},el('tr',{},el('th',{style:{width:'30%'}},'Month'),el('th',{},'Note'),el('th',{class:'r',style:{width:'25%'}},'Amount'),el('th',{style:{width:'36px'}},{}))));
+    const tbody=el('tbody',{});
+    list.forEach(r=>{
+      const del=el('button',{class:'del-btn'},'×');
+      del.addEventListener('click',()=>{S.bizs[idx].income[eid][y]=S.bizs[idx].income[eid][y].filter(e=>e.id!==r.id);save();render();});
+      tbody.append(el('tr',{},el('td',{style:{fontWeight:'600'}},MONTHS[r.month]),el('td',{class:r.note?'':'mut'},r.note||'—'),el('td',{class:'r',style:{color:biz.color,fontWeight:'700'}},fmtD(r.amount)),el('td',{style:{textAlign:'center'}},del)));
+    });
+    const tfoot=el('tfoot',{},el('tr',{},el('td',{},'Total'),el('td',{}),el('td',{class:'r',style:{color:biz.color,fontSize:'13px',letterSpacing:'0',textTransform:'none',fontVariantNumeric:'tabular-nums'}},fmt(entS.i)),el('td',{})));
+    tbl.append(tbody,tfoot);card.append(el('div',{class:'tbl-wrap'},tbl));w.append(card);return w;
+  }
+
+  if(tab==='expenses'){
+    const w=el('div',{});
+    const scanBtn=el('button',{class:'btn btn-blue btn-sm'},'📷 Scan');
+    scanBtn.addEventListener('click',()=>{S.modalData={port:biz.id,cats:biz.cats,label:biz.name};openModal('receipt');});
+    w.append(sh('Expenses · '+y,scanBtn));
+    w.append(quickAdd('expense',biz.cats,'"$200 materials March" or "paid subcontractor $1,500"',parsed=>{
+      const a=parseFloat(parsed.amount);if(!a)return;
+      if(!S.bizs[idx].expenses[eid])S.bizs[idx].expenses[eid]={};
+      if(!S.bizs[idx].expenses[eid][y])S.bizs[idx].expenses[eid][y]=[];
+      S.bizs[idx].expenses[eid][y].push({id:uid(),month:+(parsed.month??new Date().getMonth()),cat:parsed.category||biz.cats[0]||'Other',desc:parsed.description||'',amount:a});
+      save();render();
+    }));
+    const list=[...getBE(biz,eid,y)].sort((a,b)=>a.month-b.month);
+    if(!list.length){w.append(el('div',{class:'card'},emptyState('🧾','No expenses','Type above or scan receipt')));return w;}
+    const card=el('div',{class:'card'});
+    const tbl=el('table',{class:'tbl'});
+    tbl.append(el('thead',{},el('tr',{},el('th',{style:{width:'20%'}},'Month'),el('th',{style:{width:'22%'}},'Category'),el('th',{},'Description'),el('th',{class:'r',style:{width:'20%'}},'Amount'),el('th',{style:{width:'30px'}},'📁'),el('th',{style:{width:'30px'}},{}))));
+    const tbody=el('tbody',{});
+    list.forEach(r=>{
+      const del=el('button',{class:'del-btn'},'×');
+      del.addEventListener('click',()=>{S.bizs[idx].expenses[eid][y]=S.bizs[idx].expenses[eid][y].filter(e=>e.id!==r.id);save();render();});
+      const rcpt=r.receiptUrl?el('a',{class:'drive-link',href:r.receiptUrl,target:'_blank'},'📁'):el('span',{style:{color:'var(--dim)',fontSize:'11px'}},'—');
+      tbody.append(el('tr',{},el('td',{style:{fontWeight:'600'}},MONTHS[r.month]),el('td',{},el('span',{class:'tag'},r.cat)),el('td',{class:r.desc?'':'mut'},r.desc||'—'),el('td',{class:'r red'},fmtD(r.amount)),el('td',{style:{textAlign:'center'}},rcpt),el('td',{style:{textAlign:'center'}},del)));
+    });
+    const tfoot=el('tfoot',{},el('tr',{},el('td',{},'Total'),el('td',{}),el('td',{}),el('td',{class:'r',style:{color:'var(--red)',fontSize:'13px',letterSpacing:'0',textTransform:'none',fontVariantNumeric:'tabular-nums'}},fmt(entS.e)),el('td',{}),el('td',{})));
+    tbl.append(tbody,tfoot);card.append(el('div',{class:'tbl-wrap'},tbl));w.append(card);return w;
+  }
+
+  if(tab==='invoices'){
+    const w=el('div',{});
+    const invKpis=el('div',{class:'kpi-grid c3'});
+    const invTotal=invAll.reduce((s,i)=>s+i.amount,0);
+    invKpis.append(kpi('Total Invoiced',invTotal,'var(--txt)','var(--s2)','var(--bor)'));
+    invKpis.append(kpi('Paid',invPaid,'var(--grn)','var(--grnB)','var(--grnBo)'));
+    invKpis.append(kpi('Outstanding',invOut,'#fb923c','#2a1a0f','#5a3010'));
+    w.append(invKpis);
+    w.append(quickAdd('invoice',[],'"Invoice Johnson $4,500 electrical work March" or "$2,000 Smith Corp sent"',parsed=>{
+      const a=parseFloat(parsed.amount);if(!a||!parsed.client)return;
+      if(!S.bizs[idx].invoices[eid])S.bizs[idx].invoices[eid]=[];
+      S.bizs[idx].invoices[eid].push({id:uid(),client:parsed.client,desc:parsed.description||'',amount:a,month:+(parsed.month??new Date().getMonth()),status:parsed.status||'Draft',notes:'',year:y});
+      save();render();
+    }));
+    if(!invAll.length){w.append(el('div',{class:'card'},emptyState('📄','No invoices','Type above to create one')));return w;}
+    const card=el('div',{class:'card'});
+    const tbl=el('table',{class:'tbl'});
+    tbl.append(el('thead',{},el('tr',{},el('th',{},'Client'),el('th',{},'Description'),el('th',{style:{width:'18%'}},'Month'),el('th',{class:'r',style:{width:'18%'}},'Amount'),el('th',{style:{width:'20%'}},'Status'),el('th',{style:{width:'30px'}},{}))));
+    const tbody=el('tbody',{});
+    invAll.forEach(inv=>{
+      const stSel=el('select',{style:{background:'transparent',border:'none',fontSize:'11px',fontWeight:'700',cursor:'pointer',color:{Paid:'var(--grn)',Overdue:'var(--red)',Sent:'var(--blu)',Draft:'var(--mut)',Cancelled:'var(--dim)'}[inv.status]||'var(--mut)'}});
+      INV_ST.forEach(s=>{const o=el('option',{},s);if(s===inv.status)o.selected=true;stSel.append(o);});
+      stSel.addEventListener('change',()=>{
+        const i2=S.bizs[idx].invoices[eid].findIndex(x=>x.id===inv.id);
+        if(i2>=0)S.bizs[idx].invoices[eid][i2].status=stSel.value;
+        save();render();
+      });
+      const del=el('button',{class:'del-btn'},'×');
+      del.addEventListener('click',()=>{S.bizs[idx].invoices[eid]=S.bizs[idx].invoices[eid].filter(x=>x.id!==inv.id);save();render();});
+      tbody.append(el('tr',{},el('td',{style:{fontWeight:'700'}},inv.client),el('td',{class:inv.desc?'':'mut'},inv.desc||'—'),el('td',{},MONTHS[inv.month]),el('td',{class:'r',style:{fontWeight:'700'}},fmtD(inv.amount)),el('td',{},stSel),el('td',{style:{textAlign:'center'}},del)));
+    });
+    tbl.append(tbody);card.append(el('div',{class:'tbl-wrap'},tbl));w.append(card);return w;
+  }
+
+  if(tab==='contacts'){
+    const w=el('div',{});
+    const addBtn=el('button',{class:'btn btn-gold btn-sm'},'+ Add Contact');
+    addBtn.addEventListener('click',()=>{S.modalData={contType:'biz',bizId:biz.id,eid};openModal('addCont');});
+    w.append(sh('Contacts',addBtn));
+    const conts=getBC(biz,eid);
+    w.append(contactsGrid(conts,c=>{S.modalData={cont:c,contType:'biz',bizId:biz.id,eid};openModal('editCont');},id=>{
+      S.bizs[idx].contacts[eid]=S.bizs[idx].contacts[eid].filter(c=>c.id!==id);save();render();
+    }));
+    return w;
+  }
+
+  if(tab==='summary'){
+    const rows=MS.map((m,i)=>{
+      const inc=getBI(biz,eid,y).filter(e=>e.month===i).reduce((s,e)=>s+e.amount,0);
+      const exp=getBE(biz,eid,y).filter(e=>e.month===i).reduce((s,e)=>s+e.amount,0);
+      return{m,inc,exp,net:inc-exp};
+    });
+    return summaryTable(rows,entS.i,entS.e,entS.n,biz.color);
+  }
+  return el('div',{});
+}
+
+// ─── MODALS ──────────────────────────────────
+function openModal(name){S.modal=name;renderModal();}
+function closeModal(){S.modal=null;S.modalData={};$('#modal-overlay')?.remove();}
+
+function renderModal(){
+  $('#modal-overlay')?.remove();
+  if(!S.modal)return;
+  
+  const overlay=el('div',{id:'modal-overlay',class:'overlay'});
+  overlay.addEventListener('click',e=>{if(e.target===overlay)closeModal();});
+  
+  const modal=el('div',{class:'modal'});
+  const content=buildModalContent(S.modal);
+  if(!content){overlay.remove();return;}
+  
+  const hdr=el('div',{class:'modal-hdr'});
+  hdr.append(el('div',{class:'modal-title'},content.title));
+  const x=el('button',{class:'modal-x'},'×');x.addEventListener('click',closeModal);
+  hdr.append(x);
+  modal.append(hdr,el('div',{class:'modal-body'},content.body));
+  overlay.append(modal);
+  document.body.append(overlay);
+  setTimeout(()=>overlay.querySelector('input,textarea')?.focus(),80);
+}
+
+function inp(ph,type='text',val=''){const i=el('input',{class:'finp',type,placeholder:ph});i.value=val;return i;}
+function sel(opts,curVal){
+  const s=el('select',{class:'finp'});
+  opts.forEach(o=>{
+    const opt=typeof o==='string'?el('option',{},o):el('option',{value:o.v},o.l);
+    if((typeof o==='string'?o:o.v)===(curVal+''))opt.selected=true;
+    s.append(opt);
+  });
+  return s;
+}
+function fgroup(label,inputEl,mb=12){
+  const d=el('div',{class:'fgroup',style:{marginBottom:mb+'px'}});
+  d.append(el('label',{class:'flabel'},label),inputEl);
+  return d;
+}
+function frow(...groups){const d=el('div',{class:'frow'});d.append(...groups);return d;}
+function btnRow(b1text,b1fn,b2text,b2fn){
+  const d=el('div',{class:'btn-row'});
+  const b1=el('button',{class:'btn btn-gold btn-full'},b1text);b1.addEventListener('click',b1fn);
+  const b2=el('button',{class:'btn btn-ghost btn-full'},b2text);b2.addEventListener('click',b2fn);
+  d.append(b1,b2);return d;
+}
+function warn(msg){return el('div',{class:'warn'},msg);}
+
+function buildModalContent(name){
+  const d=S.modalData;
+  
+  if(name==='newBiz'){
+    const nameI=inp('e.g. Smith Construction Co.');
+    const iconI=sel(BIZ_ICONS.map(i=>({v:i,l:i})),d.icon||'💼');
+    const colorI=sel(BIZ_COLORS.map((c,i)=>({v:i,l:c.label})),0);
+    const catsI=inp('Materials, Labor, Equipment, Fuel, Other');
+    const invTog=tog(true);const contTog=tog(false);
+    const note=el('div',{style:{fontSize:'11px',color:'var(--mut)',marginTop:'4px'}},'Type your own categories separated by commas');
+    const body=el('div',{});
+    body.append(fgroup('Business Name *',nameI),frow(fgroup('Icon',iconI),fgroup('Color',colorI)),fgroup('Expense Categories *',el('div',{},catsI,note)),el('div',{class:'tog-row'},el('span',{class:'tog-label'},'Enable Invoicing'),invTog),el('div',{class:'tog-row'},el('span',{class:'tog-label'},'Enable Contacts'),contTog));
+    body.append(btnRow('Create Business',()=>{
+      const n=nameI.value.trim();if(!n)return;
+      const cats=catsI.value.split(',').map(c=>c.trim()).filter(Boolean);
+      if(!cats.length){alert('Add at least one category');return;}
+      const col=BIZ_COLORS[+colorI.value];
+      const id=uid(),eid=uid();
+      S.bizs.push({id,name:n,icon:iconI.value,color:col.val,bg:col.bg,bor:col.bor,cats,hasInvoicing:invTog.dataset.on==='1',hasContacts:contTog.dataset.on==='1',entities:[{id:eid,name:n,notes:''}],income:{},expenses:{},invoices:{},contacts:{}});
+      S.selBizEnt[id]=eid;S.bizTab[id]='income';S.activePort=id;
+      save();closeModal();render();
+    },'Cancel',closeModal));
+    return{title:'✦ Create New Business',body};
+  }
+
+  if(name==='addProp'){
+    const nI=inp('e.g. 123 Oak Street'),aI=inp('Full address'),noI=inp('Notes');
+    const body=el('div',{},fgroup('Property Name *',nI),fgroup('Address',aI),fgroup('Notes',noI));
+    body.append(btnRow('Add Property',()=>{
+      if(!nI.value.trim())return;
+      const id=uid();S.properties.push({id,name:nI.value.trim(),address:aI.value,notes:noI.value});
+      S.selProp=id;save();closeModal();render();
+    },'Cancel',closeModal));
+    return{title:'New Property',body};
+  }
+
+  if(name==='editProp'){
+    const p=d.prop;
+    const nI=inp('Name','text',p.name),aI=inp('Address','text',p.address||''),noI=inp('Notes','text',p.notes||'');
+    const body=el('div',{},fgroup('Property Name *',nI),fgroup('Address',aI),fgroup('Notes',noI));
+    body.append(btnRow('Save Changes',()=>{
+      if(!nI.value.trim())return;
+      const i=S.properties.findIndex(x=>x.id===p.id);
+      S.properties[i]={...p,name:nI.value.trim(),address:aI.value,notes:noI.value};
+      save();closeModal();render();
+    },'Cancel',closeModal));
+    return{title:'Edit Property',body};
+  }
+
+  if(name==='addUtil'){
+    const tI=sel(UTIL_T,'Electric'),pI=inp('e.g. PG&E'),aI=inp('Account #'),phI=inp('1-800-000-0000','tel'),wI=inp('www.provider.com'),nI=inp('e.g. Auto-pay on 15th');
+    const body=el('div',{},frow(fgroup('Type',tI),fgroup('Provider *',pI)),frow(fgroup('Account #',aI),fgroup('Phone',phI)),fgroup('Website',wI),fgroup('Notes',nI));
+    body.append(btnRow('Save Utility',()=>{
+      if(!pI.value.trim())return;
+      if(!S.reUtils[S.selProp])S.reUtils[S.selProp]=[];
+      S.reUtils[S.selProp].push({id:uid(),type:tI.value,provider:pI.value.trim(),acct:aI.value,phone:phI.value,web:wI.value,notes:nI.value});
+      save();closeModal();render();
+    },'Cancel',closeModal));
+    return{title:'Add Utility',body};
+  }
+
+  if(name==='editUtil'){
+    const u=d.util,p=S.selProp;
+    const tI=sel(UTIL_T,u.type),pI=inp('Provider','text',u.provider),aI=inp('Account #','text',u.acct||''),phI=inp('Phone','tel',u.phone||''),wI=inp('Website','text',u.web||''),nI=inp('Notes','text',u.notes||'');
+    const body=el('div',{},frow(fgroup('Type',tI),fgroup('Provider',pI)),frow(fgroup('Account #',aI),fgroup('Phone',phI)),fgroup('Website',wI),fgroup('Notes',nI));
+    body.append(btnRow('Save Changes',()=>{
+      const i=S.reUtils[p].findIndex(x=>x.id===u.id);
+      S.reUtils[p][i]={...u,type:tI.value,provider:pI.value,acct:aI.value,phone:phI.value,web:wI.value,notes:nI.value};
+      save();closeModal();render();
+    },'Cancel',closeModal));
+    return{title:'Edit Utility',body};
+  }
+
+  if(name==='addCont'||name==='editCont'){
+    const editing=name==='editCont';
+    const c=editing?d.cont:{};
+    const nI=inp('Full name','text',c.name||''),rI=inp('e.g. Tenant, Plumber','text',c.role||''),phI=inp('555-0000','tel',c.phone||''),eI=inp('name@email.com','email',c.email||''),noI=inp('Any notes','text',c.notes||'');
+    const body=el('div',{},fgroup('Name *',nI),fgroup('Role / Title',rI),frow(fgroup('Phone',phI),fgroup('Email',eI)),fgroup('Notes',noI));
+    body.append(btnRow(editing?'Save Changes':'Save Contact',()=>{
+      if(!nI.value.trim())return;
+      const obj={id:editing?c.id:uid(),name:nI.value.trim(),role:rI.value,phone:phI.value,email:eI.value,notes:noI.value};
+      if(d.contType==='re'){
+        if(!S.reCont[S.selProp])S.reCont[S.selProp]=[];
+        if(editing){const i=S.reCont[S.selProp].findIndex(x=>x.id===c.id);S.reCont[S.selProp][i]=obj;}
+        else S.reCont[S.selProp].push(obj);
+      } else {
+        const bi=S.bizs.findIndex(b=>b.id===d.bizId);
+        if(!S.bizs[bi].contacts[d.eid])S.bizs[bi].contacts[d.eid]=[];
+        if(editing){const i=S.bizs[bi].contacts[d.eid].findIndex(x=>x.id===c.id);S.bizs[bi].contacts[d.eid][i]=obj;}
+        else S.bizs[bi].contacts[d.eid].push(obj);
+      }
+      save();closeModal();render();
+    },'Cancel',closeModal));
+    return{title:(editing?'Edit':'Add')+' Contact',body};
+  }
+
+  if(name==='addEnt'){
+    const nI=inp('e.g. Main Operations'),noI=inp('Notes');
+    const body=el('div',{},fgroup('Name *',nI),fgroup('Notes',noI));
+    body.append(btnRow('Add Entity',()=>{
+      if(!nI.value.trim())return;
+      const bi=S.bizs.findIndex(b=>b.id===d.bizId);
+      const eid=uid();
+      S.bizs[bi].entities.push({id:eid,name:nI.value.trim(),notes:noI.value});
+      S.selBizEnt[d.bizId]=eid;
+      save();closeModal();render();
+    },'Cancel',closeModal));
+    return{title:'Add Entity',body};
+  }
+
+  if(name==='editEnt'){
+    const nI=inp('Name','text',d.ent.name),noI=inp('Notes','text',d.ent.notes||'');
+    const body=el('div',{},fgroup('Name *',nI),fgroup('Notes',noI));
+    body.append(btnRow('Save Changes',()=>{
+      const bi=S.bizs.findIndex(b=>b.id===d.bizId);
+      const ei=S.bizs[bi].entities.findIndex(e=>e.id===d.ent.id);
+      S.bizs[bi].entities[ei]={...d.ent,name:nI.value.trim(),notes:noI.value};
+      save();closeModal();render();
+    },'Cancel',closeModal));
+    return{title:'Edit Entity',body};
+  }
+
+  if(name==='receipt'){
+    const port=d.port,cats=d.cats||RE_CATS,label=d.label||'Real Estate';
+    let state='idle',aiData=null,rExp={month:new Date().getMonth(),cat:cats[0]||'Other',amount:'',desc:''};
+    
+    const body=el('div',{});
+    const fileInp=el('input',{type:'file',accept:'image/*',style:{display:'none'}});
+    
+    function buildReceipt(){
+      body.innerHTML='';body.append(fileInp);
+      if(state==='idle'){
+        const drop=el('div',{class:'receipt-drop'});
+        drop.append(el('div',{class:'receipt-drop-icon'},'📸'));
+        drop.append(el('div',{style:{fontSize:'14px',fontWeight:'700',color:'var(--gld)',marginBottom:'5px'}},'Take a photo or upload'));
+        drop.append(el('div',{style:{fontSize:'12px',color:'var(--mut)'}},'AI reads the receipt and fills in the details'));
+        drop.addEventListener('click',()=>fileInp.click());
+        body.append(drop);
+      }
+      if(state==='loading'){
+        body.append(el('div',{style:{textAlign:'center',padding:'36px 20px',background:'var(--s2)',borderRadius:'13px'}},el('div',{style:{fontSize:'34px',marginBottom:'10px'}},'🤖'),el('div',{style:{fontWeight:'700',color:'var(--gld)'}},'Reading receipt...')));
+      }
+      if(state==='error'){
+        body.append(el('div',{class:'warn'},'⚠ Couldn\'t read clearly. Fill in below.'));
+      }
+      if(state==='done'&&aiData){
+        const prev=el('div',{style:{background:'var(--grnB)',border:'1.5px solid var(--grnBo)',borderRadius:'11px',padding:'13px',marginBottom:'13px'}});
+        prev.append(el('div',{style:{fontSize:'9px',color:'var(--grn)',letterSpacing:'2px',textTransform:'uppercase',fontWeight:'700',marginBottom:'9px'}},'✓ AI Detected'));
+        const grid=el('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'8px'}});
+        [['Vendor',aiData.vendor||'—','var(--txt)'],['Amount',aiData.amount?fmtD(aiData.amount):'—','var(--grn)'],['Category',aiData.category||'—','var(--gld)'],['Date',aiData.date||'—','var(--txt)']].forEach(([l,v,c])=>{
+          const d2=el('div',{});d2.append(el('div',{style:{fontSize:'9px',color:'var(--mut)',letterSpacing:'1.5px',textTransform:'uppercase',fontWeight:'700',marginBottom:'2px'}},l),el('div',{style:{fontSize:'13px',fontWeight:'700',color:c}},v));grid.append(d2);
+        });
+        prev.append(grid);body.append(prev);
+      }
+      if(state==='done'||state==='error'){
+        const mSel=sel(MONTHS.map((m,i)=>({v:i,l:m})),rExp.month);
+        const cSel=sel(cats,rExp.cat);
+        const aI=inp('0.00','number',rExp.amount);
+        const dI=inp('Description','text',rExp.desc);
+        mSel.addEventListener('change',()=>rExp.month=+mSel.value);
+        cSel.addEventListener('change',()=>rExp.cat=cSel.value);
+        aI.addEventListener('input',()=>rExp.amount=aI.value);
+        dI.addEventListener('input',()=>rExp.desc=dI.value);
+        body.append(frow(fgroup('Month',mSel),fgroup('Category',cSel)),fgroup('Amount ($)',aI),fgroup('Description',dI));
+        const saveB=el('button',{class:'btn btn-gold btn-full',style:{marginBottom:'8px'}},'Save Expense');
+        saveB.addEventListener('click',()=>{
+          const a=parseFloat(rExp.amount);if(!a)return;
+          const entry={id:uid(),month:+rExp.month,cat:rExp.cat,desc:rExp.desc,amount:a,receiptUrl:aiData?.driveUrl||null};
+          if(port==='re'){
+            const p=S.selProp;if(!S.reExp[p])S.reExp[p]={};if(!S.reExp[p][S.selYear])S.reExp[p][S.selYear]=[];
+            S.reExp[p][S.selYear].push(entry);
+          } else {
+            const bi=S.bizs.findIndex(b=>b.id===port);
+            const eid2=S.selBizEnt[port];
+            if(!S.bizs[bi].expenses[eid2])S.bizs[bi].expenses[eid2]={};
+            if(!S.bizs[bi].expenses[eid2][S.selYear])S.bizs[bi].expenses[eid2][S.selYear]=[];
+            S.bizs[bi].expenses[eid2][S.selYear].push(entry);
+          }
+          save();closeModal();render();
+        });
+        const scanAgain=el('button',{class:'btn btn-ghost btn-full'},'Scan Again');
+        scanAgain.addEventListener('click',()=>{state='idle';aiData=null;buildReceipt();});
+        body.append(saveB,scanAgain);
+      }
+    }
+    
+    fileInp.addEventListener('change',async e=>{
+      const file=e.target.files[0];if(!file)return;
+      state='loading';buildReceipt();
+      const reader=new FileReader();
+      reader.onload=async ev=>{
+        const base64=ev.target.result.split(',')[1];
+        try{
+          const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:file.type||'image/jpeg',data:base64}},{type:'text',text:'Read this receipt. Return ONLY valid JSON:\\n{"amount":<number>,"description":"<max 60 chars>","category":"<one of: '+cats.join(', ')+'","vendor":"<n>","date":"<MM/DD/YYYY or null>"}'}]}]})});
+          const data=await resp.json();
+          const txt=(data.content||[]).map(x=>x.text||'').join('');
+          aiData=(function(s){try{var m=s.match(/{[^{}]*}/);return m?JSON.parse(m[0]):{};} catch(e){return {}; }})(txt);
+          rExp={month:aiData.date?parseInt(aiData.date.split('/')[0])-1:new Date().getMonth(),cat:cats.includes(aiData.category)?aiData.category:cats[0],amount:aiData.amount||'',desc:aiData.description||''};
+          state='done';
+        }catch(err){state='error';}
+        buildReceipt();
+      };
+      reader.readAsDataURL(file);
+    });
+    buildReceipt();
+    return{title:'📷 Scan Receipt → Drive',body};
+  }
+
+  return null;
+}
+
+function tog(initial){
+  const btn=el('button',{class:'tog'+(initial?' on':'')});
+  btn.dataset.on=initial?'1':'0';
+  const dot=el('div',{class:'tog-dot'});btn.append(dot);
+  btn.addEventListener('click',()=>{
+    const on=btn.dataset.on==='1';
+    btn.dataset.on=on?'0':'1';
+    btn.className='tog'+(on?'':' on');
+  });
+  return btn;
+}
+
+// ─── BACKUP / RESTORE ────────────────────────
+function backupData(){
+  const payload={version:2,exportedAt:new Date().toISOString(),data:{properties:S.properties,reInc:S.reInc,reExp:S.reExp,reUtils:S.reUtils,reCont:S.reCont,bizs:S.bizs,selBizEnt:S.selBizEnt,bizTab:S.bizTab}};
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}));
+  a.download='portfolio-hub-backup-'+new Date().toISOString().slice(0,10)+'.json';
+  a.click();
+}
+function restoreData(e){
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    try{
+      const payload=JSON.parse(ev.target.result);
+      const d=payload.data||payload;
+      if(d.properties)S.properties=d.properties;
+      if(d.reInc)S.reInc=d.reInc;if(d.reExp)S.reExp=d.reExp;
+      if(d.reUtils)S.reUtils=d.reUtils;if(d.reCont)S.reCont=d.reCont;
+      if(d.bizs)S.bizs=d.bizs;if(d.selBizEnt)S.selBizEnt=d.selBizEnt;
+      if(d.bizTab)S.bizTab=d.bizTab;
+      if(S.properties.length)S.selProp=S.properties[0].id;
+      save();render();alert('✓ Data restored!');
+    }catch{alert('⚠ Could not read backup file.');}
+  };
+  reader.readAsText(file);e.target.value='';
+}
+
+// ─── EXPORT ──────────────────────────────────
+function exportPort(portId){
+  let rows,name;
+  if(portId==='re'){
+    name='Real_Estate';rows=[['Property','Year','Type','Month','Category','Note','Amount']];
+    S.properties.forEach(p=>{
+      YEARS.forEach(y=>{
+        getRI(p.id,y).forEach(e=>rows.push([p.name,y,'Income',MONTHS[e.month],'Rental Income',e.note||'',e.amount]));
+        getRE(p.id,y).forEach(e=>rows.push([p.name,y,'Expense',MONTHS[e.month],e.cat,e.desc||'',e.amount]));
+      });
+      getRU(p.id).forEach(u=>rows.push([p.name,'','Utility','',u.type,u.provider,'']));
+    });
+  } else {
+    const b=getBiz(portId);if(!b)return;
+    name=b.name.replace(/\\s+/g,'_');rows=[['Entity','Year','Type','Month','Category','Note','Amount','Status']];
+    b.entities.forEach(en=>{
+      YEARS.forEach(y=>{
+        getBI(b,en.id,y).forEach(e=>rows.push([en.name,y,'Income',MONTHS[e.month],'Revenue',e.note||'',e.amount,'']));
+        getBE(b,en.id,y).forEach(e=>rows.push([en.name,y,'Expense',MONTHS[e.month],e.cat,e.desc||'',e.amount,'']));
+      });
+      getInv(b,en.id).forEach(inv=>rows.push([en.name,inv.year,'Invoice',MONTHS[inv.month],inv.desc||'',inv.client,inv.amount,inv.status]));
+    });
+  }
+  const csv=rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob(['\\uFEFF'+csv],{type:'text/csv'}));
+  a.download=name+'_'+S.selYear+'.csv';a.click();
+}
+
+// ─── INIT ─────────────────────────────────────
+// Fix selProp to first property if not set
+if(S.properties.length&&!S.selProp)S.selProp=S.properties[0].id;
+// Fix selBizEnt for all bizs
+S.bizs.forEach(b=>{if(!S.selBizEnt[b.id]&&b.entities.length)S.selBizEnt[b.id]=b.entities[0].id;});
+
+render();
+</script>
 </body>
 </html>
