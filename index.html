@@ -1,785 +1,1121 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Rental Tracker">
-<title>Rental Tracker</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap" rel="stylesheet">
-<style>
-:root {
-  --bg:#0d0f18; --surface:#161926; --s2:#1e2130; --s3:#252838;
-  --border:#232638; --border2:#2e3248;
-  --text:#e8e4dc; --muted:#6a7080; --dim:#3a3d4a;
-  --gold:#e8d5a3; --gold-dim:#a89060;
-  --green:#5cb87a; --green-bg:#152a1e; --green-border:#1e4a2e;
-  --red:#e07070; --red-bg:#2a1515; --red-border:#4a2020;
-  --radius:14px; --radius-sm:9px; --radius-xs:6px;
-}
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { -webkit-text-size-adjust: 100%; }
-body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100svh; font-size: 14px; line-height: 1.4; -webkit-tap-highlight-color: transparent; overflow-x: hidden; }
-
-/* ── TOP BAR ── */
-.topbar { background: var(--surface); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
-.topbar-inner { max-width: 960px; margin: 0 auto; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-.brand { display: flex; flex-direction: column; }
-.brand-eyebrow { font-size: 9px; letter-spacing: 3px; color: var(--muted); text-transform: uppercase; margin-bottom: 1px; }
-.brand-name { font-family: 'DM Serif Display', serif; font-size: 19px; color: var(--gold); line-height: 1; }
-.topbar-right { display: flex; gap: 7px; align-items: center; }
-
-/* ── NAV ── */
-.nav { background: var(--surface); border-bottom: 1px solid var(--border); }
-.nav-inner { max-width: 960px; margin: 0 auto; display: flex; }
-.nav-btn { flex: 1; padding: 11px 0; background: none; border: none; border-bottom: 2px solid transparent; color: var(--muted); font-weight: 600; font-size: 13px; cursor: pointer; font-family: inherit; transition: all .15s; text-align: center; }
-.nav-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
-
-/* ── PAGE BODY ── */
-.page { max-width: 960px; margin: 0 auto; padding: 20px 16px 40px; }
-
-/* ── BUTTONS ── */
-.btn { display: inline-flex; align-items: center; justify-content: center; gap: 5px; border: none; border-radius: var(--radius-sm); font-weight: 600; font-size: 13px; cursor: pointer; font-family: inherit; transition: all .12s; padding: 9px 16px; white-space: nowrap; line-height: 1; }
-.btn:active { transform: scale(.97); }
-.btn-gold { background: var(--gold); color: #0c0e16; }
-.btn-ghost { background: transparent; color: var(--muted); border: 1.5px solid var(--border2); }
-.btn-green { background: var(--green-bg); color: var(--green); border: 1.5px solid var(--green-border); }
-.btn-danger { background: var(--red-bg); color: var(--red); border: 1.5px solid var(--red-border); }
-.btn-sm { padding: 7px 13px; font-size: 12px; }
-.btn-full { width: 100%; }
-.btn-block-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-
-/* ── KPI STRIP ── */
-.kpi-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
-.kpi { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; }
-.kpi-label { font-size: 9px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; font-weight: 600; margin-bottom: 6px; }
-.kpi-val { font-family: 'DM Serif Display', serif; font-size: 20px; line-height: 1; }
-.kpi-sub { font-size: 10px; color: var(--dim); margin-top: 5px; }
-@media (max-width: 420px) { .kpi-val { font-size: 16px; } .kpi { padding: 11px 12px; } }
-
-/* ── SEGMENT CONTROL ── */
-.seg { display: inline-flex; background: var(--s2); border-radius: 11px; padding: 3px; border: 1px solid var(--border); margin-bottom: 18px; }
-.seg-btn { padding: 8px 18px; border-radius: 9px; border: none; cursor: pointer; font-weight: 600; font-size: 13px; font-family: inherit; background: transparent; color: var(--muted); transition: all .15s; }
-.seg-btn.active { background: var(--gold); color: #0c0e16; box-shadow: 0 1px 4px rgba(0,0,0,.4); }
-
-/* ── SECTION ROW ── */
-.section-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-.section-label { font-size: 10px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; font-weight: 600; }
-
-/* ── CARDS / TABLE CONTAINER ── */
-.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
-.card-header { padding: 13px 18px; border-bottom: 1px solid var(--border); font-size: 10px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; font-weight: 600; }
-
-/* ── DATA TABLE ── */
-.data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-.data-table colgroup col { /* widths set per table */ }
-
-/* Header cells */
-.data-table thead th {
-  padding: 11px 14px;
-  font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
-  font-weight: 600; color: var(--muted);
-  border-bottom: 1px solid var(--border);
-  white-space: nowrap;
-}
-.data-table thead th.r { text-align: right; }
-.data-table thead th.c { text-align: center; }
-
-/* Body cells */
-.data-table tbody td {
-  padding: 12px 14px;
-  border-bottom: 1px solid #191c28;
-  vertical-align: middle;
-}
-.data-table tbody tr:last-child td { border-bottom: none; }
-.data-table tbody td.r { text-align: right; font-variant-numeric: tabular-nums; }
-.data-table tbody td.muted { color: var(--muted); }
-.data-table tbody td.month { font-weight: 600; color: #c0bdb5; width: 110px; }
-.data-table tbody td.amt-green { text-align: right; font-weight: 700; color: var(--green); font-variant-numeric: tabular-nums; }
-.data-table tbody td.amt-red { text-align: right; font-weight: 700; color: var(--red); font-variant-numeric: tabular-nums; }
-.data-table tbody td.amt-gold { text-align: right; font-weight: 700; color: var(--gold); font-variant-numeric: tabular-nums; }
-.data-table tbody td.del { width: 44px; text-align: center; }
-
-/* Footer */
-.data-table tfoot td {
-  padding: 12px 14px;
-  border-top: 1px solid var(--border2);
-  background: #0b0d16;
-  font-size: 11px; font-weight: 700; letter-spacing: .5px;
-}
-.data-table tfoot td.r { text-align: right; font-variant-numeric: tabular-nums; }
-.data-table tfoot td.total-label { color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; font-size: 9px; }
-.data-table tfoot td.total-green { color: var(--green); font-size: 14px; text-align: right; }
-.data-table tfoot td.total-red { color: var(--red); font-size: 14px; text-align: right; }
-.data-table tfoot td.total-gold { color: var(--gold); font-size: 14px; text-align: right; }
-.data-table tfoot td.total-neg { color: var(--red); font-size: 14px; text-align: right; }
-
-/* Delete button */
-.del-btn { background: none; border: none; cursor: pointer; color: var(--dim); font-size: 17px; line-height: 1; padding: 4px 6px; border-radius: 6px; transition: all .12s; display: flex; align-items: center; justify-content: center; }
-.del-btn:active { background: var(--red-bg); color: var(--red); }
-
-/* Tag pill */
-.tag { display: inline-flex; align-items: center; background: var(--s2); color: var(--gold-dim); padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; letter-spacing: .3px; white-space: nowrap; }
-
-/* Status badge */
-.badge { display: inline-flex; align-items: center; padding: 3px 9px; border-radius: 20px; font-size: 10px; font-weight: 700; letter-spacing: .3px; }
-.badge-profit { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
-.badge-loss { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); }
-
-/* ── PROPERTY CARDS ── */
-.prop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 12px; margin-bottom: 22px; }
-.prop-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; cursor: pointer; transition: border-color .15s; }
-.prop-card:active { border-color: var(--gold); }
-.prop-card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; }
-.prop-card-info { flex: 1; min-width: 0; }
-.prop-card-name { font-family: 'DM Serif Display', serif; font-size: 15px; color: var(--gold); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.prop-card-addr { font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.prop-card-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; margin-left: 10px; }
-.prop-card-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-bottom: 12px; }
-.prop-stat { padding: 10px 10px; border-right: 1px solid var(--border); }
-.prop-stat:last-child { border-right: none; }
-.prop-stat-label { font-size: 8px; color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 5px; }
-.prop-stat-val { font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; }
-.mini-bar { height: 5px; background: var(--s2); border-radius: 3px; overflow: hidden; display: flex; margin-bottom: 5px; }
-.mini-bar-i { background: var(--green); border-radius: 3px 0 0 3px; }
-.mini-bar-e { background: var(--red); flex: 1; border-radius: 0 3px 3px 0; }
-.prop-legend { display: flex; justify-content: space-between; font-size: 9px; margin-bottom: 12px; }
-.prop-card-link { font-size: 11px; color: var(--dim); text-align: right; }
-
-/* ── PROPERTY PILLS ── */
-.prop-pills { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; align-items: center; }
-.prop-pill-wrap { display: inline-flex; align-items: center; gap: 5px; }
-.prop-pill { padding: 8px 15px; border-radius: 30px; cursor: pointer; font-weight: 600; font-size: 13px; font-family: inherit; border: 1.5px solid var(--border2); background: transparent; color: var(--muted); transition: all .15s; }
-.prop-pill.active { border-color: var(--gold); background: var(--s2); color: var(--gold); }
-.prop-pill-del { background: none; border: none; cursor: pointer; color: var(--dim); font-size: 14px; line-height: 1; padding: 2px; transition: color .12s; }
-.prop-pill-del:active { color: var(--red); }
-
-/* ── EMPTY STATE ── */
-.empty-state { padding: 48px 20px; text-align: center; }
-.empty-icon { font-size: 32px; margin-bottom: 10px; }
-.empty-title { font-size: 14px; color: #4a5060; margin-bottom: 3px; }
-.empty-sub { font-size: 11px; color: var(--dim); }
-
-/* ── MODAL ── */
-.overlay { position: fixed; inset: 0; background: rgba(0,0,0,.82); z-index: 200; display: flex; align-items: flex-end; justify-content: center; }
-@media (min-width: 560px) { .overlay { align-items: center; padding: 20px; } }
-.sheet { background: var(--surface); border: 1px solid var(--border2); border-radius: 20px 20px 0 0; padding: 24px 20px 32px; width: 100%; max-width: 460px; max-height: 92svh; overflow-y: auto; }
-@media (min-width: 560px) { .sheet { border-radius: 18px; } }
-.sheet-handle { width: 36px; height: 4px; background: var(--border2); border-radius: 2px; margin: 0 auto 20px; }
-.sheet-title { font-family: 'DM Serif Display', serif; font-size: 18px; color: var(--gold); margin-bottom: 20px; }
-.sheet-close { float: right; background: none; border: none; color: var(--muted); font-size: 22px; cursor: pointer; line-height: 1; margin-top: -2px; }
-
-/* ── FORM ── */
-.field { margin-bottom: 14px; }
-.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
-.field label { display: block; font-size: 10px; color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; font-weight: 600; margin-bottom: 7px; }
-.field input, .field select { width: 100%; background: var(--s2); border: 1.5px solid var(--border2); color: var(--text); padding: 12px 13px; border-radius: var(--radius-sm); font-size: 15px; font-family: inherit; outline: none; -webkit-appearance: none; appearance: none; transition: border-color .12s; }
-.field input:focus, .field select:focus { border-color: var(--gold); }
-.field input::placeholder { color: var(--dim); }
-
-/* ── WARN BOX ── */
-.warn-box { background: var(--red-bg); border: 1px solid var(--red-border); border-radius: var(--radius-sm); padding: 14px; font-size: 13px; color: #c87070; line-height: 1.6; margin-bottom: 20px; }
-.warn-box strong { color: var(--red); }
-.info-box { background: var(--s2); border-radius: var(--radius-sm); padding: 14px; font-size: 13px; color: var(--muted); line-height: 1.8; margin-bottom: 14px; }
-.info-box strong { color: var(--text); }
-.ok-box { background: var(--green-bg); border: 1px solid var(--green-border); border-radius: var(--radius-sm); padding: 11px 14px; font-size: 12px; color: var(--green); margin-bottom: 18px; }
-
-/* ── YEAR SELECT ── */
-.year-sel { background: var(--s2); border: 1.5px solid var(--border2); color: var(--text); padding: 8px 11px; border-radius: var(--radius-sm); font-size: 13px; font-family: inherit; cursor: pointer; outline: none; -webkit-appearance: none; }
-
-/* ── SCROLLABLE TABLE WRAPPER ── */
-.table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-
-.hidden { display: none !important; }
-</style>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="theme-color" content="#0d0f18"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <title>Portfolio Hub</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body,#root{min-height:100%;background:#0d0f18}
+    body{font-family:'DM Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  </style>
 </head>
 <body>
+  <div id="root"></div>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script type="text/babel">
+    const { useState, useMemo, useRef } = React;
 
-<!-- TOP BAR -->
-<div class="topbar">
-  <div class="topbar-inner">
-    <div class="brand">
-      <span class="brand-eyebrow">Portfolio</span>
-      <span class="brand-name">Rental Tracker</span>
-    </div>
-    <div class="topbar-right">
-      <select id="yearSel" class="year-sel"></select>
-      <button class="btn btn-green btn-sm" onclick="openSheet('exportSheet')">⬇ Export</button>
-      <button class="btn btn-gold btn-sm" onclick="openSheet('addPropSheet')">+ Property</button>
-    </div>
-  </div>
-</div>
 
-<!-- NAV -->
-<div class="nav">
-  <div class="nav-inner">
-    <button class="nav-btn active" id="navDash" onclick="setView('dashboard',this)">🏠 Dashboard</button>
-    <button class="nav-btn" id="navDetail" onclick="setView('detail',this)">📋 Detail</button>
-  </div>
-</div>
-
-<!-- PAGE -->
-<div class="page">
-
-  <!-- ═══════════ DASHBOARD ═══════════ -->
-  <div id="vDash">
-    <div class="kpi-strip" id="portKpis"></div>
-    <div class="section-label" style="margin-bottom:12px" id="propCardsLabel"></div>
-    <div class="prop-grid" id="propCards"></div>
-    <div class="card">
-      <div class="card-header" id="compTitle"></div>
-      <div class="table-scroll"><table class="data-table" id="compTable"></table></div>
-    </div>
-  </div>
-
-  <!-- ═══════════ DETAIL ═══════════ -->
-  <div id="vDetail" class="hidden">
-    <div class="prop-pills" id="propPills"></div>
-    <div class="kpi-strip" id="detKpis"></div>
-
-    <div class="seg" id="segCtrl">
-      <button class="seg-btn active" onclick="setTab('income',this)">Income</button>
-      <button class="seg-btn" onclick="setTab('expenses',this)">Expenses</button>
-      <button class="seg-btn" onclick="setTab('summary',this)">Summary</button>
-    </div>
-
-    <!-- Income tab -->
-    <div id="tabIncome">
-      <div class="section-row">
-        <span class="section-label">Income · <span id="incYrLbl"></span></span>
-        <button class="btn btn-gold btn-sm" onclick="openSheet('addIncSheet')">+ Add Income</button>
-      </div>
-      <div class="card">
-        <div id="incEmpty" class="empty-state hidden">
-          <div class="empty-icon">💰</div>
-          <div class="empty-title">No income recorded</div>
-          <div class="empty-sub">Tap "+ Add Income" to log a payment</div>
-        </div>
-        <div class="table-scroll">
-          <table class="data-table" id="incTable">
-            <colgroup><col style="width:120px"><col><col style="width:130px"><col style="width:44px"></colgroup>
-            <thead><tr><th>Month</th><th>Note</th><th class="r">Amount</th><th></th></tr></thead>
-            <tbody id="incBody"></tbody>
-            <tfoot id="incFoot"></tfoot>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- Expenses tab -->
-    <div id="tabExpenses" class="hidden">
-      <div class="section-row">
-        <span class="section-label">Expenses · <span id="expYrLbl"></span></span>
-        <button class="btn btn-gold btn-sm" onclick="openSheet('addExpSheet')">+ Add Expense</button>
-      </div>
-      <div class="card">
-        <div id="expEmpty" class="empty-state hidden">
-          <div class="empty-icon">🧾</div>
-          <div class="empty-title">No expenses recorded</div>
-          <div class="empty-sub">Tap "+ Add Expense" to log a cost</div>
-        </div>
-        <div class="table-scroll">
-          <table class="data-table" id="expTable">
-            <colgroup><col style="width:110px"><col style="width:120px"><col><col style="width:130px"><col style="width:44px"></colgroup>
-            <thead><tr><th>Month</th><th>Category</th><th>Description</th><th class="r">Amount</th><th></th></tr></thead>
-            <tbody id="expBody"></tbody>
-            <tfoot id="expFoot"></tfoot>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- Summary tab -->
-    <div id="tabSummary" class="hidden">
-      <div class="card">
-        <div class="card-header" id="sumTitle"></div>
-        <div class="table-scroll">
-          <table class="data-table" id="sumTable">
-            <colgroup><col style="width:100px"><col style="width:130px"><col style="width:130px"><col style="width:130px"></colgroup>
-            <thead><tr><th>Month</th><th class="r">Income</th><th class="r">Expenses</th><th class="r">Net</th></tr></thead>
-            <tbody id="sumBody"></tbody>
-            <tfoot id="sumFoot"></tfoot>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
-</div><!-- /page -->
-
-<!-- ═══════════ SHEETS / MODALS ═══════════ -->
-
-<!-- Add Property -->
-<div class="overlay hidden" id="addPropSheet" onclick="bgClose(event,'addPropSheet')">
-  <div class="sheet">
-    <div class="sheet-handle"></div>
-    <button class="sheet-close" onclick="closeSheet('addPropSheet')">×</button>
-    <div class="sheet-title">New Property</div>
-    <div class="field"><label>Property Name *</label><input id="fPropName" placeholder="e.g. 123 Oak Street" autocomplete="off"></div>
-    <div class="field" style="margin-bottom:22px"><label>Address</label><input id="fPropAddr" placeholder="Full address" autocomplete="off"></div>
-    <div class="btn-block-pair">
-      <button class="btn btn-gold btn-full" onclick="addProperty()">Add Property</button>
-      <button class="btn btn-ghost btn-full" onclick="closeSheet('addPropSheet')">Cancel</button>
-    </div>
-  </div>
-</div>
-
-<!-- Add Income -->
-<div class="overlay hidden" id="addIncSheet" onclick="bgClose(event,'addIncSheet')">
-  <div class="sheet">
-    <div class="sheet-handle"></div>
-    <button class="sheet-close" onclick="closeSheet('addIncSheet')">×</button>
-    <div class="sheet-title">Add Income</div>
-    <div class="field-row">
-      <div class="field"><label>Month</label><select id="fIncMonth"></select></div>
-      <div class="field"><label>Amount ($)</label><input id="fIncAmt" type="number" inputmode="decimal" placeholder="0.00"></div>
-    </div>
-    <div class="field" style="margin-bottom:22px"><label>Note (optional)</label><input id="fIncNote" placeholder="e.g. Tenant A – full payment" autocomplete="off"></div>
-    <div class="btn-block-pair">
-      <button class="btn btn-gold btn-full" onclick="addIncome()">Save Income</button>
-      <button class="btn btn-ghost btn-full" onclick="closeSheet('addIncSheet')">Cancel</button>
-    </div>
-  </div>
-</div>
-
-<!-- Add Expense -->
-<div class="overlay hidden" id="addExpSheet" onclick="bgClose(event,'addExpSheet')">
-  <div class="sheet">
-    <div class="sheet-handle"></div>
-    <button class="sheet-close" onclick="closeSheet('addExpSheet')">×</button>
-    <div class="sheet-title">Add Expense</div>
-    <div class="field-row">
-      <div class="field"><label>Month</label><select id="fExpMonth"></select></div>
-      <div class="field"><label>Category</label><select id="fExpCat"></select></div>
-    </div>
-    <div class="field"><label>Amount ($)</label><input id="fExpAmt" type="number" inputmode="decimal" placeholder="0.00"></div>
-    <div class="field" style="margin-bottom:22px"><label>Description (optional)</label><input id="fExpDesc" placeholder="e.g. Roof repair" autocomplete="off"></div>
-    <div class="btn-block-pair">
-      <button class="btn btn-gold btn-full" onclick="addExpense()">Save Expense</button>
-      <button class="btn btn-ghost btn-full" onclick="closeSheet('addExpSheet')">Cancel</button>
-    </div>
-  </div>
-</div>
-
-<!-- Delete Property -->
-<div class="overlay hidden" id="delPropSheet" onclick="bgClose(event,'delPropSheet')">
-  <div class="sheet">
-    <div class="sheet-handle"></div>
-    <button class="sheet-close" onclick="closeSheet('delPropSheet')">×</button>
-    <div class="sheet-title">Delete Property</div>
-    <div class="warn-box">⚠ Permanently delete <strong id="delPropName"></strong> and all its income and expense records? This cannot be undone.</div>
-    <div class="btn-block-pair">
-      <button class="btn btn-danger btn-full" onclick="confirmDelete()">Yes, Delete</button>
-      <button class="btn btn-ghost btn-full" onclick="closeSheet('delPropSheet')">Cancel</button>
-    </div>
-  </div>
-</div>
-
-<!-- Export -->
-<div class="overlay hidden" id="exportSheet" onclick="bgClose(event,'exportSheet')">
-  <div class="sheet">
-    <div class="sheet-handle"></div>
-    <button class="sheet-close" onclick="closeSheet('exportSheet')">×</button>
-    <div class="sheet-title">Export Data</div>
-    <div class="info-box">Exports as a <strong>.CSV file</strong> — opens directly in Excel or Google Sheets.<br><br>📊 <strong>Excel:</strong> Open the downloaded file directly<br>📋 <strong>Google Sheets:</strong> File → Import → Upload CSV</div>
-    <div class="ok-box">✓ All properties · all years · income + expenses</div>
-    <div class="btn-block-pair">
-      <button class="btn btn-green btn-full" onclick="exportCSV()">⬇ Download CSV</button>
-      <button class="btn btn-ghost btn-full" onclick="closeSheet('exportSheet')">Cancel</button>
-    </div>
-  </div>
-</div>
-
-<script>
-/* ─── CONSTANTS ─── */
 const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-const MS     = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-const CATS   = ["Mortgage","Insurance","Taxes","Repairs","Maintenance","Management","Utilities","HOA","Other"];
-const CY     = new Date().getFullYear();
-const YEARS  = [CY-2, CY-1, CY, CY+1];
+const MS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const CY = new Date().getFullYear();
+const YEARS = Array.from({length:21},(_,i)=>CY-10+i);
+const uid = () => Math.random().toString(36).slice(2)+Date.now().toString(36);
+const fmt  = n => (+n||0).toLocaleString("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0});
+const fmtD = n => (+n||0).toLocaleString("en-US",{style:"currency",currency:"USD",minimumFractionDigits:2});
 
-/* ─── STATE ─── */
-let D = {
-  properties: [{ id:"p1", name:"123 Oak Street", address:"123 Oak St, Austin TX" }],
-  income: {}, expenses: {},
-  prop: "p1", year: CY, view: "dashboard", tab: "income"
+const RE_CATS = ["Mortgage","Insurance","Taxes","Repairs","Maintenance","Management","Utilities","HOA","Other"];
+const INVOICE_STATUSES = ["Draft","Sent","Paid","Overdue","Cancelled"];
+const UTIL_TYPES = ["Electric","Gas","Water","Internet","Trash","Sewer","HOA","Security","Other"];
+const UTIL_ICONS = {Electric:"⚡",Gas:"🔥",Water:"💧",Internet:"📶",Trash:"🗑️",Sewer:"🚿",HOA:"🏘️",Security:"🔒",Other:"📋"};
+const BIZ_ICONS = ["💼","🏗️","⚡","🏡","💻","🏥","🚗","🍕","✂️","📦","🎨","🔧","🌿","📱","🏋️","🎵","📸","🛒","✈️","🏦"];
+const BIZ_COLORS = [
+  {label:"Blue",    val:"#5b8dee", bg:"#1a2340", border:"#2a3a60"},
+  {label:"Emerald", val:"#5cb87a", bg:"#152a1e", border:"#1e4a2e"},
+  {label:"Gold",    val:"#e8d5a3", bg:"#2a2410", border:"#4a3e18"},
+  {label:"Violet",  val:"#a78bfa", bg:"#1e1a35", border:"#3a2a60"},
+  {label:"Rose",    val:"#f472b6", bg:"#2a1525", border:"#5a2040"},
+  {label:"Cyan",    val:"#22d3ee", bg:"#0f2530", border:"#1a3e50"},
+  {label:"Orange",  val:"#fb923c", bg:"#2a1a0f", border:"#5a3010"},
+  {label:"Lime",    val:"#a3e635", bg:"#1a2810", border:"#2e4818"},
+  {label:"Fuchsia", val:"#e879f9", bg:"#2a1030", border:"#501850"},
+  {label:"Teal",    val:"#2dd4bf", bg:"#0f2525", border:"#1a4040"},
+];
+
+// ── DARK THEME TOKENS ──
+const D = {
+  bg:"#0d0f18",       surface:"#161926",   s2:"#1e2130",    s3:"#252838",
+  border:"#232638",   border2:"#2e3248",
+  text:"#e8e4dc",     muted:"#6a7080",     dim:"#3a3d4a",
+  gold:"#e8d5a3",     goldDim:"#a89060",
+  green:"#5cb87a",    greenBg:"#152a1e",   greenBorder:"#1e4a2e",
+  red:"#e07070",      redBg:"#2a1515",     redBorder:"#4a2020",
+  blue:"#5b8dee",     blueBg:"#1a2340",    blueBorder:"#2a3a60",
 };
+const T = { serif:"'Playfair Display',Georgia,serif", sans:"'DM Sans',system-ui,sans-serif" };
+const iSt = {width:"100%",background:D.s2,border:`1.5px solid ${D.border2}`,color:D.text,padding:"10px 13px",borderRadius:9,fontSize:14,fontFamily:"inherit",outline:"none",appearance:"none",WebkitAppearance:"none",boxSizing:"border-box"};
 
-/* ─── PERSIST ─── */
-function save() { try { localStorage.setItem("rt3", JSON.stringify(D)); } catch(e) {} }
-function load() { try { const d = localStorage.getItem("rt3"); if(d) D = JSON.parse(d); } catch(e) {} }
+// ── PRIMITIVES ──
+function FI(p){return <input style={iSt} {...p}/>;}
+function FS({opts,...p}){return <select style={iSt} {...p}>{opts.map((o,i)=>typeof o==="string"?<option key={i}>{o}</option>:<option key={i} value={o.v}>{o.l}</option>)}</select>;}
+function FT(p){return <textarea style={{...iSt,resize:"none"}} {...p}/>;}
+function FF({label,children,mb=13}){return <div style={{marginBottom:mb}}><label style={{display:"block",fontSize:10,fontWeight:700,letterSpacing:1.5,textTransform:"uppercase",color:D.muted,marginBottom:7}}>{label}</label>{children}</div>;}
+function FR({children,cols="1fr 1fr",mb=13}){return <div style={{display:"grid",gridTemplateColumns:cols,gap:12,marginBottom:mb}}>{children}</div>;}
 
-/* ─── HELPERS ─── */
-const uid  = () => Math.random().toString(36).slice(2) + Date.now().toString(36);
-const $    = id => document.getElementById(id);
-const fmt  = n  => (+n).toLocaleString("en-US", { style:"currency", currency:"USD", maximumFractionDigits:0 });
-const fmtD = n  => (+n).toLocaleString("en-US", { style:"currency", currency:"USD", minimumFractionDigits:2, maximumFractionDigits:2 });
-const getI = (p,y) => D.income[p]?.[y]   ?? [];
-const getE = (p,y) => D.expenses[p]?.[y] ?? [];
-const sum  = arr   => arr.reduce((s,e) => s + e.amount, 0);
-function propSums(p,y) {
-  const i = sum(getI(p,y)), e = sum(getE(p,y));
-  return { i, e, n: i - e };
+function Toggle({on,onChange,label}){
+  return <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"11px 0",borderBottom:`1px solid ${D.border}`}}>
+    <span style={{fontSize:13,color:D.text,fontWeight:500}}>{label}</span>
+    <div onClick={()=>onChange(!on)} style={{width:42,height:23,borderRadius:12,background:on?D.gold:D.dim,cursor:"pointer",position:"relative",transition:"background .2s",flexShrink:0}}>
+      <div style={{position:"absolute",top:3,left:on?19:3,width:17,height:17,borderRadius:9,background:"#fff",transition:"left .2s",boxShadow:"0 1px 3px rgba(0,0,0,.4)"}}/>
+    </div>
+  </div>;
 }
-function portfolio(y) {
-  return D.properties.reduce((a,p) => {
-    const s = propSums(p.id, y);
-    return { i: a.i+s.i, e: a.e+s.e, n: a.n+s.n };
-  }, { i:0, e:0, n:0 });
-}
-const dash = v => v ? fmt(v) : `<span style="color:var(--dim)">—</span>`;
 
-/* ─── SHEETS ─── */
-function openSheet(id)  { $(id).classList.remove('hidden'); }
-function closeSheet(id) { $(id).classList.add('hidden'); }
-function bgClose(e, id) { if (e.target === $(id)) closeSheet(id); }
-
-/* ─── VIEWS ─── */
-function setView(v, btn) {
-  D.view = v;
-  $('vDash').classList.toggle('hidden', v !== 'dashboard');
-  $('vDetail').classList.toggle('hidden', v !== 'detail');
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  if (btn) btn.classList.add('active');
-  render();
+function Btn({v="primary",full,sm,onClick,children,style:s={}}){
+  const vars={
+    primary:{background:D.gold,color:"#0c0e16",border:"none"},
+    ghost:{background:"transparent",color:D.muted,border:`1.5px solid ${D.border2}`},
+    danger:{background:D.redBg,color:D.red,border:`1.5px solid ${D.redBorder}`},
+    green:{background:D.greenBg,color:D.green,border:`1.5px solid ${D.greenBorder}`},
+    blue:{background:D.blueBg,color:D.blue,border:`1.5px solid ${D.blueBorder}`},
+    dark:{background:D.s2,color:D.muted,border:`1.5px solid ${D.border2}`},
+  };
+  return <button onClick={onClick} style={{display:"inline-flex",alignItems:"center",justifyContent:"center",gap:6,borderRadius:9,fontWeight:700,fontSize:sm?12:13,cursor:"pointer",fontFamily:T.sans,padding:full?"11px 20px":sm?"6px 12px":"8px 15px",whiteSpace:"nowrap",lineHeight:1,width:full?"100%":"auto",transition:"opacity .12s",...vars[v],...s}}>{children}</button>;
 }
-function setTab(t, btn) {
-  D.tab = t;
-  ['income','expenses','summary'].forEach(x =>
-    $('tab' + x.charAt(0).toUpperCase() + x.slice(1)).classList.toggle('hidden', x !== t)
+function BtnRow({children}){return <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginTop:18}}>{children}</div>;}
+
+function Modal({open,onClose,title,children,width=460}){
+  if(!open) return null;
+  return <div onClick={e=>e.target===e.currentTarget&&onClose()} style={{position:"fixed",inset:0,background:"rgba(0,0,0,.85)",backdropFilter:"blur(8px)",zIndex:300,display:"flex",alignItems:"center",justifyContent:"center",padding:16,overflowY:"auto"}}>
+    <div style={{background:D.surface,border:`1.5px solid ${D.border2}`,borderRadius:18,width:"100%",maxWidth:width,boxShadow:"0 40px 100px rgba(0,0,0,.7)",maxHeight:"92vh",overflowY:"auto",margin:"auto"}}>
+      <div style={{padding:"18px 22px 13px",borderBottom:`1px solid ${D.border}`,display:"flex",justifyContent:"space-between",alignItems:"center",position:"sticky",top:0,background:D.surface,zIndex:1}}>
+        <span style={{fontFamily:T.serif,fontSize:16,fontWeight:700,color:D.gold}}>{title}</span>
+        <button onClick={onClose} style={{background:D.s3,border:"none",borderRadius:"50%",width:26,height:26,cursor:"pointer",fontSize:14,color:D.muted,display:"flex",alignItems:"center",justifyContent:"center"}}>×</button>
+      </div>
+      <div style={{padding:"16px 22px 22px"}}>{children}</div>
+    </div>
+  </div>;
+}
+
+function KPI({label,value,color,bg,border,sub}){
+  return <div style={{background:bg||D.s2,border:`1.5px solid ${border||D.border}`,borderRadius:12,padding:"12px 14px"}}>
+    <div style={{fontSize:9,color,letterSpacing:2,textTransform:"uppercase",fontWeight:700,marginBottom:5,opacity:.8}}>{label}</div>
+    <div style={{fontFamily:T.serif,fontSize:19,fontWeight:700,color,lineHeight:1,fontVariantNumeric:"tabular-nums"}}>{fmt(value)}</div>
+    {sub&&<div style={{fontSize:10,color,opacity:.5,marginTop:4}}>{sub}</div>}
+  </div>;
+}
+
+function SH({label,action}){
+  return <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:11,flexWrap:"wrap",gap:8}}>
+    <span style={{fontSize:9,fontWeight:700,letterSpacing:2.5,textTransform:"uppercase",color:D.muted}}>{label}</span>
+    {action}
+  </div>;
+}
+
+function Card({children,style={}}){
+  return <div style={{background:D.surface,border:`1.5px solid ${D.border}`,borderRadius:13,overflow:"hidden",marginBottom:13,...style}}>{children}</div>;
+}
+
+function TH({right,children}){
+  return <th style={{padding:"8px 11px",fontSize:9,letterSpacing:2,textTransform:"uppercase",fontWeight:700,color:D.muted,borderBottom:`1px solid ${D.border}`,textAlign:right?"right":"left",whiteSpace:"nowrap",background:D.s3}}>{children}</th>;
+}
+function TD({right,color,bold,muted,children}){
+  return <td style={{padding:"9px 11px",borderBottom:`1px solid ${D.s3}`,textAlign:right?"right":"left",fontWeight:bold?700:400,color:color||(muted?D.muted:D.text),verticalAlign:"middle",fontVariantNumeric:right?"tabular-nums":"normal",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{children}</td>;
+}
+function TFC({right,color,bold,children}){
+  return <td style={{padding:"9px 11px",borderTop:`1.5px solid ${D.border}`,background:"#0b0d16",textAlign:right?"right":"left",color:color||D.muted,fontWeight:bold?700:600,fontSize:right?13:9,letterSpacing:right?0:1.5,textTransform:right?"none":"uppercase",fontVariantNumeric:right?"tabular-nums":"normal"}}>{children}</td>;
+}
+function DelBtn({onClick}){
+  return <td style={{padding:"6px 8px",textAlign:"center",borderBottom:`1px solid ${D.s3}`,width:"36px"}}>
+    <button onClick={onClick} style={{background:"none",border:"none",cursor:"pointer",color:D.dim,fontSize:15,lineHeight:1,padding:"2px 5px"}}>×</button>
+  </td>;
+}
+function Empty({icon,title,sub}){
+  return <div style={{padding:"40px 20px",textAlign:"center"}}>
+    <div style={{fontSize:30,marginBottom:10}}>{icon}</div>
+    <div style={{fontSize:13,color:D.muted,marginBottom:4,fontWeight:500}}>{title}</div>
+    <div style={{fontSize:11,color:D.dim}}>{sub}</div>
+  </div>;
+}
+function Tag({children}){
+  return <span style={{display:"inline-flex",alignItems:"center",background:D.s3,color:D.goldDim,padding:"3px 9px",borderRadius:6,fontSize:11,fontWeight:600,whiteSpace:"nowrap",border:`1px solid ${D.border}`}}>{children}</span>;
+}
+
+function Seg({tabs,active,onChange}){
+  return <div style={{display:"inline-flex",background:D.s2,borderRadius:10,padding:3,marginBottom:13,gap:2,border:`1px solid ${D.border}`,flexWrap:"wrap"}}>
+    {tabs.map(t=><button key={t} onClick={()=>onChange(t)} style={{padding:"6px 13px",borderRadius:8,border:"none",cursor:"pointer",fontWeight:700,fontSize:12,fontFamily:T.sans,background:active===t?D.gold:"transparent",color:active===t?"#0c0e16":D.muted,transition:"all .15s"}}>{t.charAt(0).toUpperCase()+t.slice(1)}</button>)}
+  </div>;
+}
+
+function SummaryTable({rows,totI,totE,totN,incColor}){
+  const ic = incColor||D.green;
+  return <Card>
+    <div style={{padding:"9px 12px",borderBottom:`1px solid ${D.border}`,fontSize:9,fontWeight:700,letterSpacing:2,textTransform:"uppercase",color:D.muted,background:D.s3}}>Month-by-Month</div>
+    <table style={{width:"100%",borderCollapse:"collapse",tableLayout:"fixed"}}>
+      <thead><tr style={{background:D.s3}}>
+        {["Month","Income","Expenses","Net"].map((h,i)=><th key={h} style={{padding:"8px 11px",fontSize:9,letterSpacing:1.5,textTransform:"uppercase",fontWeight:700,color:D.muted,borderBottom:`1px solid ${D.border}`,textAlign:i===0?"left":"right",width:"25%"}}>{h}</th>)}
+      </tr></thead>
+      <tbody>{rows.map(({m,inc,exp,net})=><tr key={m}>
+        <td style={{padding:"8px 11px",borderBottom:`1px solid ${D.s3}`,fontWeight:600,color:D.text,fontSize:12}}>{m}</td>
+        <td style={{padding:"8px 11px",borderBottom:`1px solid ${D.s3}`,textAlign:"right",color:inc?ic:D.dim,fontWeight:inc?600:400,fontVariantNumeric:"tabular-nums",fontSize:12}}>{inc?fmt(inc):"—"}</td>
+        <td style={{padding:"8px 11px",borderBottom:`1px solid ${D.s3}`,textAlign:"right",color:exp?D.red:D.dim,fontWeight:exp?600:400,fontVariantNumeric:"tabular-nums",fontSize:12}}>{exp?fmt(exp):"—"}</td>
+        <td style={{padding:"8px 11px",borderBottom:`1px solid ${D.s3}`,textAlign:"right",fontWeight:700,color:net>0?D.green:net<0?D.red:D.dim,fontVariantNumeric:"tabular-nums",fontSize:12}}>{inc||exp?fmt(net):"—"}</td>
+      </tr>)}</tbody>
+      <tfoot><tr style={{background:"#0b0d16"}}>
+        <td style={{padding:"9px 11px",borderTop:`1.5px solid ${D.border}`,fontSize:9,fontWeight:700,letterSpacing:1.5,textTransform:"uppercase",color:D.muted}}>Annual</td>
+        <td style={{padding:"9px 11px",borderTop:`1.5px solid ${D.border}`,textAlign:"right",color:ic,fontWeight:700,fontSize:13,fontVariantNumeric:"tabular-nums"}}>{fmt(totI)}</td>
+        <td style={{padding:"9px 11px",borderTop:`1.5px solid ${D.border}`,textAlign:"right",color:D.red,fontWeight:700,fontSize:13,fontVariantNumeric:"tabular-nums"}}>{fmt(totE)}</td>
+        <td style={{padding:"9px 11px",borderTop:`1.5px solid ${D.border}`,textAlign:"right",color:totN>=0?D.gold:D.red,fontWeight:700,fontSize:13,fontVariantNumeric:"tabular-nums"}}>{fmt(totN)}</td>
+      </tr></tfoot>
+    </table>
+  </Card>;
+}
+
+function ContactsGrid({contacts,onEdit,onDel}){
+  if(!contacts.length) return <Empty icon="👤" title="No contacts yet" sub="Tap + Add Contact"/>;
+  return <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(230px,1fr))",gap:10}}>
+    {contacts.map(c=><div key={c.id} style={{background:D.s2,border:`1.5px solid ${D.border}`,borderRadius:12,padding:13}}>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:9}}>
+        <div><div style={{fontSize:13,fontWeight:700,color:D.gold,marginBottom:2}}>{c.name}</div>{c.role&&<div style={{fontSize:11,color:D.muted}}>{c.role}</div>}</div>
+        <div style={{display:"flex",gap:5}}>
+          <button onClick={()=>onEdit(c)} style={{background:D.s3,border:"none",borderRadius:6,width:24,height:24,cursor:"pointer",fontSize:10,display:"flex",alignItems:"center",justifyContent:"center"}}>✏️</button>
+          <button onClick={()=>onDel(c.id)} style={{background:D.redBg,border:"none",borderRadius:6,width:24,height:24,cursor:"pointer",fontSize:10,display:"flex",alignItems:"center",justifyContent:"center"}}>🗑️</button>
+        </div>
+      </div>
+      <div style={{borderTop:`1px solid ${D.border}`,paddingTop:8,display:"flex",flexDirection:"column",gap:5}}>
+        {c.phone&&<div style={{display:"flex",gap:8,fontSize:11}}><span style={{color:D.muted,fontSize:9,width:44,flexShrink:0,fontWeight:700,textTransform:"uppercase",letterSpacing:1}}>Phone</span><a href={`tel:${c.phone}`} style={{color:D.blue,fontWeight:600,textDecoration:"none"}}>{c.phone}</a></div>}
+        {c.email&&<div style={{display:"flex",gap:8,fontSize:11}}><span style={{color:D.muted,fontSize:9,width:44,flexShrink:0,fontWeight:700,textTransform:"uppercase",letterSpacing:1}}>Email</span><a href={`mailto:${c.email}`} style={{color:D.blue,fontWeight:600,textDecoration:"none",wordBreak:"break-all"}}>{c.email}</a></div>}
+        {c.notes&&<div style={{display:"flex",gap:8,fontSize:11}}><span style={{color:D.muted,fontSize:9,width:44,flexShrink:0,fontWeight:700,textTransform:"uppercase",letterSpacing:1}}>Notes</span><span style={{color:D.muted}}>{c.notes}</span></div>}
+      </div>
+    </div>)}
+  </div>;
+}
+
+function ContactForm({f,setF}){
+  return <>
+    <FF label="Name *"><FI value={f.name} onChange={e=>setF(x=>({...x,name:e.target.value}))} placeholder="Full name" autoFocus/></FF>
+    <FF label="Role / Title"><FI value={f.role} onChange={e=>setF(x=>({...x,role:e.target.value}))} placeholder="e.g. Tenant, Plumber, Supplier"/></FF>
+    <FR><FF label="Phone"><FI value={f.phone} onChange={e=>setF(x=>({...x,phone:e.target.value}))} type="tel" placeholder="555-0000"/></FF><FF label="Email"><FI value={f.email} onChange={e=>setF(x=>({...x,email:e.target.value}))} type="email" placeholder="name@email.com"/></FF></FR>
+    <FF label="Notes" mb={0}><FI value={f.notes} onChange={e=>setF(x=>({...x,notes:e.target.value}))} placeholder="Any notes"/></FF>
+  </>;
+}
+
+// ── QUICK ADD (Natural Language Input) ──
+function QuickAdd({onSave,cats,type,placeholder,apiKey}){
+  const [text,setText]=useState("");
+  const [state,setState]=useState("idle"); // idle | loading | preview | error
+  const [parsed,setParsed]=useState(null);
+  const [edited,setEdited]=useState(null);
+  const [showForm,setShowForm]=useState(false);
+
+  async function parse(){
+    if(!text.trim())return;
+    setState("loading");
+    const catList=cats||[];
+    const prompt=type==="income"
+      ?`Parse this income entry: "${text}"
+Return ONLY JSON: {"month":<0-11>,"amount":<number>,"note":"<description>"}`
+      :type==="invoice"
+      ?`Parse this invoice: "${text}"
+Return ONLY JSON: {"client":"<name>","description":"<work>","amount":<number>,"month":<0-11>,"status":"Draft"}`
+      :`Parse this expense: "${text}"
+Categories: ${catList.join(", ")}
+Return ONLY JSON: {"month":<0-11>,"amount":<number>,"category":"<best match>","description":"<brief>"}`;
+    try{
+      const resp=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:200,messages:[{role:"user",content:prompt}]})});
+      const data=await resp.json();
+      const raw=data.content?.map(x=>x.text||"").join("")||"";
+      const p=JSON.parse(raw.replace(/```json|```/g,"").trim());
+      setParsed(p);setEdited({...p});setState("preview");setText("");
+    }catch{setState("error");}
+  }
+
+  function save(){onSave(edited);setState("idle");setParsed(null);setEdited(null);}
+
+  const MONTHS=["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+  return <div style={{marginBottom:12}}>
+    {/* Quick text input — always visible */}
+    <div style={{background:D.s2,border:`1.5px solid ${state==="preview"?D.green:D.border2}`,borderRadius:12,padding:12,marginBottom:state==="preview"?10:0,transition:"border-color .2s"}}>
+      <div style={{fontSize:9,color:D.goldDim,letterSpacing:2,textTransform:"uppercase",fontWeight:700,marginBottom:7}}>✦ Quick Add</div>
+      <div style={{display:"flex",gap:8,alignItems:"flex-end"}}>
+        <textarea value={text} onChange={e=>setText(e.target.value)}
+          onKeyDown={e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();parse();}}}
+          placeholder={placeholder||`Type naturally e.g. "$1,200 rent January" or "paid plumber $340 last month"`}
+          rows={2}
+          style={{flex:1,background:D.s3,border:`1px solid ${D.border}`,color:D.text,fontSize:13,fontFamily:T.sans,resize:"none",outline:"none",lineHeight:1.5,borderRadius:9,padding:"8px 11px",caretColor:D.gold}}
+        />
+        <button onClick={parse} disabled={state==="loading"||!text.trim()} style={{background:state==="loading"?D.s3:D.gold,color:"#0c0e16",border:"none",borderRadius:9,padding:"8px 14px",fontWeight:700,fontSize:12,cursor:"pointer",fontFamily:T.sans,flexShrink:0,height:52,opacity:!text.trim()?.5:1,transition:"all .15s"}}>
+          {state==="loading"?"…":"Add →"}
+        </button>
+      </div>
+      {state==="error"&&<div style={{fontSize:11,color:D.red,marginTop:6}}>⚠ Couldn't parse — fill the form below instead.</div>}
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:7}}>
+        <span style={{fontSize:10,color:D.dim}}>Enter to submit · Shift+Enter for new line</span>
+        <button onClick={()=>setShowForm(f=>!f)} style={{background:"transparent",border:"none",color:D.muted,fontSize:11,cursor:"pointer",fontFamily:T.sans,fontWeight:600}}>{showForm?"✕ Hide form":"⊞ Manual form"}</button>
+      </div>
+    </div>
+
+    {/* AI Preview card */}
+    {state==="preview"&&edited&&<div style={{background:D.greenBg,border:`1.5px solid ${D.greenBorder}`,borderRadius:12,padding:13,marginBottom:10}}>
+      <div style={{fontSize:9,color:D.green,letterSpacing:2,textTransform:"uppercase",fontWeight:700,marginBottom:10}}>✓ AI Parsed — review &amp; confirm</div>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:12}}>
+        {type!=="invoice"&&<div>
+          <div style={{fontSize:9,color:D.muted,letterSpacing:1.5,textTransform:"uppercase",fontWeight:700,marginBottom:4}}>Month</div>
+          <select value={edited.month} onChange={e=>setEdited(x=>({...x,month:+e.target.value}))} style={{...iSt,padding:"6px 10px",fontSize:12}}>
+            {MONTHS.map((m,i)=><option key={i} value={i}>{m}</option>)}
+          </select>
+        </div>}
+        {type==="invoice"&&<div>
+          <div style={{fontSize:9,color:D.muted,letterSpacing:1.5,textTransform:"uppercase",fontWeight:700,marginBottom:4}}>Client</div>
+          <input value={edited.client||""} onChange={e=>setEdited(x=>({...x,client:e.target.value}))} style={{...iSt,padding:"6px 10px",fontSize:12}}/>
+        </div>}
+        <div>
+          <div style={{fontSize:9,color:D.muted,letterSpacing:1.5,textTransform:"uppercase",fontWeight:700,marginBottom:4}}>Amount</div>
+          <input type="number" value={edited.amount||""} onChange={e=>setEdited(x=>({...x,amount:e.target.value}))} style={{...iSt,padding:"6px 10px",fontSize:12}}/>
+        </div>
+        {type==="expense"&&<div>
+          <div style={{fontSize:9,color:D.muted,letterSpacing:1.5,textTransform:"uppercase",fontWeight:700,marginBottom:4}}>Category</div>
+          <select value={edited.category||""} onChange={e=>setEdited(x=>({...x,category:e.target.value}))} style={{...iSt,padding:"6px 10px",fontSize:12}}>
+            {(cats||[]).map(c=><option key={c}>{c}</option>)}
+          </select>
+        </div>}
+        <div>
+          <div style={{fontSize:9,color:D.muted,letterSpacing:1.5,textTransform:"uppercase",fontWeight:700,marginBottom:4}}>{type==="income"?"Note":type==="invoice"?"Description":"Description"}</div>
+          <input value={edited.description||edited.note||""} onChange={e=>setEdited(x=>({...x,description:e.target.value,note:e.target.value}))} style={{...iSt,padding:"6px 10px",fontSize:12}}/>
+        </div>
+      </div>
+      <div style={{display:"flex",gap:7}}>
+        <button onClick={save} style={{flex:1,background:D.green,color:"#0c0e16",border:"none",borderRadius:8,padding:"8px",fontWeight:700,fontSize:12,cursor:"pointer",fontFamily:T.sans}}>✓ Save</button>
+        <button onClick={()=>{setState("idle");setParsed(null);setEdited(null);}} style={{background:"transparent",color:D.red,border:`1.5px solid ${D.redBorder}`,borderRadius:8,padding:"8px 12px",fontWeight:700,fontSize:12,cursor:"pointer",fontFamily:T.sans}}>✕</button>
+      </div>
+    </div>}
+
+    {/* Collapsible manual form */}
+    {showForm&&<div style={{background:D.s2,border:`1.5px solid ${D.border2}`,borderRadius:12,padding:12,marginBottom:0}}>
+      <div style={{fontSize:9,color:D.muted,letterSpacing:2,textTransform:"uppercase",fontWeight:700,marginBottom:10}}>Manual Entry</div>
+      <slot-for-form/>
+    </div>}
+  </div>;
+}
+
+function PillBar({items,sel,onSel,onEdit,onDel,color}){
+  return <div style={{background:D.surface,border:`1.5px solid ${D.border}`,borderRadius:10,padding:"9px 12px",marginBottom:12,display:"flex",gap:6,flexWrap:"wrap",alignItems:"center"}}>
+    {items.map(p=><span key={p.id} style={{display:"inline-flex",alignItems:"center",gap:2}}>
+      <button onClick={()=>onSel(p.id)} style={{padding:"5px 11px",borderRadius:6,fontWeight:700,fontSize:12,cursor:"pointer",fontFamily:T.sans,border:`1.5px solid ${p.id===sel?(color||D.gold):D.border2}`,background:p.id===sel?(color||D.gold):D.s2,color:p.id===sel?"#0c0e16":D.muted,transition:"all .15s"}}>{p.name}</button>
+      {onEdit&&<button onClick={e=>{e.stopPropagation();onEdit(p)}} style={{background:"none",border:"none",cursor:"pointer",color:D.dim,fontSize:11,padding:"1px 3px"}}>✏️</button>}
+      {onDel&&<button onClick={e=>{e.stopPropagation();onDel(p.id)}} style={{background:"none",border:"none",cursor:"pointer",color:D.red,fontSize:13,padding:"1px 3px",fontWeight:700,lineHeight:1}}>✕</button>}
+    </span>)}
+    {items.length===0&&<span style={{fontSize:11,color:D.muted}}>None yet</span>}
+  </div>;
+}
+
+// ── MAIN APP ──
+function App({authToken, currentUser, onLogout}){
+  const [selYear,setSelYear]=useState(CY);
+  const [activePort,setActivePort]=useState("master");
+  const [modal,setModal]=useState(null);
+  const open=m=>setModal(m);
+  const close=()=>setModal(null);
+
+  // RE
+  const [properties,setProps]=useState([{id:"p1",name:"123 Oak Street",address:"123 Oak St, Austin TX",notes:""}]);
+  const [reInc,setReInc]=useState({});
+  const [reExp,setReExp]=useState({});
+  const [reUtils,setReUtils]=useState({});
+  const [reCont,setReCont]=useState({});
+  const [selProp,setSelProp]=useState("p1");
+  const [reTab,setReTab]=useState("income");
+  const [fProp,setFProp]=useState({name:"",address:"",notes:""});
+  const [fEProp,setFEProp]=useState({name:"",address:"",notes:""});
+  const [editPId,setEditPId]=useState(null);
+  const [delPId,setDelPId]=useState(null);
+  const [fRI,setFRI]=useState({month:new Date().getMonth(),amount:"",note:""});
+  const [fRE,setFRE]=useState({month:new Date().getMonth(),cat:RE_CATS[0],amount:"",desc:""});
+  const [fUtil,setFUtil]=useState({type:UTIL_TYPES[0],provider:"",acct:"",phone:"",web:"",notes:""});
+  const [fEUtil,setFEUtil]=useState({type:UTIL_TYPES[0],provider:"",acct:"",phone:"",web:"",notes:""});
+  const [editUtilId,setEditUtilId]=useState(null);
+  const [fRCont,setFRCont]=useState({name:"",role:"",phone:"",email:"",notes:""});
+  const [fERCont,setFERCont]=useState({name:"",role:"",phone:"",email:"",notes:""});
+  const [editRContId,setEditRContId]=useState(null);
+
+  // Businesses
+  const [bizs,setBizs]=useState([]);
+  const [selBizEnt,setSelBizEnt]=useState({});
+  const [bizTab,setBizTab]=useState({});
+  const [fBiz,setFBiz]=useState({name:"",icon:"💼",colorIdx:0,cats:"",hasInvoicing:true,hasContacts:false});
+  const [fEnt,setFEnt]=useState({name:"",notes:""});
+  const [fEEnt,setFEEnt]=useState({name:"",notes:""});
+  const [editEntId,setEditEntId]=useState(null);
+  const [delEntId,setDelEntId]=useState(null);
+  const [activeBizId,setActiveBizId]=useState(null);
+  const [fBI,setFBI]=useState({month:new Date().getMonth(),amount:"",note:""});
+  const [fBE,setFBE]=useState({month:new Date().getMonth(),cat:"",amount:"",desc:""});
+  const [fInv,setFInv]=useState({client:"",desc:"",amount:"",month:new Date().getMonth(),status:"Draft",notes:""});
+  const [fBCont,setFBCont]=useState({name:"",role:"",phone:"",email:"",notes:""});
+  const [fEBCont,setFEBCont]=useState({name:"",role:"",phone:"",email:"",notes:""});
+  const [editBContId,setEditBContId]=useState(null);
+
+  // AI
+  const [aiState,setAiState]=useState("idle");
+  const [aiData,setAiData]=useState(null);
+  const [rExp,setRExp]=useState({month:new Date().getMonth(),cat:"",amount:"",desc:""});
+  const [aiCtx,setAiCtx]=useState(null);
+  const fileRef=useRef();
+  const receiptFileRef=useRef();
+
+  // Drive + API
+  const API = "https://your-app.ondigitalocean.app"; // ← replace with your DO URL
+  const [authToken,setAuthToken]=useState(()=>localStorage.getItem("ph_token")||null);
+  const [driveStatus,setDriveStatus]=useState(null); // null | {connected:bool}
+  const [driveUploading,setDriveUploading]=useState(false);
+
+  async function uploadToDrive(file, meta){
+    if(!authToken){console.warn("No auth token — Drive upload skipped");return null;}
+    setDriveUploading(true);
+    try{
+      const fd=new FormData();
+      fd.append("file",file);
+      fd.append("portType",meta.portType||"re");
+      fd.append("month",meta.month??new Date().getMonth());
+      fd.append("year",meta.year??new Date().getFullYear());
+      fd.append("label",meta.label||"");
+      if(meta.expenseId) fd.append("expenseId",meta.expenseId);
+      const resp=await fetch(`${API}/api/drive/upload`,{method:"POST",headers:{Authorization:`Bearer ${authToken}`},body:fd});
+      const data=await resp.json();
+      if(data.url) return data;
+      return null;
+    }catch(e){console.error("Drive upload error",e);return null;}
+    finally{setDriveUploading(false);}
+  }
+
+  // Backup / Restore
+  function backupData(){
+    const payload={version:2,exportedAt:new Date().toISOString(),data:{properties,reInc,reExp,reUtils,reCont,bizs,selBizEnt,bizTab}};
+    const a=document.createElement("a");
+    a.href=URL.createObjectURL(new Blob([JSON.stringify(payload,null,2)],{type:"application/json"}));
+    a.download=`portfolio-hub-backup-${new Date().toISOString().slice(0,10)}.json`;
+    a.click();
+  }
+  function restoreData(e){
+    const file=e.target.files[0];if(!file)return;
+    const reader=new FileReader();
+    reader.onload=ev=>{
+      try{
+        const payload=JSON.parse(ev.target.result);
+        const d=payload.data||payload;
+        if(d.properties)setProps(d.properties);
+        if(d.reInc)setReInc(d.reInc);
+        if(d.reExp)setReExp(d.reExp);
+        if(d.reUtils)setReUtils(d.reUtils);
+        if(d.reCont)setReCont(d.reCont);
+        if(d.bizs)setBizs(d.bizs);
+        if(d.selBizEnt)setSelBizEnt(d.selBizEnt);
+        if(d.bizTab)setBizTab(d.bizTab);
+        alert("✓ Data restored successfully!");
+      }catch{alert("⚠ Could not read backup file. Is it a valid Portfolio Hub backup?");}
+    };
+    reader.readAsText(file);
+    e.target.value="";
+  }
+  const restoreRef=useRef();
+
+  // ── RE helpers ──
+  const getRI=(p,y)=>reInc[p]?.[y]??[];
+  const getRE=(p,y)=>reExp[p]?.[y]??[];
+  const getRU=p=>reUtils[p]??[];
+  const getRC=p=>reCont[p]??[];
+  const reSums=(p,y)=>{const i=getRI(p,y).reduce((s,e)=>s+e.amount,0),x=getRE(p,y).reduce((s,e)=>s+e.amount,0);return{i,e:x,n:i-x};};
+  const reTot=y=>properties.reduce((a,p)=>{const s=reSums(p.id,y);return{i:a.i+s.i,e:a.e+s.e,n:a.n+s.n}},{i:0,e:0,n:0});
+
+  // ── Biz helpers ──
+  const getBiz=id=>bizs.find(b=>b.id===id);
+  const getBI=(b,eid,y)=>b.income[eid]?.[y]??[];
+  const getBE=(b,eid,y)=>b.expenses[eid]?.[y]??[];
+  const getInv=(b,eid)=>b.invoices[eid]??[];
+  const getBC=(b,eid)=>b.contacts[eid]??[];
+  const bizEntS=(b,eid,y)=>{const i=getBI(b,eid,y).reduce((s,e)=>s+e.amount,0),x=getBE(b,eid,y).reduce((s,e)=>s+e.amount,0);return{i,e:x,n:i-x};};
+  const bizTot=(b,y)=>b.entities.reduce((a,en)=>{const s=bizEntS(b,en.id,y);return{i:a.i+s.i,e:a.e+s.e,n:a.n+s.n}},{i:0,e:0,n:0});
+
+  const masterTot=useMemo(()=>{
+    const re=reTot(selYear);
+    const biz=bizs.reduce((a,b)=>{const t=bizTot(b,selYear);return{i:a.i+t.i,e:a.e+t.e,n:a.n+t.n}},{i:0,e:0,n:0});
+    return{i:re.i+biz.i,e:re.e+biz.e,n:re.n+biz.n};
+  },[reInc,reExp,bizs,selYear,properties]);
+
+  // ── RE Actions ──
+  function addProp(){if(!fProp.name.trim())return;const id=uid();setProps(p=>[...p,{id,...fProp}]);setSelProp(id);setFProp({name:"",address:"",notes:""});close();}
+  function saveEProp(){if(!fEProp.name.trim())return;setProps(ps=>ps.map(p=>p.id===editPId?{...p,...fEProp}:p));close();}
+  function delProp(){const id=delPId;const rem=properties.filter(p=>p.id!==id);setProps(rem);setReInc(v=>{const n={...v};delete n[id];return n});setReExp(v=>{const n={...v};delete n[id];return n});setReUtils(v=>{const n={...v};delete n[id];return n});setReCont(v=>{const n={...v};delete n[id];return n});if(selProp===id)setSelProp(rem[0]?.id??null);close();}
+  function addRI(){const a=parseFloat(fRI.amount);if(!a||isNaN(a))return;setReInc(v=>{const n={...v};(n[selProp]??={})[selYear]??=[];n[selProp][selYear]=[...n[selProp][selYear],{id:uid(),month:+fRI.month,amount:a,note:fRI.note}];return n});setFRI(f=>({...f,amount:"",note:""}));close();}
+  function delRI(id){setReInc(v=>{const n={...v};n[selProp][selYear]=n[selProp][selYear].filter(e=>e.id!==id);return n});}
+  function addRE(){const a=parseFloat(fRE.amount);if(!a||isNaN(a))return;setReExp(v=>{const n={...v};(n[selProp]??={})[selYear]??=[];n[selProp][selYear]=[...n[selProp][selYear],{id:uid(),month:+fRE.month,cat:fRE.cat,desc:fRE.desc,amount:a}];return n});setFRE(f=>({...f,amount:"",desc:""}));close();}
+  function delRE(id){setReExp(v=>{const n={...v};n[selProp][selYear]=n[selProp][selYear].filter(e=>e.id!==id);return n});}
+  function addUtil(){if(!fUtil.provider.trim())return;setReUtils(v=>{const n={...v};n[selProp]=[...(n[selProp]||[]),{id:uid(),...fUtil}];return n});setFUtil({type:UTIL_TYPES[0],provider:"",acct:"",phone:"",web:"",notes:""});close();}
+  function saveEUtil(){setReUtils(v=>{const n={...v};n[selProp]=n[selProp].map(u=>u.id===editUtilId?{...u,...fEUtil}:u);return n});close();}
+  function delUtil(id){setReUtils(v=>{const n={...v};n[selProp]=(n[selProp]||[]).filter(u=>u.id!==id);return n});}
+  function addRCont(){if(!fRCont.name.trim())return;setReCont(v=>{const n={...v};n[selProp]=[...(n[selProp]||[]),{id:uid(),...fRCont}];return n});setFRCont({name:"",role:"",phone:"",email:"",notes:""});close();}
+  function saveERCont(){setReCont(v=>{const n={...v};n[selProp]=n[selProp].map(c=>c.id===editRContId?{...c,...fERCont}:c);return n});close();}
+  function delRCont(id){setReCont(v=>{const n={...v};n[selProp]=(n[selProp]||[]).filter(c=>c.id!==id);return n});}
+
+  // ── Biz Actions ──
+  function createBiz(){
+    if(!fBiz.name.trim())return;
+    const cats=fBiz.cats.split(",").map(c=>c.trim()).filter(Boolean);
+    if(!cats.length){alert("Add at least one expense category");return;}
+    const col=BIZ_COLORS[fBiz.colorIdx];
+    const id=uid();const eid=uid();
+    setBizs(b=>[...b,{id,name:fBiz.name,icon:fBiz.icon,color:col.val,bg:col.bg,border:col.border,cats,hasInvoicing:fBiz.hasInvoicing,hasContacts:fBiz.hasContacts,entities:[{id:eid,name:fBiz.name,notes:""}],income:{},expenses:{},invoices:{},contacts:{}}]);
+    setSelBizEnt(s=>({...s,[id]:eid}));setBizTab(s=>({...s,[id]:"income"}));
+    setFBiz({name:"",icon:"💼",colorIdx:0,cats:"",hasInvoicing:true,hasContacts:false});
+    setActivePort(id);close();
+  }
+  function updBiz(id,fn){setBizs(bs=>bs.map(b=>b.id===id?fn(b):b));}
+  function delBiz(id){setBizs(b=>b.filter(x=>x.id!==id));if(activePort===id)setActivePort("master");close();}
+  function addEnt(bizId){if(!fEnt.name.trim())return;const eid=uid();updBiz(bizId,b=>({...b,entities:[...b.entities,{id:eid,...fEnt}]}));setSelBizEnt(s=>({...s,[bizId]:eid}));setFEnt({name:"",notes:""});close();}
+  function saveEEnt(bizId){updBiz(bizId,b=>({...b,entities:b.entities.map(e=>e.id===editEntId?{...e,...fEEnt}:e)}));close();}
+  function delEnt(bizId){updBiz(bizId,b=>{const ents=b.entities.filter(e=>e.id!==delEntId);setSelBizEnt(s=>({...s,[bizId]:ents[0]?.id??null}));return{...b,entities:ents}});close();}
+  function addBI(bizId){const a=parseFloat(fBI.amount);if(!a||isNaN(a))return;const eid=selBizEnt[bizId];updBiz(bizId,b=>{const inc={...b.income};(inc[eid]??={})[selYear]??=[];inc[eid][selYear]=[...inc[eid][selYear],{id:uid(),month:+fBI.month,amount:a,note:fBI.note}];return{...b,income:inc}});setFBI(f=>({...f,amount:"",note:""}));close();}
+  function delBI(bizId,id){const eid=selBizEnt[bizId];updBiz(bizId,b=>{const inc={...b.income};inc[eid][selYear]=inc[eid][selYear].filter(e=>e.id!==id);return{...b,income:inc}});}
+  function addBE(bizId,src){const s=src||fBE;const a=parseFloat(s.amount);if(!a||isNaN(a))return;const eid=selBizEnt[bizId];updBiz(bizId,b=>{const exp={...b.expenses};(exp[eid]??={})[selYear]??=[];exp[eid][selYear]=[...exp[eid][selYear],{id:uid(),month:+s.month,cat:s.cat,desc:s.desc,amount:a}];return{...b,expenses:exp}});setFBE(f=>({...f,amount:"",desc:""}));setAiState("idle");setAiData(null);close();}
+  function delBE(bizId,id){const eid=selBizEnt[bizId];updBiz(bizId,b=>{const exp={...b.expenses};exp[eid][selYear]=exp[eid][selYear].filter(e=>e.id!==id);return{...b,expenses:exp}});}
+  function addInv(bizId){const a=parseFloat(fInv.amount);if(!a||!fInv.client.trim())return;const eid=selBizEnt[bizId];updBiz(bizId,b=>{const inv={...b.invoices};(inv[eid]??=[]);inv[eid]=[...inv[eid],{id:uid(),...fInv,amount:a,year:selYear}];return{...b,invoices:inv}});setFInv({client:"",desc:"",amount:"",month:new Date().getMonth(),status:"Draft",notes:""});close();}
+  function updInvS(bizId,id,status){const eid=selBizEnt[bizId];updBiz(bizId,b=>{const inv={...b.invoices};inv[eid]=inv[eid].map(i=>i.id===id?{...i,status}:i);return{...b,invoices:inv}});}
+  function delInv(bizId,id){const eid=selBizEnt[bizId];updBiz(bizId,b=>{const inv={...b.invoices};inv[eid]=(inv[eid]||[]).filter(i=>i.id!==id);return{...b,invoices:inv}});}
+  function addBC(bizId){if(!fBCont.name.trim())return;const eid=selBizEnt[bizId];updBiz(bizId,b=>{const c={...b.contacts};c[eid]=[...(c[eid]||[]),{id:uid(),...fBCont}];return{...b,contacts:c}});setFBCont({name:"",role:"",phone:"",email:"",notes:""});close();}
+  function saveEBC(bizId){const eid=selBizEnt[bizId];updBiz(bizId,b=>{const c={...b.contacts};c[eid]=c[eid].map(x=>x.id===editBContId?{...x,...fEBCont}:x);return{...b,contacts:c}});close();}
+  function delBC(bizId,id){const eid=selBizEnt[bizId];updBiz(bizId,b=>{const c={...b.contacts};c[eid]=(c[eid]||[]).filter(x=>x.id!==id);return{...b,contacts:c}});}
+
+  // ── AI ──
+  async function handleReceipt(e){
+    const file=e.target.files[0];if(!file)return;
+    setAiState("loading");
+    const cats=aiCtx?.cats||RE_CATS;
+    const reader=new FileReader();
+    reader.onload=async ev=>{
+      const base64=ev.target.result.split(",")[1];
+      try{
+        const resp=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:600,messages:[{role:"user",content:[{type:"image",source:{type:"base64",media_type:file.type||"image/jpeg",data:base64}},{type:"text",text:`Read this receipt. Return ONLY valid JSON:
+{"amount":<number>,"description":"<max 60 chars>","category":"<one of: ${cats.join(", ")}>","vendor":"<n>","date":"<MM/DD/YYYY or null>"}`}]}]})});
+        const data=await resp.json();
+        const text=data.content?.map(x=>x.text||"").join("")||"";
+        const parsed=JSON.parse(text.replace(/```json|```/g,"").trim());
+        setAiData(parsed);
+        setRExp(r=>({...r,amount:parsed.amount||"",desc:parsed.description||"",cat:cats.includes(parsed.category)?parsed.category:cats[0],month:parsed.date?parseInt(parsed.date.split("/")[0])-1:r.month}));
+        setAiState("done");
+      }catch{setAiState("error");}
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // ── Export ──
+  function exportPort(portId){
+    let rows,name;
+    if(portId==="re"){
+      name="Real_Estate";rows=[["Property","Year","Type","Month","Category","Note","Amount"]];
+      properties.forEach(p=>{YEARS.forEach(y=>{getRI(p.id,y).forEach(e=>rows.push([p.name,y,"Income",MONTHS[e.month],"Rental Income",e.note||"",e.amount]));getRE(p.id,y).forEach(e=>rows.push([p.name,y,"Expense",MONTHS[e.month],e.cat,e.desc||"",e.amount]));});getRU(p.id).forEach(u=>rows.push([p.name,"","Utility","",u.type,u.provider,""]))});
+    }else{
+      const b=getBiz(portId);if(!b)return;
+      name=b.name.replace(/\s+/g,"_");rows=[["Entity","Year","Type","Month","Category","Note","Amount","Status"]];
+      b.entities.forEach(en=>{YEARS.forEach(y=>{getBI(b,en.id,y).forEach(e=>rows.push([en.name,y,"Income",MONTHS[e.month],"Revenue",e.note||"",e.amount,""]));getBE(b,en.id,y).forEach(e=>rows.push([en.name,y,"Expense",MONTHS[e.month],e.cat,e.desc||"",e.amount,""]));});getInv(b,en.id).forEach(inv=>rows.push([en.name,inv.year,"Invoice",MONTHS[inv.month],inv.desc||"",inv.client,inv.amount,inv.status]));});
+    }
+    const csv=rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(",")).join("
+");
+    const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\uFEFF"+csv],{type:"text/csv"}));a.download=`${name}_${selYear}.csv`;a.click();
+  }
+
+  // ── Computed ──
+  const activeBiz=useMemo(()=>bizs.find(b=>b.id===activePort),[bizs,activePort]);
+  const curBizEid=activeBiz?selBizEnt[activeBiz.id]:null;
+  const curBizEnt=activeBiz?.entities.find(e=>e.id===curBizEid);
+  const curBizTab=activeBiz?bizTab[activeBiz.id]||"income":"income";
+  const curBizS=activeBiz&&curBizEnt?bizEntS(activeBiz,curBizEid,selYear):{i:0,e:0,n:0};
+  const curBizInc=useMemo(()=>activeBiz&&curBizEnt?[...getBI(activeBiz,curBizEid,selYear)].sort((a,b)=>a.month-b.month):[],[activeBiz,curBizEid,selYear]);
+  const curBizExp=useMemo(()=>activeBiz&&curBizEnt?[...getBE(activeBiz,curBizEid,selYear)].sort((a,b)=>a.month-b.month):[],[activeBiz,curBizEid,selYear]);
+  const curBizInv=activeBiz&&curBizEnt?getInv(activeBiz,curBizEid):[];
+  const curBizCont=activeBiz&&curBizEnt?getBC(activeBiz,curBizEid):[];
+  const curBizMonthly=useMemo(()=>activeBiz&&curBizEnt?MS.map((m,i)=>{const inc=getBI(activeBiz,curBizEid,selYear).filter(e=>e.month===i).reduce((s,e)=>s+e.amount,0),exp=getBE(activeBiz,curBizEid,selYear).filter(e=>e.month===i).reduce((s,e)=>s+e.amount,0);return{m,inc,exp,net:inc-exp}}):[],[activeBiz,curBizEid,selYear]);
+  const rePS=useMemo(()=>reSums(selProp,selYear),[reInc,reExp,selProp,selYear]);
+  const reIncList=useMemo(()=>[...getRI(selProp,selYear)].sort((a,b)=>a.month-b.month),[reInc,selProp,selYear]);
+  const reExpList=useMemo(()=>[...getRE(selProp,selYear)].sort((a,b)=>a.month-b.month),[reExp,selProp,selYear]);
+  const reMonthly=useMemo(()=>MS.map((m,i)=>{const inc=getRI(selProp,selYear).filter(e=>e.month===i).reduce((s,e)=>s+e.amount,0),exp=getRE(selProp,selYear).filter(e=>e.month===i).reduce((s,e)=>s+e.amount,0);return{m,inc,exp,net:inc-exp}}),[reInc,reExp,selProp,selYear]);
+  const propObj=properties.find(p=>p.id===selProp);
+  const invTotal=curBizInv.reduce((s,i)=>s+i.amount,0);
+  const invPaid=curBizInv.filter(i=>i.status==="Paid").reduce((s,i)=>s+i.amount,0);
+  const invOut=curBizInv.filter(i=>["Sent","Overdue"].includes(i.status)).reduce((s,i)=>s+i.amount,0);
+  const navItems=[{id:"master",icon:"📊",label:"Master",color:D.gold},{id:"re",icon:"🏠",label:"Real Estate",color:D.green},...bizs.map(b=>({id:b.id,icon:b.icon,label:b.name,color:b.color}))];
+
+  return(
+    <div style={{background:D.bg,minHeight:"100%",fontFamily:T.sans,color:D.text,fontSize:14}}>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@400;500;600;700&display=swap');*{box-sizing:border-box}button:active{opacity:.8}::-webkit-scrollbar{width:3px;height:3px}::-webkit-scrollbar-thumb{background:${D.border};border-radius:2px}input:focus,select:focus,textarea:focus{border-color:${D.gold}!important;box-shadow:0 0 0 3px rgba(232,213,163,.1)!important}option{background:${D.s2};color:${D.text}}`}</style>
+
+      {/* HEADER */}
+      <div style={{background:D.surface,borderBottom:`1px solid ${D.border}`}}>
+        <div style={{maxWidth:1100,margin:"0 auto",padding:"0 20px",display:"flex",alignItems:"center",justifyContent:"space-between",height:52,gap:10}}>
+          <div style={{display:"flex",alignItems:"center",gap:10}}>
+            <div style={{width:26,height:26,borderRadius:7,background:`linear-gradient(135deg,${D.gold},#a07830)`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:13}}>📊</div>
+            <div>
+              <div style={{fontSize:9,letterSpacing:3,textTransform:"uppercase",color:D.muted,fontWeight:700,lineHeight:1}}>Portfolio</div>
+              <div style={{fontFamily:T.serif,fontSize:16,fontWeight:700,color:D.gold,lineHeight:1.2}}>Hub</div>
+            </div>
+          </div>
+          <div style={{display:"flex",gap:7,alignItems:"center"}}>
+            <select value={selYear} onChange={e=>setSelYear(+e.target.value)} style={{...iSt,width:"auto",padding:"5px 10px",fontSize:12,background:D.s3,border:`1px solid ${D.border2}`}}>
+              {YEARS.map(y=><option key={y} value={y}>{y}</option>)}
+            </select>
+            <input ref={restoreRef} type="file" accept=".json" style={{display:"none"}} onChange={restoreData}/>
+            <Btn v="dark" sm onClick={backupData} style={{fontSize:11}}>💾 Backup</Btn>
+            <Btn v="dark" sm onClick={()=>restoreRef.current?.click()} style={{fontSize:11}}>📂 Restore</Btn>
+            <Btn v="primary" sm onClick={()=>open("newBiz")}>+ New Business</Btn>
+            {onLogout&&<button onClick={onLogout} title={`Signed in as ${currentUser?.name||"you"}`} style={{background:D.s2,border:`1px solid ${D.border2}`,borderRadius:8,padding:"5px 10px",color:D.muted,fontSize:11,cursor:"pointer",fontFamily:T.sans,fontWeight:600}}>👤 {currentUser?.name?.split(" ")[0]||"Me"}</button>}
+          </div>
+        </div>
+      </div>
+
+      {/* NAV */}
+      <div style={{background:D.surface,borderBottom:`1px solid ${D.border}`,overflowX:"auto"}}>
+        <div style={{maxWidth:1100,margin:"0 auto",padding:"0 16px",display:"flex",minWidth:"fit-content"}}>
+          {navItems.map(p=><button key={p.id} onClick={()=>setActivePort(p.id)} style={{padding:"10px 15px",background:"none",border:"none",borderBottom:`2px solid ${activePort===p.id?p.color:"transparent"}`,color:activePort===p.id?p.color:D.muted,fontWeight:activePort===p.id?700:500,fontSize:12,cursor:"pointer",fontFamily:T.sans,whiteSpace:"nowrap",letterSpacing:.3,transition:"all .15s"}}>{p.icon} {p.label}</button>)}
+        </div>
+      </div>
+
+      <div style={{maxWidth:1100,margin:"0 auto",padding:"18px 20px 48px"}}>
+
+        {/* ══ MASTER ══ */}
+        {activePort==="master"&&(<>
+          <div style={{marginBottom:14}}>
+            <div style={{fontFamily:T.serif,fontSize:17,fontWeight:700,color:D.gold,lineHeight:1}}>Portfolio Overview</div>
+            <div style={{fontSize:11,color:D.muted,marginTop:3}}>{selYear} · All portfolios</div>
+          </div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10,marginBottom:18}}>
+            <KPI label="Total Income"    value={masterTot.i} color={D.green} bg={D.greenBg} border={D.greenBorder}/>
+            <KPI label="Total Expenses"  value={masterTot.e} color={D.red}   bg={D.redBg}   border={D.redBorder}/>
+            <KPI label="Net"             value={masterTot.n} color={masterTot.n>=0?D.gold:D.red} bg={masterTot.n>=0?"#1e1a0a":D.redBg} border={masterTot.n>=0?"#3a3010":D.redBorder}/>
+          </div>
+          <SH label="Portfolios"/>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(200px,1fr))",gap:10}}>
+            {[{id:"re",icon:"🏠",label:"Real Estate",color:D.green,bg:D.greenBg,border:D.greenBorder,tot:reTot(selYear),sub:`${properties.length} properties`},...bizs.map(b=>({id:b.id,icon:b.icon,label:b.name,color:b.color,bg:b.bg,border:b.border,tot:bizTot(b,selYear),sub:`${b.entities.length} ${b.entities.length===1?"entity":"entities"}`}))].map(p=>(
+              <div key={p.id} onClick={()=>setActivePort(p.id)} style={{background:D.surface,border:`1.5px solid ${p.border}`,borderRadius:12,padding:13,cursor:"pointer"}}>
+                <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:9}}><span style={{fontSize:18}}>{p.icon}</span><div><div style={{fontWeight:700,fontSize:12,color:D.text}}>{p.label}</div><div style={{fontSize:10,color:D.muted}}>{p.sub}</div></div></div>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,marginBottom:8}}>
+                  <div><div style={{fontSize:8,color:D.muted,letterSpacing:1.5,textTransform:"uppercase",fontWeight:700,marginBottom:2}}>Income</div><div style={{fontSize:13,fontWeight:700,color:D.green,fontVariantNumeric:"tabular-nums"}}>{fmt(p.tot.i)}</div></div>
+                  <div><div style={{fontSize:8,color:D.muted,letterSpacing:1.5,textTransform:"uppercase",fontWeight:700,marginBottom:2}}>Net</div><div style={{fontSize:13,fontWeight:700,color:p.tot.n>=0?D.gold:D.red,fontVariantNumeric:"tabular-nums"}}>{fmt(p.tot.n)}</div></div>
+                </div>
+                <div style={{height:2,background:D.s3,borderRadius:2,overflow:"hidden"}}><div style={{width:p.tot.i+p.tot.e>0?`${Math.round(p.tot.i/(p.tot.i+p.tot.e)*100)}%`:"0%",height:"100%",background:p.color}}/></div>
+                <div style={{fontSize:10,color:D.dim,textAlign:"right",marginTop:6}}>Open →</div>
+              </div>
+            ))}
+            <div onClick={()=>open("newBiz")} style={{background:D.surface,border:`2px dashed ${D.border2}`,borderRadius:12,padding:13,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column",gap:6,minHeight:110}}>
+              <div style={{width:28,height:28,borderRadius:7,background:`linear-gradient(135deg,${D.gold},#a07830)`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:14}}>➕</div>
+              <div style={{fontSize:11,color:D.muted,fontWeight:600}}>New Business</div>
+            </div>
+          </div>
+        </>)}
+
+        {/* ══ REAL ESTATE ══ */}
+        {activePort==="re"&&(<>
+          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:13,flexWrap:"wrap",gap:8}}>
+            <div style={{display:"flex",alignItems:"center",gap:8}}>
+              <span style={{fontSize:16}}>🏠</span>
+              <div><div style={{fontFamily:T.serif,fontSize:16,fontWeight:700,color:D.gold,lineHeight:1}}>Real Estate</div><div style={{fontSize:10,color:D.muted,marginTop:2}}>{properties.length} properties · {selYear}</div></div>
+            </div>
+            <div style={{display:"flex",gap:7}}><Btn v="green" sm onClick={()=>exportPort("re")}>↓ Export</Btn><Btn v="primary" sm onClick={()=>open("addProp")}>+ Property</Btn></div>
+          </div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10,marginBottom:12}}>
+            <KPI label="Income"   value={reTot(selYear).i} color={D.green} bg={D.greenBg} border={D.greenBorder}/>
+            <KPI label="Expenses" value={reTot(selYear).e} color={D.red}   bg={D.redBg}   border={D.redBorder}/>
+            <KPI label="Net"      value={reTot(selYear).n} color={reTot(selYear).n>=0?D.gold:D.red} bg={reTot(selYear).n>=0?"#1e1a0a":D.redBg} border={reTot(selYear).n>=0?"#3a3010":D.redBorder}/>
+          </div>
+          <PillBar
+            items={properties}
+            sel={selProp}
+            onSel={setSelProp}
+            onEdit={p=>{setEditPId(p.id);setFEProp({name:p.name,address:p.address||"",notes:p.notes||""});open("editProp")}}
+            onDel={id=>{setDelPId(id);open("delProp")}}
+          />
+          {propObj&&(<>
+            <Seg tabs={["income","expenses","utilities","contacts","summary"]} active={reTab} onChange={setReTab}/>
+            {reTab==="income"&&(<>
+              <SH label={`Income · ${selYear}`} action={null}/>
+              <QuickAdd type="income" cats={[]} placeholder={`"$1,250 rent January" or "tenant paid Feb rent $1,400"`}
+                onSave={p=>{const a=parseFloat(p.amount);if(!a||isNaN(a))return;setReInc(v=>{const n={...v};(n[selProp]??={})[selYear]??=[];n[selProp][selYear]=[...n[selProp][selYear],{id:uid(),month:+(p.month??new Date().getMonth()),amount:a,note:p.note||p.description||""}];return n});}}/>
+              <Card>{reIncList.length===0?<Empty icon="💰" title="No income recorded" sub="Type above to add quickly"/>:
+                <table style={{width:"100%",borderCollapse:"collapse",tableLayout:"fixed"}}>
+                  <thead><tr><TH>Month</TH><TH>Note</TH><TH right>Amount</TH><TH></TH></tr></thead>
+                  <tbody>{reIncList.map(r=><tr key={r.id}><TD bold>{MONTHS[r.month]}</TD><TD muted={!r.note}>{r.note||"—"}</TD><TD right color={D.green} bold>{fmtD(r.amount)}</TD><DelBtn onClick={()=>delRI(r.id)}/></tr>)}</tbody>
+                  <tfoot><tr><TFC>Total</TFC><TFC></TFC><TFC right color={D.green} bold>{fmt(rePS.i)}</TFC><TFC></TFC></tr></tfoot>
+                </table>}
+              </Card>
+            </>)}
+            {reTab==="expenses"&&(<>
+              <SH label={`Expenses · ${selYear}`} action={<Btn v="blue" sm onClick={()=>{setAiCtx({port:"re",cats:RE_CATS});setAiState("idle");setAiData(null);setRExp({month:new Date().getMonth(),cat:RE_CATS[0],amount:"",desc:""});open("receipt")}}>📷 Scan → Drive</Btn>}/>
+              <QuickAdd type="expense" cats={RE_CATS} placeholder={`"$340 plumber January" or "mortgage $1,200 March"`}
+                onSave={p=>{const a=parseFloat(p.amount);if(!a||isNaN(a))return;setReExp(v=>{const n={...v};(n[selProp]??={})[selYear]??=[];n[selProp][selYear]=[...n[selProp][selYear],{id:uid(),month:+(p.month??new Date().getMonth()),cat:p.category||RE_CATS[0],desc:p.description||"",amount:a}];return n});}}/>
+              <Card>{reExpList.length===0?<Empty icon="🧾" title="No expenses recorded" sub="Type above or scan a receipt"/>:
+                <table style={{width:"100%",borderCollapse:"collapse",tableLayout:"fixed"}}>
+                  <thead><tr><TH>Month</TH><TH>Category</TH><TH>Description</TH><TH right>Amount</TH><TH></TH></tr></thead>
+                  <tbody>{reExpList.map(r=><tr key={r.id}><TD bold>{MONTHS[r.month]}</TD><td style={{padding:"9px 11px",borderBottom:`1px solid ${D.s3}`}}><Tag>{r.cat}</Tag></td><TD muted={!r.desc}>{r.desc||"—"}</TD><TD right color={D.red} bold>{fmtD(r.amount)}</TD><td style={{padding:"9px 11px",borderBottom:`1px solid ${D.s3}`,textAlign:"center",width:32}}>{r.receiptUrl?<a href={r.receiptUrl} target="_blank" rel="noreferrer" title="View receipt in Drive" style={{color:D.blue,textDecoration:"none",fontSize:13}}>📁</a>:<span style={{color:D.dim,fontSize:11}}>—</span>}</td><DelBtn onClick={()=>delRE(r.id)}/></tr>)}</tbody>
+                  <tfoot><tr><TFC></TFC><TFC>Total</TFC><TFC></TFC><TFC right color={D.red} bold>{fmt(rePS.e)}</TFC><TFC></TFC></tr></tfoot>
+                </table>}
+              </Card>
+            </>)}
+            {reTab==="utilities"&&(<>
+              <SH label="Utilities" action={<Btn v="primary" sm onClick={()=>open("addUtil")}>+ Add Utility</Btn>}/>
+              {getRU(selProp).length===0?<Empty icon="⚡" title="No utilities saved" sub="Store account numbers, phone numbers and more"/>:
+              <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))",gap:10}}>
+                {getRU(selProp).map(u=><div key={u.id} style={{background:D.surface,border:`1.5px solid ${D.border}`,borderRadius:12,padding:13}}>
+                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:9}}>
+                    <div><div style={{fontSize:9,color:D.muted,textTransform:"uppercase",letterSpacing:2,fontWeight:700,marginBottom:2}}>{UTIL_ICONS[u.type]||"📋"} {u.type}</div><div style={{fontSize:13,fontWeight:700,color:D.gold}}>{u.provider}</div></div>
+                    <div style={{display:"flex",gap:4}}>
+                      <button onClick={()=>{setEditUtilId(u.id);setFEUtil({type:u.type,provider:u.provider,acct:u.acct||"",phone:u.phone||"",web:u.web||"",notes:u.notes||""});open("editUtil")}} style={{background:D.s3,border:"none",borderRadius:5,width:22,height:22,cursor:"pointer",fontSize:9,display:"flex",alignItems:"center",justifyContent:"center"}}>✏️</button>
+                      <button onClick={()=>delUtil(u.id)} style={{background:D.redBg,border:"none",borderRadius:5,width:22,height:22,cursor:"pointer",fontSize:9,display:"flex",alignItems:"center",justifyContent:"center"}}>🗑️</button>
+                    </div>
+                  </div>
+                  <div style={{borderTop:`1px solid ${D.border}`,paddingTop:7,display:"flex",flexDirection:"column",gap:4}}>
+                    {u.acct&&<div style={{display:"flex",gap:8,fontSize:11}}><span style={{color:D.muted,fontSize:9,width:48,flexShrink:0,fontWeight:700,textTransform:"uppercase",letterSpacing:1}}>Account</span><span style={{color:D.text,fontWeight:600}}>{u.acct}</span></div>}
+                    {u.phone&&<div style={{display:"flex",gap:8,fontSize:11}}><span style={{color:D.muted,fontSize:9,width:48,flexShrink:0,fontWeight:700,textTransform:"uppercase",letterSpacing:1}}>Phone</span><a href={`tel:${u.phone}`} style={{color:D.blue,fontWeight:600,textDecoration:"none"}}>{u.phone}</a></div>}
+                    {u.web&&<div style={{display:"flex",gap:8,fontSize:11}}><span style={{color:D.muted,fontSize:9,width:48,flexShrink:0,fontWeight:700,textTransform:"uppercase",letterSpacing:1}}>Web</span><a href={u.web.startsWith("http")?u.web:`https://${u.web}`} target="_blank" rel="noreferrer" style={{color:D.blue,fontWeight:600,textDecoration:"none",wordBreak:"break-all"}}>{u.web}</a></div>}
+                    {u.notes&&<div style={{display:"flex",gap:8,fontSize:11}}><span style={{color:D.muted,fontSize:9,width:48,flexShrink:0,fontWeight:700,textTransform:"uppercase",letterSpacing:1}}>Notes</span><span style={{color:D.muted}}>{u.notes}</span></div>}
+                  </div>
+                </div>)}
+              </div>}
+            </>)}
+            {reTab==="contacts"&&(<>
+              <SH label="Contacts" action={<Btn v="primary" sm onClick={()=>{setFRCont({name:"",role:"",phone:"",email:"",notes:""});open("addRCont")}}>+ Add Contact</Btn>}/>
+              <ContactsGrid contacts={getRC(selProp)} onEdit={c=>{setEditRContId(c.id);setFERCont({name:c.name,role:c.role||"",phone:c.phone||"",email:c.email||"",notes:c.notes||""});open("editRCont")}} onDel={delRCont}/>
+            </>)}
+            {reTab==="summary"&&<SummaryTable rows={reMonthly} totI={rePS.i} totE={rePS.e} totN={rePS.n}/>}
+          </>)}
+        </>)}
+
+        {/* ══ BUSINESS ══ */}
+        {activeBiz&&(<>
+          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:13,flexWrap:"wrap",gap:8}}>
+            <div style={{display:"flex",alignItems:"center",gap:8}}>
+              <span style={{fontSize:18}}>{activeBiz.icon}</span>
+              <div><div style={{fontFamily:T.serif,fontSize:16,fontWeight:700,color:activeBiz.color,lineHeight:1}}>{activeBiz.name}</div><div style={{fontSize:10,color:D.muted,marginTop:2}}>{activeBiz.entities.length} entities · {selYear}</div></div>
+            </div>
+            <div style={{display:"flex",gap:7,flexWrap:"wrap"}}>
+              <Btn v="green" sm onClick={()=>exportPort(activeBiz.id)}>↓ Export</Btn>
+              <Btn v="dark"  sm onClick={()=>{setActiveBizId(activeBiz.id);open("addEnt")}}>+ Entity</Btn>
+              <Btn v="danger" sm onClick={()=>{setActiveBizId(activeBiz.id);open("delBiz")}}>Delete</Btn>
+            </div>
+          </div>
+          <div style={{display:"grid",gridTemplateColumns:activeBiz.hasInvoicing?"repeat(4,1fr)":"repeat(3,1fr)",gap:10,marginBottom:12}}>
+            <KPI label="Income"   value={bizTot(activeBiz,selYear).i} color={activeBiz.color} bg={activeBiz.bg} border={activeBiz.border}/>
+            <KPI label="Expenses" value={bizTot(activeBiz,selYear).e} color={D.red} bg={D.redBg} border={D.redBorder}/>
+            <KPI label="Net"      value={bizTot(activeBiz,selYear).n} color={bizTot(activeBiz,selYear).n>=0?D.gold:D.red} bg={bizTot(activeBiz,selYear).n>=0?"#1e1a0a":D.redBg} border={bizTot(activeBiz,selYear).n>=0?"#3a3010":D.redBorder}/>
+            {activeBiz.hasInvoicing&&<KPI label="Outstanding" value={invOut} color="#fb923c" bg="#2a1a0f" border="#5a3010" sub={`${curBizInv.filter(i=>["Sent","Overdue"].includes(i.status)).length} open`}/>}
+          </div>
+          <PillBar
+            items={activeBiz.entities}
+            sel={curBizEid}
+            color={activeBiz.color}
+            onSel={id=>setSelBizEnt(s=>({...s,[activeBiz.id]:id}))}
+            onEdit={en=>{setEditEntId(en.id);setFEEnt({name:en.name,notes:en.notes||""});setActiveBizId(activeBiz.id);open("editEnt")}}
+            onDel={id=>{setDelEntId(id);setActiveBizId(activeBiz.id);open("delEnt")}}
+          />
+          {curBizEnt&&(<>
+            <Seg tabs={["income","expenses",activeBiz.hasInvoicing&&"invoices",activeBiz.hasContacts&&"contacts","summary"].filter(Boolean)} active={curBizTab} onChange={t=>setBizTab(s=>({...s,[activeBiz.id]:t}))}/>
+            {curBizTab==="income"&&(<>
+              <SH label={`Income · ${selYear}`} action={null}/>
+              <QuickAdd type="income" cats={[]} placeholder={`"$5,000 from client April" or "Johnson Corp paid $3,200 March"`}
+                onSave={p=>{const a=parseFloat(p.amount);if(!a||isNaN(a))return;const eid=selBizEnt[activeBiz.id];updBiz(activeBiz.id,b=>{const inc={...b.income};(inc[eid]??={})[selYear]??=[];inc[eid][selYear]=[...inc[eid][selYear],{id:uid(),month:+(p.month??new Date().getMonth()),amount:a,note:p.note||p.description||""}];return{...b,income:inc}});}}/>
+              <Card>{curBizInc.length===0?<Empty icon="💰" title="No income" sub="Type above to add quickly"/>:
+                <table style={{width:"100%",borderCollapse:"collapse",tableLayout:"fixed"}}>
+                  <thead><tr><TH>Month</TH><TH>Note</TH><TH right>Amount</TH><TH></TH></tr></thead>
+                  <tbody>{curBizInc.map(r=><tr key={r.id}><TD bold>{MONTHS[r.month]}</TD><TD muted={!r.note}>{r.note||"—"}</TD><TD right color={activeBiz.color} bold>{fmtD(r.amount)}</TD><DelBtn onClick={()=>delBI(activeBiz.id,r.id)}/></tr>)}</tbody>
+                  <tfoot><tr><TFC>Total</TFC><TFC></TFC><TFC right color={activeBiz.color} bold>{fmt(curBizS.i)}</TFC><TFC></TFC></tr></tfoot>
+                </table>}
+              </Card>
+            </>)}
+            {curBizTab==="expenses"&&(<>
+              <SH label={`Expenses · ${selYear}`} action={<Btn v="blue" sm onClick={()=>{setAiCtx({port:activeBiz.id,cats:activeBiz.cats});setAiState("idle");setAiData(null);setRExp({month:new Date().getMonth(),cat:activeBiz.cats[0],amount:"",desc:""});open("receipt")}}>📷 Scan → Drive</Btn>}/>
+              <QuickAdd type="expense" cats={activeBiz.cats} placeholder={`"$200 materials March" or "paid subcontractor $1,500 last month"`}
+                onSave={p=>{const a=parseFloat(p.amount);if(!a||isNaN(a))return;const eid=selBizEnt[activeBiz.id];updBiz(activeBiz.id,b=>{const exp={...b.expenses};(exp[eid]??={})[selYear]??=[];exp[eid][selYear]=[...exp[eid][selYear],{id:uid(),month:+(p.month??new Date().getMonth()),cat:p.category||activeBiz.cats[0],desc:p.description||"",amount:a}];return{...b,expenses:exp}});}}/>
+              <Card>{curBizExp.length===0?<Empty icon="🧾" title="No expenses" sub="Type above or scan a receipt"/>:
+                <table style={{width:"100%",borderCollapse:"collapse",tableLayout:"fixed"}}>
+                  <thead><tr><TH>Month</TH><TH>Category</TH><TH>Description</TH><TH right>Amount</TH><TH></TH></tr></thead>
+                  <tbody>{curBizExp.map(r=><tr key={r.id}><TD bold>{MONTHS[r.month]}</TD><td style={{padding:"9px 11px",borderBottom:`1px solid ${D.s3}`}}><Tag>{r.cat}</Tag></td><TD muted={!r.desc}>{r.desc||"—"}</TD><TD right color={D.red} bold>{fmtD(r.amount)}</TD><td style={{padding:"9px 11px",borderBottom:`1px solid ${D.s3}`,textAlign:"center",width:32}}>{r.receiptUrl?<a href={r.receiptUrl} target="_blank" rel="noreferrer" title="View receipt in Drive" style={{color:D.blue,textDecoration:"none",fontSize:13}}>📁</a>:<span style={{color:D.dim,fontSize:11}}>—</span>}</td><DelBtn onClick={()=>delBE(activeBiz.id,r.id)}/></tr>)}</tbody>
+                  <tfoot><tr><TFC></TFC><TFC>Total</TFC><TFC></TFC><TFC right color={D.red} bold>{fmt(curBizS.e)}</TFC><TFC></TFC></tr></tfoot>
+                </table>}
+              </Card>
+            </>)}
+            {curBizTab==="invoices"&&activeBiz.hasInvoicing&&(<>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10,marginBottom:12}}>
+                <KPI label="Total Invoiced" value={invTotal} color={D.text}  bg={D.s2}      border={D.border}/>
+                <KPI label="Paid"           value={invPaid}  color={D.green} bg={D.greenBg} border={D.greenBorder}/>
+                <KPI label="Outstanding"    value={invOut}   color="#fb923c" bg="#2a1a0f"   border="#5a3010"/>
+              </div>
+              <SH label="Invoices" action={null}/>
+              <QuickAdd type="invoice" cats={[]} placeholder={`"Invoice Johnson $4,500 electrical work March" or "$2,000 Smith Corp sent"`}
+                onSave={p=>{const a=parseFloat(p.amount);if(!a||!p.client)return;const eid=selBizEnt[activeBiz.id];updBiz(activeBiz.id,b=>{const inv={...b.invoices};(inv[eid]??=[]);inv[eid]=[...inv[eid],{id:uid(),client:p.client,desc:p.description||"",amount:a,month:+(p.month??new Date().getMonth()),status:p.status||"Draft",notes:"",year:selYear}];return{...b,invoices:inv}});}}/>
+              <Card>{curBizInv.length===0?<Empty icon="📄" title="No invoices" sub="Type above to create quickly"/>:
+                <table style={{width:"100%",borderCollapse:"collapse",tableLayout:"fixed"}}>
+                  <thead><tr><TH>Client</TH><TH>Description</TH><TH>Month</TH><TH right>Amount</TH><TH>Status</TH><TH></TH></tr></thead>
+                  <tbody>{curBizInv.map(inv=><tr key={inv.id}>
+                    <TD bold>{inv.client}</TD><TD muted={!inv.desc}>{inv.desc||"—"}</TD><TD>{MONTHS[inv.month]}</TD><TD right bold>{fmtD(inv.amount)}</TD>
+                    <td style={{padding:"9px 11px",borderBottom:`1px solid ${D.s3}`}}>
+                      <select value={inv.status} onChange={e=>updInvS(activeBiz.id,inv.id,e.target.value)} style={{background:"transparent",border:"none",fontFamily:T.sans,fontSize:11,fontWeight:700,cursor:"pointer",outline:"none",color:{Paid:D.green,Overdue:D.red,Sent:D.blue,Draft:D.muted,Cancelled:D.dim}[inv.status]||D.muted}}>
+                        {INVOICE_STATUSES.map(s=><option key={s}>{s}</option>)}
+                      </select>
+                    </td>
+                    <DelBtn onClick={()=>delInv(activeBiz.id,inv.id)}/>
+                  </tr>)}</tbody>
+                </table>}
+              </Card>
+            </>)}
+            {curBizTab==="contacts"&&activeBiz.hasContacts&&(<>
+              <SH label="Contacts" action={<Btn v="primary" sm onClick={()=>{setActiveBizId(activeBiz.id);setFBCont({name:"",role:"",phone:"",email:"",notes:""});open("addBC")}}>+ Add Contact</Btn>}/>
+              <ContactsGrid contacts={curBizCont} onEdit={c=>{setEditBContId(c.id);setFEBCont({name:c.name,role:c.role||"",phone:c.phone||"",email:c.email||"",notes:c.notes||""});setActiveBizId(activeBiz.id);open("editBC")}} onDel={id=>delBC(activeBiz.id,id)}/>
+            </>)}
+            {curBizTab==="summary"&&<SummaryTable rows={curBizMonthly} totI={curBizS.i} totE={curBizS.e} totN={curBizS.n} incColor={activeBiz.color}/>}
+          </>)}
+        </>)}
+
+      </div>
+
+      {/* ══ MODALS ══ */}
+
+      {/* New Business */}
+      <Modal open={modal==="newBiz"} onClose={close} title="✦ Create New Business" width={500}>
+        <FF label="Business Name *"><FI value={fBiz.name} onChange={e=>setFBiz(f=>({...f,name:e.target.value}))} placeholder="e.g. Smith Construction Co." autoFocus/></FF>
+        <FR cols="1fr 1fr">
+          <FF label="Icon"><select value={fBiz.icon} onChange={e=>setFBiz(f=>({...f,icon:e.target.value}))} style={{...iSt,fontSize:18}}>{BIZ_ICONS.map(ic=><option key={ic} value={ic}>{ic}</option>)}</select></FF>
+          <FF label="Color"><select value={fBiz.colorIdx} onChange={e=>setFBiz(f=>({...f,colorIdx:+e.target.value}))} style={iSt}>{BIZ_COLORS.map((c,i)=><option key={i} value={i}>{c.label}</option>)}</select></FF>
+        </FR>
+        <FF label="Expense Categories (comma separated) *">
+          <FI value={fBiz.cats} onChange={e=>setFBiz(f=>({...f,cats:e.target.value}))} placeholder="Materials, Labor, Equipment, Fuel, Other"/>
+          <div style={{fontSize:11,color:D.muted,marginTop:5}}>Type your own categories, separated by commas</div>
+        </FF>
+        <div style={{marginBottom:10}}>
+          <Toggle on={fBiz.hasInvoicing} onChange={v=>setFBiz(f=>({...f,hasInvoicing:v}))} label="Enable Invoicing — track clients & payments"/>
+          <Toggle on={fBiz.hasContacts}  onChange={v=>setFBiz(f=>({...f,hasContacts:v}))}  label="Enable Contacts — store vendors & suppliers"/>
+        </div>
+        <div style={{background:BIZ_COLORS[fBiz.colorIdx].bg,border:`1.5px solid ${BIZ_COLORS[fBiz.colorIdx].border}`,borderRadius:10,padding:"10px 14px",marginBottom:4,display:"flex",alignItems:"center",gap:8}}>
+          <span style={{fontSize:20}}>{fBiz.icon}</span>
+          <div><div style={{fontWeight:700,color:BIZ_COLORS[fBiz.colorIdx].val,fontSize:13}}>{fBiz.name||"Business Name"}</div><div style={{fontSize:10,color:D.muted,marginTop:1}}>Preview</div></div>
+        </div>
+        <BtnRow><Btn v="primary" full onClick={createBiz}>Create Business</Btn><Btn v="ghost" full onClick={close}>Cancel</Btn></BtnRow>
+      </Modal>
+
+      <Modal open={modal==="delBiz"} onClose={close} title="Delete Business">
+        <div style={{background:D.redBg,border:`1.5px solid ${D.redBorder}`,borderRadius:10,padding:14,fontSize:13,color:D.red,lineHeight:1.7,marginBottom:4}}>⚠ Permanently delete <strong style={{color:D.red}}>{activeBiz?.name}</strong> and all its data? This cannot be undone.</div>
+        <BtnRow><Btn v="danger" full onClick={()=>delBiz(activeBizId)}>Yes, Delete</Btn><Btn v="ghost" full onClick={close}>Cancel</Btn></BtnRow>
+      </Modal>
+
+      {/* Property */}
+      <Modal open={modal==="addProp"} onClose={close} title="New Property">
+        <FF label="Property Name *"><FI value={fProp.name} onChange={e=>setFProp(f=>({...f,name:e.target.value}))} placeholder="e.g. 123 Oak Street" autoFocus/></FF>
+        <FF label="Address"><FI value={fProp.address} onChange={e=>setFProp(f=>({...f,address:e.target.value}))} placeholder="Full address"/></FF>
+        <FF label="Notes" mb={0}><FT value={fProp.notes} onChange={e=>setFProp(f=>({...f,notes:e.target.value}))} rows={2} placeholder="Any notes..."/></FF>
+        <BtnRow><Btn v="primary" full onClick={addProp}>Add Property</Btn><Btn v="ghost" full onClick={close}>Cancel</Btn></BtnRow>
+      </Modal>
+      <Modal open={modal==="editProp"} onClose={close} title="Edit Property">
+        <FF label="Property Name *"><FI value={fEProp.name} onChange={e=>setFEProp(f=>({...f,name:e.target.value}))}/></FF>
+        <FF label="Address"><FI value={fEProp.address} onChange={e=>setFEProp(f=>({...f,address:e.target.value}))}/></FF>
+        <FF label="Notes" mb={0}><FT value={fEProp.notes} onChange={e=>setFEProp(f=>({...f,notes:e.target.value}))} rows={2}/></FF>
+        <BtnRow><Btn v="primary" full onClick={saveEProp}>Save Changes</Btn><Btn v="ghost" full onClick={close}>Cancel</Btn></BtnRow>
+      </Modal>
+      <Modal open={modal==="delProp"} onClose={close} title="Delete Property">
+        <div style={{background:D.redBg,border:`1.5px solid ${D.redBorder}`,borderRadius:10,padding:14,fontSize:13,color:D.red,lineHeight:1.7,marginBottom:4}}>⚠ Delete <strong style={{color:D.red}}>{properties.find(p=>p.id===delPId)?.name}</strong> and all its data? Cannot be undone.</div>
+        <BtnRow><Btn v="danger" full onClick={delProp}>Yes, Delete</Btn><Btn v="ghost" full onClick={close}>Cancel</Btn></BtnRow>
+      </Modal>
+
+      {/* RE Income / Expense */}
+      <Modal open={modal==="addRI"} onClose={close} title="Add Income">
+        <FR><FF label="Month"><FS opts={MONTHS.map((m,i)=>({v:i,l:m}))} value={fRI.month} onChange={e=>setFRI(f=>({...f,month:e.target.value}))}/></FF><FF label="Amount ($)"><FI type="number" inputMode="decimal" value={fRI.amount} onChange={e=>setFRI(f=>({...f,amount:e.target.value}))} placeholder="0.00" autoFocus/></FF></FR>
+        <FF label="Note (optional)" mb={0}><FI value={fRI.note} onChange={e=>setFRI(f=>({...f,note:e.target.value}))} placeholder="e.g. Tenant A – full payment"/></FF>
+        <BtnRow><Btn v="primary" full onClick={addRI}>Save Income</Btn><Btn v="ghost" full onClick={close}>Cancel</Btn></BtnRow>
+      </Modal>
+      <Modal open={modal==="addRE"} onClose={close} title="Add Expense">
+        <FR><FF label="Month"><FS opts={MONTHS.map((m,i)=>({v:i,l:m}))} value={fRE.month} onChange={e=>setFRE(f=>({...f,month:e.target.value}))}/></FF><FF label="Category"><FS opts={RE_CATS} value={fRE.cat} onChange={e=>setFRE(f=>({...f,cat:e.target.value}))}/></FF></FR>
+        <FF label="Amount ($)"><FI type="number" inputMode="decimal" value={fRE.amount} onChange={e=>setFRE(f=>({...f,amount:e.target.value}))} placeholder="0.00" autoFocus/></FF>
+        <FF label="Description (optional)" mb={0}><FI value={fRE.desc} onChange={e=>setFRE(f=>({...f,desc:e.target.value}))} placeholder="e.g. Plumber"/></FF>
+        <BtnRow><Btn v="primary" full onClick={addRE}>Save Expense</Btn><Btn v="ghost" full onClick={close}>Cancel</Btn></BtnRow>
+      </Modal>
+
+      {/* Utilities */}
+      <Modal open={modal==="addUtil"} onClose={close} title="Add Utility">
+        <FR><FF label="Type"><FS opts={UTIL_TYPES} value={fUtil.type} onChange={e=>setFUtil(f=>({...f,type:e.target.value}))}/></FF><FF label="Provider *"><FI value={fUtil.provider} onChange={e=>setFUtil(f=>({...f,provider:e.target.value}))} placeholder="e.g. PG&E" autoFocus/></FF></FR>
+        <FR><FF label="Account #"><FI value={fUtil.acct} onChange={e=>setFUtil(f=>({...f,acct:e.target.value}))} placeholder="Account #"/></FF><FF label="Phone"><FI value={fUtil.phone} onChange={e=>setFUtil(f=>({...f,phone:e.target.value}))} type="tel" placeholder="1-800-000-0000"/></FF></FR>
+        <FF label="Website"><FI value={fUtil.web} onChange={e=>setFUtil(f=>({...f,web:e.target.value}))} placeholder="www.provider.com"/></FF>
+        <FF label="Notes" mb={0}><FI value={fUtil.notes} onChange={e=>setFUtil(f=>({...f,notes:e.target.value}))} placeholder="e.g. Auto-pay on 15th"/></FF>
+        <BtnRow><Btn v="primary" full onClick={addUtil}>Save Utility</Btn><Btn v="ghost" full onClick={close}>Cancel</Btn></BtnRow>
+      </Modal>
+      <Modal open={modal==="editUtil"} onClose={close} title="Edit Utility">
+        <FR><FF label="Type"><FS opts={UTIL_TYPES} value={fEUtil.type} onChange={e=>setFEUtil(f=>({...f,type:e.target.value}))}/></FF><FF label="Provider"><FI value={fEUtil.provider} onChange={e=>setFEUtil(f=>({...f,provider:e.target.value}))}/></FF></FR>
+        <FR><FF label="Account #"><FI value={fEUtil.acct} onChange={e=>setFEUtil(f=>({...f,acct:e.target.value}))}/></FF><FF label="Phone"><FI value={fEUtil.phone} onChange={e=>setFEUtil(f=>({...f,phone:e.target.value}))} type="tel"/></FF></FR>
+        <FF label="Website"><FI value={fEUtil.web} onChange={e=>setFEUtil(f=>({...f,web:e.target.value}))}/></FF>
+        <FF label="Notes" mb={0}><FI value={fEUtil.notes} onChange={e=>setFEUtil(f=>({...f,notes:e.target.value}))}/></FF>
+        <BtnRow><Btn v="primary" full onClick={saveEUtil}>Save Changes</Btn><Btn v="ghost" full onClick={close}>Cancel</Btn></BtnRow>
+      </Modal>
+
+      {/* RE Contacts */}
+      <Modal open={modal==="addRCont"} onClose={close} title="Add Contact"><ContactForm f={fRCont} setF={setFRCont}/><BtnRow><Btn v="primary" full onClick={addRCont}>Save Contact</Btn><Btn v="ghost" full onClick={close}>Cancel</Btn></BtnRow></Modal>
+      <Modal open={modal==="editRCont"} onClose={close} title="Edit Contact"><ContactForm f={fERCont} setF={setFERCont}/><BtnRow><Btn v="primary" full onClick={saveERCont}>Save Changes</Btn><Btn v="ghost" full onClick={close}>Cancel</Btn></BtnRow></Modal>
+
+      {/* Entities */}
+      <Modal open={modal==="addEnt"} onClose={close} title="Add Entity">
+        <FF label="Name *"><FI value={fEnt.name} onChange={e=>setFEnt(f=>({...f,name:e.target.value}))} placeholder="e.g. Main Operations" autoFocus/></FF>
+        <FF label="Notes" mb={0}><FT value={fEnt.notes} onChange={e=>setFEnt(f=>({...f,notes:e.target.value}))} rows={2} placeholder="Any notes..."/></FF>
+        <BtnRow><Btn v="primary" full onClick={()=>addEnt(activeBizId)}>Add Entity</Btn><Btn v="ghost" full onClick={close}>Cancel</Btn></BtnRow>
+      </Modal>
+      <Modal open={modal==="editEnt"} onClose={close} title="Edit Entity">
+        <FF label="Name *"><FI value={fEEnt.name} onChange={e=>setFEEnt(f=>({...f,name:e.target.value}))}/></FF>
+        <FF label="Notes" mb={0}><FT value={fEEnt.notes} onChange={e=>setFEEnt(f=>({...f,notes:e.target.value}))} rows={2}/></FF>
+        <BtnRow><Btn v="primary" full onClick={()=>saveEEnt(activeBizId)}>Save Changes</Btn><Btn v="ghost" full onClick={close}>Cancel</Btn></BtnRow>
+      </Modal>
+      <Modal open={modal==="delEnt"} onClose={close} title="Delete Entity">
+        <div style={{background:D.redBg,border:`1.5px solid ${D.redBorder}`,borderRadius:10,padding:14,fontSize:13,color:D.red,lineHeight:1.7,marginBottom:4}}>⚠ Delete this entity and all its data? Cannot be undone.</div>
+        <BtnRow><Btn v="danger" full onClick={()=>delEnt(activeBizId)}>Yes, Delete</Btn><Btn v="ghost" full onClick={close}>Cancel</Btn></BtnRow>
+      </Modal>
+
+      {/* Biz Income / Expense */}
+      <Modal open={modal==="addBI"} onClose={close} title="Add Income">
+        <FR><FF label="Month"><FS opts={MONTHS.map((m,i)=>({v:i,l:m}))} value={fBI.month} onChange={e=>setFBI(f=>({...f,month:e.target.value}))}/></FF><FF label="Amount ($)"><FI type="number" inputMode="decimal" value={fBI.amount} onChange={e=>setFBI(f=>({...f,amount:e.target.value}))} placeholder="0.00" autoFocus/></FF></FR>
+        <FF label="Note (optional)" mb={0}><FI value={fBI.note} onChange={e=>setFBI(f=>({...f,note:e.target.value}))} placeholder="e.g. Client payment"/></FF>
+        <BtnRow><Btn v="primary" full onClick={()=>addBI(activeBizId)}>Save Income</Btn><Btn v="ghost" full onClick={close}>Cancel</Btn></BtnRow>
+      </Modal>
+      <Modal open={modal==="addBE"} onClose={close} title="Add Expense">
+        <FR><FF label="Month"><FS opts={MONTHS.map((m,i)=>({v:i,l:m}))} value={fBE.month} onChange={e=>setFBE(f=>({...f,month:e.target.value}))}/></FF><FF label="Category"><FS opts={activeBiz?.cats||[]} value={fBE.cat} onChange={e=>setFBE(f=>({...f,cat:e.target.value}))}/></FF></FR>
+        <FF label="Amount ($)"><FI type="number" inputMode="decimal" value={fBE.amount} onChange={e=>setFBE(f=>({...f,amount:e.target.value}))} placeholder="0.00" autoFocus/></FF>
+        <FF label="Description (optional)" mb={0}><FI value={fBE.desc} onChange={e=>setFBE(f=>({...f,desc:e.target.value}))} placeholder="e.g. Materials"/></FF>
+        <BtnRow><Btn v="primary" full onClick={()=>addBE(activeBizId)}>Save Expense</Btn><Btn v="ghost" full onClick={close}>Cancel</Btn></BtnRow>
+      </Modal>
+
+      {/* Invoice */}
+      <Modal open={modal==="addInv"} onClose={close} title="New Invoice">
+        <FF label="Client Name *"><FI value={fInv.client} onChange={e=>setFInv(f=>({...f,client:e.target.value}))} placeholder="Client or company name" autoFocus/></FF>
+        <FF label="Description"><FI value={fInv.desc} onChange={e=>setFInv(f=>({...f,desc:e.target.value}))} placeholder="Work description"/></FF>
+        <FR><FF label="Amount ($)"><FI type="number" inputMode="decimal" value={fInv.amount} onChange={e=>setFInv(f=>({...f,amount:e.target.value}))} placeholder="0.00"/></FF><FF label="Month"><FS opts={MONTHS.map((m,i)=>({v:i,l:m}))} value={fInv.month} onChange={e=>setFInv(f=>({...f,month:e.target.value}))}/></FF></FR>
+        <FF label="Status"><FS opts={INVOICE_STATUSES} value={fInv.status} onChange={e=>setFInv(f=>({...f,status:e.target.value}))}/></FF>
+        <FF label="Notes" mb={0}><FI value={fInv.notes} onChange={e=>setFInv(f=>({...f,notes:e.target.value}))} placeholder="Any notes"/></FF>
+        <BtnRow><Btn v="primary" full onClick={()=>addInv(activeBizId)}>Create Invoice</Btn><Btn v="ghost" full onClick={close}>Cancel</Btn></BtnRow>
+      </Modal>
+
+      {/* Biz Contacts */}
+      <Modal open={modal==="addBC"} onClose={close} title="Add Contact"><ContactForm f={fBCont} setF={setFBCont}/><BtnRow><Btn v="primary" full onClick={()=>addBC(activeBizId)}>Save Contact</Btn><Btn v="ghost" full onClick={close}>Cancel</Btn></BtnRow></Modal>
+      <Modal open={modal==="editBC"} onClose={close} title="Edit Contact"><ContactForm f={fEBCont} setF={setFEBCont}/><BtnRow><Btn v="primary" full onClick={()=>saveEBC(activeBizId)}>Save Changes</Btn><Btn v="ghost" full onClick={close}>Cancel</Btn></BtnRow></Modal>
+
+      {/* AI Receipt + Drive Upload */}
+      <Modal open={modal==="receipt"} onClose={()=>{close();setAiState("idle");setAiData(null);}} title="📷 Scan Receipt → Drive" width={480}>
+        <input ref={fileRef} type="file" accept="image/*" style={{display:"none"}} onChange={async e=>{
+          const file=e.target.files[0];if(!file)return;
+          setAiState("loading");
+          const cats=aiCtx?.cats||RE_CATS;
+          // Run AI + Drive upload in parallel
+          const reader=new FileReader();
+          reader.onload=async ev=>{
+            const base64=ev.target.result.split(",")[1];
+            const [aiResp,driveResp]=await Promise.allSettled([
+              fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:600,messages:[{role:"user",content:[{type:"image",source:{type:"base64",media_type:file.type||"image/jpeg",data:base64}},{type:"text",text:`Read this receipt. Return ONLY valid JSON:
+{"amount":<number>,"description":"<max 60 chars>","category":"<one of: ${cats.join(", ")}>","vendor":"<n>","date":"<MM/DD/YYYY or null>"}`}]}]})}).then(r=>r.json()),
+              uploadToDrive(file,{portType:aiCtx?.port==="re"?"re":"biz",month:new Date().getMonth(),year:selYear,label:aiCtx?.port==="re"?"Real Estate":(activeBiz?.name||"Business")}),
+            ]);
+            // Process AI result
+            try{
+              const data=aiResp.value||aiResp.reason;
+              const text=data.content?.map(x=>x.text||"").join("")||"";
+              const parsed=JSON.parse(text.replace(/```json|```/g,"").trim());
+              setAiData({...parsed,driveUrl:driveResp.value?.url||null});
+              setRExp(r=>({...r,amount:parsed.amount||"",desc:parsed.description||"",cat:cats.includes(parsed.category)?parsed.category:cats[0],month:parsed.date?parseInt(parsed.date.split("/")[0])-1:r.month}));
+              setAiState("done");
+            }catch{setAiState("error");}
+          };
+          reader.readAsDataURL(file);
+        }}/>
+        {aiState==="idle"&&(
+          <div onClick={()=>fileRef.current?.click()} style={{border:`2px dashed ${D.border2}`,borderRadius:14,padding:"38px 20px",textAlign:"center",cursor:"pointer",background:D.s2,marginBottom:4}}>
+            <div style={{fontSize:40,marginBottom:12}}>📸</div>
+            <div style={{fontSize:14,fontWeight:700,color:D.gold,marginBottom:6}}>Take a photo or upload</div>
+            <div style={{fontSize:12,color:D.muted,marginBottom:4}}>AI reads the receipt and fills in expense details</div>
+            {authToken&&<div style={{fontSize:11,color:D.green,marginTop:6}}>✓ Will auto-save to Google Drive</div>}
+            {!authToken&&<div style={{fontSize:11,color:D.goldDim,marginTop:6}}>Connect backend to auto-save to Drive</div>}
+          </div>
+        )}
+        {aiState==="loading"&&(
+          <div style={{textAlign:"center",padding:"38px 20px",background:D.s2,borderRadius:14,marginBottom:14}}>
+            <div style={{fontSize:36,marginBottom:12}}>🤖</div>
+            <div style={{fontWeight:700,color:D.gold,marginBottom:4}}>Reading receipt{driveUploading?" + uploading to Drive":""}...</div>
+            <div style={{fontSize:12,color:D.muted}}>AI is extracting the details</div>
+          </div>
+        )}
+        {aiState==="error"&&(
+          <div style={{background:D.redBg,border:`1.5px solid ${D.redBorder}`,borderRadius:10,padding:13,fontSize:12,color:D.red,marginBottom:14}}>
+            ⚠ Couldn't read clearly. Fill in the details manually below.
+          </div>
+        )}
+        {aiState==="done"&&aiData&&(
+          <div style={{background:D.greenBg,border:`1.5px solid ${D.greenBorder}`,borderRadius:12,padding:14,marginBottom:14}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
+              <div style={{fontSize:9,color:D.green,letterSpacing:2,textTransform:"uppercase",fontWeight:700}}>✓ AI Detected</div>
+              {aiData.driveUrl&&<a href={aiData.driveUrl} target="_blank" rel="noreferrer" style={{fontSize:10,color:D.blue,fontWeight:700,textDecoration:"none"}}>📁 View in Drive →</a>}
+              {!aiData.driveUrl&&<span style={{fontSize:10,color:D.goldDim}}>Drive: not connected</span>}
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,fontSize:12}}>
+              {[["Vendor",aiData.vendor||"—",D.text],["Amount",aiData.amount?fmtD(aiData.amount):"—",D.green],["Category",aiData.category||"—",D.gold],["Date",aiData.date||"—",D.text]].map(([l,v,c])=>(
+                <div key={l}><div style={{fontSize:9,color:D.muted,textTransform:"uppercase",letterSpacing:1.5,fontWeight:700,marginBottom:3}}>{l}</div><div style={{fontWeight:700,color:c}}>{v}</div></div>
+              ))}
+            </div>
+          </div>
+        )}
+        {(aiState==="done"||aiState==="error")&&(<>
+          <FR><FF label="Month"><FS opts={MONTHS.map((m,i)=>({v:i,l:m}))} value={rExp.month} onChange={e=>setRExp(r=>({...r,month:e.target.value}))}/></FF><FF label="Category"><FS opts={aiCtx?.cats||RE_CATS} value={rExp.cat} onChange={e=>setRExp(r=>({...r,cat:e.target.value}))}/></FF></FR>
+          <FF label="Amount ($)"><FI type="number" inputMode="decimal" value={rExp.amount} onChange={e=>setRExp(r=>({...r,amount:e.target.value}))} placeholder="0.00"/></FF>
+          <FF label="Description" mb={0}><FI value={rExp.desc} onChange={e=>setRExp(r=>({...r,desc:e.target.value}))}/></FF>
+          <BtnRow>
+            <Btn v="primary" full onClick={()=>{
+              const driveUrl=aiData?.driveUrl||null;
+              if(aiCtx?.port==="re"){const a=parseFloat(rExp.amount);if(!a||isNaN(a))return;setReExp(v=>{const n={...v};(n[selProp]??={})[selYear]??=[];n[selProp][selYear]=[...n[selProp][selYear],{id:uid(),month:+rExp.month,cat:rExp.cat,desc:rExp.desc,amount:a,receiptUrl:driveUrl}];return n});setAiState("idle");setAiData(null);close();}
+              else{const a=parseFloat(rExp.amount);if(!a||isNaN(a))return;const bizId=aiCtx?.port;const eid=selBizEnt[bizId];updBiz(bizId,b=>{const exp={...b.expenses};(exp[eid]??={})[selYear]??=[];exp[eid][selYear]=[...exp[eid][selYear],{id:uid(),month:+rExp.month,cat:rExp.cat,desc:rExp.desc,amount:a,receiptUrl:driveUrl}];return{...b,expenses:exp}});setAiState("idle");setAiData(null);close();}
+            }}>Save Expense</Btn>
+            <Btn v="ghost" full onClick={()=>{setAiState("idle");setAiData(null);if(fileRef.current)fileRef.current.value="";}}>Scan Again</Btn>
+          </BtnRow>
+        </>)}
+      </Modal>
+
+    </div>
   );
-  document.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
-  if (btn) btn.classList.add('active');
-  renderDetail();
 }
 
-/* ─── YEAR ─── */
-function initYear() {
-  const s = $('yearSel');
-  s.innerHTML = YEARS.map(y => `<option value="${y}"${y===D.year?' selected':''}>${y}</option>`).join('');
-  s.onchange = () => { D.year = +s.value; save(); render(); };
-}
 
-/* ─── SELECTS ─── */
-function initSelects() {
-  const mo = MONTHS.map((m,i) => `<option value="${i}">${m}</option>`).join('');
-  $('fIncMonth').innerHTML = mo;
-  $('fExpMonth').innerHTML = mo;
-  $('fExpCat').innerHTML   = CATS.map(c => `<option>${c}</option>`).join('');
-  const cm = new Date().getMonth();
-  $('fIncMonth').value = cm;
-  $('fExpMonth').value = cm;
-}
+// ══════════════════════════════════════
+//  LOGIN SCREEN
+// ══════════════════════════════════════
+const API_URL = "https://your-app.ondigitalocean.app"; // ← update this when backend is live
 
-/* ─── PROPERTY CRUD ─── */
-function addProperty() {
-  const name = $('fPropName').value.trim();
-  if (!name) { $('fPropName').focus(); return; }
-  const id = uid();
-  D.properties.push({ id, name, address: $('fPropAddr').value.trim() });
-  D.prop = id;
-  $('fPropName').value = '';
-  $('fPropAddr').value = '';
-  closeSheet('addPropSheet');
-  save(); render();
-}
+function LoginScreen({ onLogin }) {
+  const [mode, setMode] = useState("login");
+  const [form, setForm] = useState({ name:"", email:"", password:"" });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-let _delId = null;
-function promptDelete(id, e) {
-  e.stopPropagation();
-  _delId = id;
-  const p = D.properties.find(x => x.id === id);
-  $('delPropName').textContent = p ? p.name : 'this property';
-  openSheet('delPropSheet');
-}
-function confirmDelete() {
-  if (!_delId) return;
-  D.properties = D.properties.filter(p => p.id !== _delId);
-  delete D.income[_delId];
-  delete D.expenses[_delId];
-  if (D.prop === _delId) D.prop = D.properties[0]?.id ?? null;
-  _delId = null;
-  closeSheet('delPropSheet');
-  save(); render();
-}
+  const LD = {
+    bg:"#0d0f18", surface:"#161926", s2:"#1e2130",
+    border:"#232638", border2:"#2e3248",
+    text:"#e8e4dc", muted:"#6a7080",
+    gold:"#e8d5a3", red:"#e07070", redBg:"#2a1515", redBorder:"#4a2020",
+  };
+  const LT = { serif:"'Playfair Display',Georgia,serif", sans:"'DM Sans',system-ui,sans-serif" };
+  const inp = { width:"100%", background:LD.s2, border:`1.5px solid ${LD.border2}`, color:LD.text,
+    padding:"13px 15px", borderRadius:10, fontSize:15, fontFamily:LT.sans,
+    outline:"none", boxSizing:"border-box", marginBottom:12 };
 
-/* ─── INCOME CRUD ─── */
-function addIncome() {
-  const amt = parseFloat($('fIncAmt').value);
-  if (!amt || isNaN(amt)) { $('fIncAmt').focus(); return; }
-  const p = D.prop, y = D.year;
-  (D.income[p] ??= {})[y] ??= [];
-  D.income[p][y].push({ id: uid(), month: +$('fIncMonth').value, amount: amt, note: $('fIncNote').value.trim() });
-  $('fIncAmt').value = '';
-  $('fIncNote').value = '';
-  closeSheet('addIncSheet');
-  save(); render();
-}
-function delIncome(id) {
-  const p = D.prop, y = D.year;
-  D.income[p][y] = D.income[p][y].filter(e => e.id !== id);
-  save(); render();
-}
+  async function submit() {
+    setError("");
+    if(!form.email||!form.password){setError("Please fill in all fields");return;}
+    if(mode==="register"&&!form.name){setError("Please enter your name");return;}
 
-/* ─── EXPENSE CRUD ─── */
-function addExpense() {
-  const amt = parseFloat($('fExpAmt').value);
-  if (!amt || isNaN(amt)) { $('fExpAmt').focus(); return; }
-  const p = D.prop, y = D.year;
-  (D.expenses[p] ??= {})[y] ??= [];
-  D.expenses[p][y].push({ id: uid(), month: +$('fExpMonth').value, cat: $('fExpCat').value, desc: $('fExpDesc').value.trim(), amount: amt });
-  $('fExpAmt').value = '';
-  $('fExpDesc').value = '';
-  closeSheet('addExpSheet');
-  save(); render();
-}
-function delExpense(id) {
-  const p = D.prop, y = D.year;
-  D.expenses[p][y] = D.expenses[p][y].filter(e => e.id !== id);
-  save(); render();
-}
-
-/* ─── EXPORT ─── */
-function exportCSV() {
-  const rows = [["Property","Address","Year","Type","Month","Category","Note / Description","Amount"]];
-  D.properties.forEach(p => {
-    YEARS.forEach(y => {
-      getI(p.id,y).forEach(e => rows.push([p.name, p.address, y, "Income",  MONTHS[e.month], "Rental Income", e.note||"", e.amount]));
-      getE(p.id,y).forEach(e => rows.push([p.name, p.address, y, "Expense", MONTHS[e.month], e.cat, e.desc||"", e.amount]));
-    });
-  });
-  const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(",")).join("\n");
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([csv], { type:"text/csv" }));
-  a.download = "rental-tracker.csv";
-  a.click();
-  closeSheet('exportSheet');
-}
-
-/* ─── NAVIGATION HELPERS ─── */
-function selectProp(id) { D.prop = id; save(); renderDetail(); }
-function goDetail(id) {
-  D.prop = id; D.view = 'detail';
-  $('vDash').classList.add('hidden');
-  $('vDetail').classList.remove('hidden');
-  $('navDash').classList.remove('active');
-  $('navDetail').classList.add('active');
-  save(); render();
-}
-
-/* ══════════════════════════════════════════
-   RENDER
-══════════════════════════════════════════ */
-function render() { renderDashboard(); renderDetail(); }
-
-/* ─── DASHBOARD ─── */
-function renderDashboard() {
-  const y = D.year, tot = portfolio(y);
-
-  /* Portfolio KPIs */
-  $('portKpis').innerHTML = [
-    { label:"Portfolio Income",   val: tot.i, color:"var(--green)" },
-    { label:"Portfolio Expenses", val: tot.e, color:"var(--red)"   },
-    { label:"Portfolio Net",      val: tot.n, color: tot.n>=0 ? "var(--gold)" : "var(--red)" }
-  ].map(k => `
-    <div class="kpi">
-      <div class="kpi-label">${k.label}</div>
-      <div class="kpi-val" style="color:${k.color}">${fmt(k.val)}</div>
-      <div class="kpi-sub">${y} · All Properties</div>
-    </div>`).join('');
-
-  /* Property label */
-  $('propCardsLabel').textContent = `Properties — ${y}`;
-
-  /* Property cards */
-  $('propCards').innerHTML = D.properties.map(p => {
-    const s = propSums(p.id, y);
-    const total = s.i + s.e;
-    const pct   = total > 0 ? Math.round(s.i / total * 100) : 0;
-    return `
-    <div class="prop-card" onclick="goDetail('${p.id}')">
-      <div class="prop-card-top">
-        <div class="prop-card-info">
-          <div class="prop-card-name">${p.name}</div>
-          <div class="prop-card-addr">${p.address || 'No address'}</div>
-        </div>
-        <div class="prop-card-actions">
-          <span class="${s.n>=0?'badge badge-profit':'badge badge-loss'}">${s.n>=0?'✓ Profit':'⚠ Loss'}</span>
-          <button onclick="promptDelete('${p.id}',event)" class="prop-pill-del" title="Delete">🗑</button>
-        </div>
-      </div>
-      <div class="prop-card-stats">
-        <div class="prop-stat">
-          <div class="prop-stat-label">Income</div>
-          <div class="prop-stat-val" style="color:var(--green)">${fmt(s.i)}</div>
-        </div>
-        <div class="prop-stat">
-          <div class="prop-stat-label">Expenses</div>
-          <div class="prop-stat-val" style="color:var(--red)">${fmt(s.e)}</div>
-        </div>
-        <div class="prop-stat">
-          <div class="prop-stat-label">Net</div>
-          <div class="prop-stat-val" style="color:${s.n>=0?'var(--gold)':'var(--red)'}">${fmt(s.n)}</div>
-        </div>
-      </div>
-      <div class="mini-bar"><div class="mini-bar-i" style="width:${pct}%"></div><div class="mini-bar-e"></div></div>
-      <div class="prop-legend"><span style="color:var(--green)">■ Income</span><span style="color:var(--red)">■ Expenses</span></div>
-      <div class="prop-card-link">View details →</div>
-    </div>`;
-  }).join('');
-
-  /* Comparison table */
-  $('compTitle').textContent = `Monthly Comparison — All Properties — ${y}`;
-  const ps = D.properties;
-  if (!ps.length) { $('compTable').innerHTML = ''; return; }
-
-  const ch = ps.map(p => `<th colspan="2" style="text-align:center;border-left:1px solid var(--border)">${p.name}</th>`).join('');
-  const sh = ps.map(() => `
-    <th style="text-align:right;color:var(--green);border-left:1px solid var(--border);font-size:9px;padding:8px 12px;background:var(--s3);border-bottom:1px solid var(--border)">INC</th>
-    <th style="text-align:right;color:var(--red);font-size:9px;padding:8px 12px;background:var(--s3);border-bottom:1px solid var(--border)">EXP</th>`).join('');
-
-  const rows = MS.map((m,i) => {
-    let rn = 0;
-    const cells = ps.map(p => {
-      const inc = sum(getI(p.id,y).filter(e => e.month===i));
-      const exp = sum(getE(p.id,y).filter(e => e.month===i));
-      rn += inc - exp;
-      return `<td style="text-align:right;color:var(--green);font-weight:600;border-left:1px solid var(--border);font-variant-numeric:tabular-nums">${dash(inc)}</td>
-              <td style="text-align:right;color:var(--red);font-variant-numeric:tabular-nums">${dash(exp)}</td>`;
-    }).join('');
-    const nc = rn>0?'var(--gold)':rn<0?'var(--red)':'var(--dim)';
-    return `<tr>
-      <td style="font-weight:600;color:#c0bdb5;white-space:nowrap">${m}</td>
-      ${cells}
-      <td style="text-align:right;font-weight:700;color:${nc};border-left:1px solid var(--border2);font-variant-numeric:tabular-nums">${rn!==0?fmt(rn):'<span style="color:var(--dim)">—</span>'}</td>
-    </tr>`;
-  }).join('');
-
-  const fc = ps.map(p => {
-    const s = propSums(p.id,y);
-    return `<td class="total-green r" style="border-left:1px solid var(--border)">${fmt(s.i)}</td>
-            <td class="total-red r">${fmt(s.e)}</td>`;
-  }).join('');
-  const nc = tot.n>=0?'total-gold':'total-neg';
-
-  $('compTable').innerHTML = `
-    <colgroup><col style="width:90px">${ps.map(()=>'<col style="width:110px"><col style="width:110px">').join('')}<col style="width:120px"></colgroup>
-    <thead>
-      <tr><th>Month</th>${ch}<th class="r" style="border-left:1px solid var(--border2)">Net</th></tr>
-      <tr><th></th>${sh}<th style="border-left:1px solid var(--border2)"></th></tr>
-    </thead>
-    <tbody>${rows}</tbody>
-    <tfoot><tr>
-      <td class="total-label">Annual</td>
-      ${fc}
-      <td class="${nc}" style="border-left:1px solid var(--border2)">${fmt(tot.n)}</td>
-    </tr></tfoot>`;
-}
-
-/* ─── DETAIL ─── */
-function renderDetail() {
-  const pid = D.prop, y = D.year;
-  const prop = D.properties.find(p => p.id === pid);
-
-  /* Pills */
-  $('propPills').innerHTML = D.properties.map(p => `
-    <span class="prop-pill-wrap">
-      <button class="prop-pill${p.id===pid?' active':''}" onclick="selectProp('${p.id}')">${p.name}</button>
-      <button class="prop-pill-del" onclick="promptDelete('${p.id}',event)" title="Delete">🗑</button>
-    </span>`).join('');
-
-  if (!prop) return;
-
-  const s = propSums(pid, y);
-
-  /* Detail KPIs */
-  $('detKpis').innerHTML = [
-    { label:"Total Income",   val:s.i, color:"var(--green)" },
-    { label:"Total Expenses", val:s.e, color:"var(--red)"   },
-    { label:"Net Income",     val:s.n, color:s.n>=0?"var(--gold)":"var(--red)" }
-  ].map(k => `
-    <div class="kpi">
-      <div class="kpi-label">${k.label}</div>
-      <div class="kpi-val" style="color:${k.color}">${fmt(k.val)}</div>
-    </div>`).join('');
-
-  $('incYrLbl').textContent = y;
-  $('expYrLbl').textContent = y;
-  $('sumTitle').textContent = `Month-by-Month — ${y}`;
-
-  /* ── Income ── */
-  const il = [...getI(pid,y)].sort((a,b) => a.month - b.month);
-  $('incEmpty').classList.toggle('hidden', il.length > 0);
-  $('incTable').classList.toggle('hidden', il.length === 0);
-  if (il.length) {
-    $('incBody').innerHTML = il.map(r => `
-      <tr>
-        <td class="month">${MONTHS[r.month]}</td>
-        <td class="muted">${r.note || '—'}</td>
-        <td class="amt-green">${fmtD(r.amount)}</td>
-        <td class="del"><button class="del-btn" onclick="delIncome('${r.id}')">×</button></td>
-      </tr>`).join('');
-    $('incFoot').innerHTML = `
-      <tr>
-        <td class="total-label" colspan="2">Total</td>
-        <td class="total-green">${fmt(s.i)}</td>
-        <td></td>
-      </tr>`;
+    // No backend yet → skip straight to app
+    if(API_URL.includes("your-app")){
+      onLogin({name:form.name||form.email.split("@")[0],email:form.email},null);
+      return;
+    }
+    setLoading(true);
+    try{
+      const ep=mode==="login"?"/api/auth/login":"/api/auth/register";
+      const body=mode==="login"
+        ?{email:form.email,password:form.password}
+        :{email:form.email,password:form.password,name:form.name};
+      const res=await fetch(API_URL+ep,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+      const data=await res.json();
+      if(!res.ok){setError(data.error||"Something went wrong");return;}
+      localStorage.setItem("ph_token",data.token);
+      localStorage.setItem("ph_user",JSON.stringify(data.user));
+      onLogin(data.user,data.token);
+    }catch(e){
+      setError("Can't reach server — using local mode.");
+      onLogin({name:form.email.split("@")[0],email:form.email},null);
+    }finally{setLoading(false);}
   }
 
-  /* ── Expenses ── */
-  const el = [...getE(pid,y)].sort((a,b) => a.month - b.month);
-  $('expEmpty').classList.toggle('hidden', el.length > 0);
-  $('expTable').classList.toggle('hidden', el.length === 0);
-  if (el.length) {
-    $('expBody').innerHTML = el.map(r => `
-      <tr>
-        <td class="month">${MONTHS[r.month]}</td>
-        <td><span class="tag">${r.cat}</span></td>
-        <td class="muted">${r.desc || '—'}</td>
-        <td class="amt-red">${fmtD(r.amount)}</td>
-        <td class="del"><button class="del-btn" onclick="delExpense('${r.id}')">×</button></td>
-      </tr>`).join('');
-    $('expFoot').innerHTML = `
-      <tr>
-        <td class="total-label" colspan="3">Total</td>
-        <td class="total-red">${fmt(s.e)}</td>
-        <td></td>
-      </tr>`;
-  }
-
-  /* ── Summary ── */
-  let rows = '', ai = 0, ae = 0;
-  MS.forEach((m,i) => {
-    const inc = sum(getI(pid,y).filter(e => e.month===i));
-    const exp = sum(getE(pid,y).filter(e => e.month===i));
-    const net = inc - exp;
-    ai += inc; ae += exp;
-    const nc = net>0?'amt-gold':net<0?'amt-red':'muted';
-    rows += `
-      <tr>
-        <td class="month">${m}</td>
-        <td class="amt-green">${inc ? fmt(inc) : '<span style="color:var(--dim)">—</span>'}</td>
-        <td class="amt-red">${exp ? fmt(exp) : '<span style="color:var(--dim)">—</span>'}</td>
-        <td class="${nc}">${inc||exp ? fmt(net) : '<span style="color:var(--dim)">—</span>'}</td>
-      </tr>`;
-  });
-  const an = ai - ae;
-  $('sumBody').innerHTML = rows;
-  $('sumFoot').innerHTML = `
-    <tr>
-      <td class="total-label">Annual</td>
-      <td class="total-green">${fmt(ai)}</td>
-      <td class="total-red">${fmt(ae)}</td>
-      <td class="${an>=0?'total-gold':'total-neg'}">${fmt(an)}</td>
-    </tr>`;
+  return (
+    <div style={{background:LD.bg,minHeight:"100vh",display:"flex",alignItems:"center",
+      justifyContent:"center",padding:20,fontFamily:LT.sans}}>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;600;700&display=swap');`}</style>
+      <div style={{width:"100%",maxWidth:380}}>
+        <div style={{textAlign:"center",marginBottom:36}}>
+          <div style={{width:54,height:54,borderRadius:14,background:`linear-gradient(135deg,${LD.gold},#a07830)`,
+            display:"flex",alignItems:"center",justifyContent:"center",fontSize:28,margin:"0 auto 14px"}}>📊</div>
+          <div style={{fontFamily:LT.serif,fontSize:28,fontWeight:700,color:LD.gold,marginBottom:6}}>Portfolio Hub</div>
+          <div style={{fontSize:13,color:LD.muted}}>{mode==="login"?"Welcome back":"Create your account"}</div>
+        </div>
+        <div style={{background:LD.surface,border:`1.5px solid ${LD.border}`,borderRadius:20,padding:28}}>
+          {mode==="register"&&<input style={inp} placeholder="Your name" value={form.name}
+            onChange={e=>setForm(f=>({...f,name:e.target.value}))} onKeyDown={e=>e.key==="Enter"&&submit()} autoFocus/>}
+          <input style={inp} placeholder="Email address" type="email" value={form.email}
+            onChange={e=>setForm(f=>({...f,email:e.target.value}))} onKeyDown={e=>e.key==="Enter"&&submit()}
+            autoFocus={mode==="login"}/>
+          <input style={{...inp,marginBottom:error?8:18}} placeholder="Password" type="password" value={form.password}
+            onChange={e=>setForm(f=>({...f,password:e.target.value}))} onKeyDown={e=>e.key==="Enter"&&submit()}/>
+          {error&&<div style={{background:LD.redBg,border:`1px solid ${LD.redBorder}`,borderRadius:8,
+            padding:"10px 13px",fontSize:13,color:LD.red,marginBottom:14}}>{error}</div>}
+          <button onClick={submit} disabled={loading} style={{width:"100%",background:LD.gold,color:"#0c0e16",
+            border:"none",borderRadius:10,padding:"14px",fontWeight:700,fontSize:15,
+            cursor:loading?"wait":"pointer",fontFamily:LT.sans,marginBottom:14,opacity:loading?0.7:1}}>
+            {loading?"Please wait...":mode==="login"?"Sign In →":"Create Account →"}
+          </button>
+          <button onClick={()=>window.location.href=API_URL+"/api/auth/google"}
+            disabled={API_URL.includes("your-app")}
+            style={{width:"100%",background:LD.s2,color:LD.text,border:`1.5px solid ${LD.border2}`,
+              borderRadius:10,padding:"13px",fontWeight:600,fontSize:14,cursor:"pointer",
+              fontFamily:LT.sans,marginBottom:18,display:"flex",alignItems:"center",
+              justifyContent:"center",gap:10,opacity:API_URL.includes("your-app")?0.4:1}}>
+            <span style={{fontSize:18}}>🔵</span>
+            {API_URL.includes("your-app")?"Sign in with Google (setup required)":"Sign in with Google"}
+          </button>
+          <div style={{textAlign:"center",fontSize:13,color:LD.muted}}>
+            {mode==="login"?"Don't have an account? ":"Already have an account? "}
+            <span onClick={()=>{setMode(mode==="login"?"register":"login");setError("");}}
+              style={{color:LD.gold,fontWeight:700,cursor:"pointer"}}>
+              {mode==="login"?"Register":"Sign in"}
+            </span>
+          </div>
+          {API_URL.includes("your-app")&&<div style={{marginTop:16,padding:"10px 13px",
+            background:LD.s2,borderRadius:8,border:`1px solid ${LD.border}`,
+            fontSize:12,color:LD.muted,textAlign:"center",lineHeight:1.6}}>
+            💡 Backend not set up yet — tap Sign In to use the app. Your data saves in this browser.
+          </div>}
+        </div>
+      </div>
+    </div>
+  );
 }
 
-/* ─── BOOT ─── */
-load();
-initYear();
-initSelects();
-render();
-</script>
+// ══ ROOT — shows login OR the main app ══
+function Root() {
+  const [user,setUser]=useState(()=>{try{return JSON.parse(localStorage.getItem("ph_user"));}catch{return null;}});
+  const [token,setToken]=useState(()=>localStorage.getItem("ph_token")||null);
+
+  // Pick up Google OAuth token from URL
+  const [,]=useState(()=>{
+    const params=new URLSearchParams(window.location.search);
+    const t=params.get("token");
+    if(t){
+      localStorage.setItem("ph_token",t);
+      setToken(t);
+      fetch(API_URL+"/api/auth/me",{headers:{Authorization:`Bearer ${t}`}})
+        .then(r=>r.json()).then(u=>{localStorage.setItem("ph_user",JSON.stringify(u));setUser(u);}).catch(()=>{});
+      window.history.replaceState({},"",window.location.pathname);
+    }
+  });
+
+  function handleLogin(u,t){setUser(u);setToken(t);if(u)localStorage.setItem("ph_user",JSON.stringify(u));}
+  function handleLogout(){localStorage.removeItem("ph_token");localStorage.removeItem("ph_user");setUser(null);setToken(null);}
+
+  if(!user) return <LoginScreen onLogin={handleLogin}/>;
+  return <App authToken={token} currentUser={user} onLogout={handleLogout}/>;
+}
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<Root/>);
+  </script>
 </body>
 </html>
