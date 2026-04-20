@@ -197,7 +197,7 @@ const BIZ_COLORS=[
   {label:'Orange',  val:'#fb923c',bg:'#2a1a0f',bor:'#5a3010'},
   {label:'Lime',    val:'#a3e635',bg:'#1a2810',bor:'#2e4818'},
 ];
-const API_URL='https://goldfish-app-es8sx.ondigitalocean.app';
+const API_URL='https://your-app.ondigitalocean.app';
 
 // ─── HELPERS ─────────────────────────────────
 const uid=()=>Math.random().toString(36).slice(2)+Date.now().toString(36);
@@ -564,6 +564,49 @@ function parseNL(text,type,cats){
   if(type==='income')return{amount,month,note:desc};
   if(type==='expense')return{amount,month,category:extractCategory(text,cats),description:desc};
   if(type==='invoice')return{amount,month,client:extractClient(text)||desc,description:desc,status:'Draft'};
+  if(name==='invite'){
+    const bizId=d.bizId;
+    const emailI=el('input',{class:'finp',type:'email',placeholder:'their@email.com'});
+    emailI.style.marginBottom='10px';
+    const canEditTog=tog(true);
+    const statusBox=el('div',{style:{display:'none',padding:'10px 12px',borderRadius:'8px',fontSize:'13px',marginBottom:'12px',lineHeight:'1.5'}});
+    const body=el('div',{});
+    body.append(
+      el('div',{style:{fontSize:'13px',color:'var(--mut)',marginBottom:'14px',lineHeight:'1.6'}},'They need to register at your app URL first, then you can invite them here. They will ONLY see this business — nothing else.'),
+      fgroup('Their Email Address',emailI),
+      el('div',{class:'tog-row'},el('span',{class:'tog-label'},'Can add income & expenses'),canEditTog),
+      el('div',{style:{height:'14px'}}),
+      statusBox
+    );
+    const sendBtn=el('button',{class:'btn btn-gold btn-full'},'Send Invite');
+    sendBtn.addEventListener('click',async()=>{
+      const email=emailI.value.trim();
+      if(!email){statusBox.textContent='Please enter an email address';statusBox.style.display='block';statusBox.style.background='var(--redB)';statusBox.style.color='var(--red)';return;}
+      sendBtn.textContent='Sending...';sendBtn.disabled=true;
+      try{
+        const res=await fetch(API_URL+'/api/businesses/'+bizId+'/invite',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+S.token},body:JSON.stringify({email,can_edit:canEditTog.dataset.on==='1',can_manage:false})});
+        const data=await res.json();
+        if(res.ok){
+          statusBox.textContent='✓ Invite sent! '+email+' can now log in and access this business.';
+          statusBox.style.display='block';statusBox.style.background='var(--grnB)';statusBox.style.color='var(--grn)';
+          emailI.value='';
+        } else {
+          statusBox.textContent='⚠ '+( data.error||'Something went wrong');
+          statusBox.style.display='block';statusBox.style.background='var(--redB)';statusBox.style.color='var(--red)';
+        }
+      }catch(e){
+        statusBox.textContent='⚠ Could not reach server. Check your connection.';
+        statusBox.style.display='block';statusBox.style.background='var(--redB)';statusBox.style.color='var(--red)';
+      }
+      sendBtn.textContent='Send Invite';sendBtn.disabled=false;
+    });
+    body.append(sendBtn);
+    body.append(el('div',{style:{marginTop:'16px',padding:'11px 13px',background:'var(--s2)',borderRadius:'8px',border:'1px solid var(--bor)',fontSize:'12px',color:'var(--mut)',lineHeight:'1.6'}},
+      '💡 How it works: share your app link with them, they tap Register, create an account, then they can log in and see only this business.'
+    ));
+    return{title:'✉️ Invite to '+d.bizName,body};
+  }
+
   return null;
 }
 
@@ -912,7 +955,8 @@ function renderBiz(biz){
   const expBtn=el('button',{class:'btn btn-green btn-sm'},'↓ Export');expBtn.addEventListener('click',()=>exportPort(biz.id));
   const entBtn=el('button',{class:'btn btn-dark btn-sm'},'+ Entity');entBtn.addEventListener('click',()=>{S.modalData={bizId:biz.id};openModal('addEnt');});
   const delBtn=el('button',{class:'btn btn-red btn-sm'},'Delete');delBtn.addEventListener('click',()=>{if(confirm('Delete '+biz.name+' and all its data?')){S.bizs=S.bizs.filter(b=>b.id!==biz.id);if(S.activePort===biz.id)S.activePort='master';save();render();}});
-  hr.append(expBtn,entBtn,delBtn);hdr.append(hr);
+  const invBtn=el('button',{class:'btn btn-blue btn-sm'},'✉️ Invite');invBtn.addEventListener('click',()=>{S.modalData={bizId:biz.id,bizName:biz.name};openModal('invite');});
+  hr.append(expBtn,entBtn,invBtn,delBtn);hdr.append(hr);
   wrap.append(hdr);
 
   // KPIs
@@ -1322,6 +1366,49 @@ function buildModalContent(name){
     });
     buildReceipt();
     return{title:'📷 Scan Receipt → Drive',body};
+  }
+
+  if(name==='invite'){
+    const bizId=d.bizId;
+    const emailI=el('input',{class:'finp',type:'email',placeholder:'their@email.com'});
+    emailI.style.marginBottom='10px';
+    const canEditTog=tog(true);
+    const statusBox=el('div',{style:{display:'none',padding:'10px 12px',borderRadius:'8px',fontSize:'13px',marginBottom:'12px',lineHeight:'1.5'}});
+    const body=el('div',{});
+    body.append(
+      el('div',{style:{fontSize:'13px',color:'var(--mut)',marginBottom:'14px',lineHeight:'1.6'}},'They need to register at your app URL first, then you can invite them here. They will ONLY see this business — nothing else.'),
+      fgroup('Their Email Address',emailI),
+      el('div',{class:'tog-row'},el('span',{class:'tog-label'},'Can add income & expenses'),canEditTog),
+      el('div',{style:{height:'14px'}}),
+      statusBox
+    );
+    const sendBtn=el('button',{class:'btn btn-gold btn-full'},'Send Invite');
+    sendBtn.addEventListener('click',async()=>{
+      const email=emailI.value.trim();
+      if(!email){statusBox.textContent='Please enter an email address';statusBox.style.display='block';statusBox.style.background='var(--redB)';statusBox.style.color='var(--red)';return;}
+      sendBtn.textContent='Sending...';sendBtn.disabled=true;
+      try{
+        const res=await fetch(API_URL+'/api/businesses/'+bizId+'/invite',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+S.token},body:JSON.stringify({email,can_edit:canEditTog.dataset.on==='1',can_manage:false})});
+        const data=await res.json();
+        if(res.ok){
+          statusBox.textContent='✓ Invite sent! '+email+' can now log in and access this business.';
+          statusBox.style.display='block';statusBox.style.background='var(--grnB)';statusBox.style.color='var(--grn)';
+          emailI.value='';
+        } else {
+          statusBox.textContent='⚠ '+( data.error||'Something went wrong');
+          statusBox.style.display='block';statusBox.style.background='var(--redB)';statusBox.style.color='var(--red)';
+        }
+      }catch(e){
+        statusBox.textContent='⚠ Could not reach server. Check your connection.';
+        statusBox.style.display='block';statusBox.style.background='var(--redB)';statusBox.style.color='var(--red)';
+      }
+      sendBtn.textContent='Send Invite';sendBtn.disabled=false;
+    });
+    body.append(sendBtn);
+    body.append(el('div',{style:{marginTop:'16px',padding:'11px 13px',background:'var(--s2)',borderRadius:'8px',border:'1px solid var(--bor)',fontSize:'12px',color:'var(--mut)',lineHeight:'1.6'}},
+      '💡 How it works: share your app link with them, they tap Register, create an account, then they can log in and see only this business.'
+    ));
+    return{title:'✉️ Invite to '+d.bizName,body};
   }
 
   return null;
