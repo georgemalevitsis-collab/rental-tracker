@@ -339,7 +339,7 @@ function renderLogin(){
       if(!res.ok){errBox.textContent=data.error||'Something went wrong';errBox.style.display='block';return;}
       S.token=data.token;S.user=data.user;
       localStorage.setItem('ph_token',data.token);localStorage.setItem('ph_user',JSON.stringify(data.user));
-      render();
+      render();return;
     }catch(e){
       S.user={name:email.split('@')[0],email};localStorage.setItem('ph_user',JSON.stringify(S.user));render();
     }finally{submitBtn.textContent=loginMode==='login'?'Sign In →':'Create Account →';submitBtn.disabled=false;}
