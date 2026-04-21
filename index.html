@@ -336,7 +336,7 @@ function renderLogin(){
       const body=loginMode==='login'?{email,password:pass}:{email,password:pass,name};
       const res=await fetch(API_URL+ep,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
       const data=await res.json();
-      if(!res.ok){errBox.textContent=data.error||'Something went wrong';errBox.style.display='block';return;}
+      if(!res.ok){errBox.textContent='Server says: '+(data.error||'Something went wrong')+' ('+res.status+')';errBox.style.display='block';errBox.style.background='var(--redB)';errBox.style.color='var(--red)';return;}
       S.token=data.token;S.user=data.user;
       localStorage.setItem('ph_token',data.token);localStorage.setItem('ph_user',JSON.stringify(data.user));
       render();return;
@@ -350,7 +350,7 @@ function renderLogin(){
   switchRow.innerHTML=loginMode==='login'?"Don't have an account? <span>Register</span>":"Already have an account? <span>Sign In</span>";
   switchRow.querySelector('span').addEventListener('click',()=>{loginMode=loginMode==='login'?'register':'login';render();});
 
-  const noteBox=API_URL.includes('your-app')?el('div',{class:'login-note'},'💡 Backend not set up yet — tap Sign In to use the app locally. Your data saves in this browser.'):null;
+  const noteBox=null;
 
   card.append(logo,...(nameInp?[nameInp]:[]),emailInp,passInp,errBox,submitBtn,switchRow,...(noteBox?[noteBox]:[]));
   wrap.append(card);
